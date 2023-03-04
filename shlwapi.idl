@@ -1,0 +1,1039 @@
+// ********
+// shlwapi.idl Interaces for the Windows light-weight utility APIs             *
+//                                                                              *
+// Part of this file donated for Windows API Type Library by Benoit Cerrina 
+// Based on : shlwapi.h v1.0                                                   *
+// ********
+
+// This file is not enabled because some users may not have SHLWAPI.DLL
+// on their machines. Visual Basic fails at compile time if it cannot find
+// a DLL referenced in a type library. Therefore, it's better to access these
+// functions from Declare statements, because then any failures can be 
+// handled at run time. 
+
+
+//
+// Type definitions.
+//
+typedef HANDLE HUSKEY;  // HUSKEY is a Handle to a User Specific KEY.
+typedef HUSKEY *PHUSKEY;
+
+typedef enum SHREGDEL_FLAGS {
+    SHREGDEL_DEFAULT = 0x00000000,       // Delete's HKCU, or HKLM if HKCU is not found.
+    SHREGDEL_HKCU    = 0x00000001,       // Delete HKCU only
+    SHREGDEL_HKLM    = 0x00000010,       // Delete HKLM only.
+    SHREGDEL_BOTH    = 0x00000011,       // Delete both HKCU and HKLM.
+} SHREGDEL_FLAGS;
+
+typedef enum SHREGENUM_FLAGS {
+    SHREGENUM_DEFAULT = 0x00000000,       // Enumerates HKCU or HKLM if not found.
+    SHREGENUM_HKCU    = 0x00000001,       // Enumerates HKCU only
+    SHREGENUM_HKLM    = 0x00000010,       // Enumerates HKLM only.
+    SHREGENUM_BOTH    = 0x00000011,       // Enumerates both HKCU and HKLM without duplicates.
+                                          // This option is NYI.
+} SHREGENUM_FLAGS;
+
+[
+#ifdef UNICODE
+uuid(64675074-3A82-101B-8181-00AA003743D3),
+#else
+uuid(64674074-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("Windows light-weight utility APIs"),
+dllname("Shlwapi.dll")
+]
+module ShlWapi {
+
+    // Users of this header may define any number of these constants to avoid
+    // the definitions of each functional group.
+    //
+    //    NO_SHLWAPI_STRFCNS    String functions
+    //    NO_SHLWAPI_PATH       Path functions
+    //    NO_SHLWAPI_REG        Registry functions
+    //    NO_SHLWAPI_STREAM     Stream functions
+    //    NO_SHLWAPI_GDI        GDI helper functions
+
+
+    #ifndef NO_SHLWAPI_STRFCNS
+    //
+    //=============== String Routines ===================================
+    //
+ 	[
+	usesgetlasterror,
+	entry("StrChrW"),
+	helpstring("Searches string (case sensitive) for first occurrence of character that matches the specified character")
+	]
+    PTR WINAPI StrChr(PTR lpStart, WORD wMatch);
+	
+	[
+	usesgetlasterror,
+	entry("StrChrIW"),
+	helpstring("Searches string (case insensitive) for first occurrence of character that matches the specified character")
+	]
+	PTR WINAPI StrChrI(PTR lpStart, WORD wMatch);
+    
+	[
+	usesgetlasterror,
+	entry("StrCmpNW"),
+	helpstring("Compares (case sensitive) a specified number of characters of two strings to determine if they are the same")
+	]
+	int WINAPI StrCmpN(LPCWSTR lpStr1, LPCWSTR lpStr2, int nChar);
+    
+	[
+	usesgetlasterror,
+	entry("StrCmpNW"),
+	helpstring("Compares (case sensitive) a specified number of characters of two strings to determine if they are the same")
+	]
+	int WINAPI StrCmpNPtr(PTR lpStr1, PTR lpStr2, int nChar);
+    
+	[
+	usesgetlasterror,
+	entry("StrCmpNW"),
+	helpstring("Compares (case sensitive) a specified number of characters of two strings to determine if they are the same")
+	]
+	int WINAPI StrNCmp(LPCWSTR lpStr1, LPCWSTR lpStr2, int nChar);
+
+	[
+	usesgetlasterror,
+	entry("StrCmpNIW"),
+	helpstring("Compares (case insensitive) a specified number of characters of two strings to determine if they are the same")
+	]
+	int WINAPI StrCmpNI(LPCWSTR lpStr1, LPCWSTR lpStr2, int nChar);
+    
+	[
+	usesgetlasterror,
+	entry("StrCmpNIW"),
+	helpstring("Compares (case insensitive) a specified number of characters of two strings to determine if they are the same")
+	]
+	int WINAPI StrCmpNIPtr(PTR lpStr1, PTR lpStr2, int nChar);
+    
+	[
+	usesgetlasterror,
+	entry("StrCmpNIW"),
+	helpstring("Compares (case insensitive) a specified number of characters of two strings to determine if they are the same")
+	]
+	int WINAPI StrNCmpI(LPCWSTR lpStr1, LPCWSTR lpStr2, int nChar);
+
+	[
+	usesgetlasterror,
+	entry("StrCSpnW"),
+	helpstring("Searches (case sensitive) for the first occurrence of a substring (including the null terminator) within a string")
+	]
+	int WINAPI StrCSpn(PTR lpStr, LPCWSTR lpSet);
+    
+	[
+	usesgetlasterror,
+	entry("StrCSpnIW"),
+	helpstring("Searches (case insensitive) for the first occurrence of a substring (including the null terminator) within a string")
+	]
+	int WINAPI StrCSpnI(PTR lpStr, LPCWSTR lpSet);
+    
+	/* Not a good idea for Visual Basic!!!
+	[
+	usesgetlasterror,
+	entry("StrDupW"),
+	helpstring("")
+	]
+	PTR WINAPI StrDup(LPCWSTR lpSrch);
+    */
+
+	[
+	usesgetlasterror,
+	entry("StrFormatByteSizeW"),
+	helpstring("Converts a numeric value into a string that represents the number expressed as a size value in bytes, KB, MB, or GB, depending on the size")
+	]
+	PTR WINAPI StrFormatByteSize(CURRENCY qdw, LPWSTR szBuf, UINT uiBufSize);
+    
+	[
+	usesgetlasterror,
+	entry("StrFromTimeIntervalW"),
+	helpstring("Converts a given time interval, in milliseconds, to a string")
+	]
+	int WINAPI StrFromTimeInterval(LPWSTR pszOut, UINT cchMax, DWORD dwTimeMS, int digits);
+    
+	[
+	usesgetlasterror,
+	entry("StrIsIntlEqualW"),
+	helpstring("Compares a specified number of characters in two strings to determine if they are equal")
+	]
+	BOOL WINAPI StrIsIntlEqual(BOOL fCaseSens, LPCWSTR lpString1, LPCWSTR lpString2, int nChar);
+    
+	[
+	usesgetlasterror,
+	entry("StrNCatW"),
+	helpstring("Copies and appends a specified number of characters from one string onto the end of another string")
+	]
+	PTR WINAPI StrNCat(LPWSTR psz1, LPCWSTR psz2, int cchMax);
+    
+	[
+	usesgetlasterror,
+	entry("StrNCatW"),
+	helpstring("Copies and appends a specified number of characters from one string onto the end of another string")
+	]
+	PTR WINAPI StrCatN(LPWSTR psz1, LPCWSTR psz2, int cchMax);
+
+	[
+	usesgetlasterror,
+	entry("StrPBrkW"),
+	helpstring("Searches a string for the first occurrence of a character contained in a specified buffer (not including the null terminator)")
+	]
+	PTR WINAPI StrPBrk(PTR psz, LPCWSTR pszSet);
+    
+	[
+	usesgetlasterror,
+	entry("StrRChrW"),
+	helpstring("Searches a string (case sensitive) for the last occurrence of a character that matches the specified character")
+	]
+	PTR WINAPI StrRChr(LPCWSTR lpStart, PTR lpEnd, WORD wMatch);
+    
+	[
+	usesgetlasterror,
+	entry("StrRChrIW"),
+	helpstring("Searches a string (case insensitive) for the last occurrence of a character that matches the specified character")
+	]
+	PTR WINAPI StrRChrI(LPCWSTR lpStart, PTR lpEnd, WORD wMatch);
+    
+	[
+	usesgetlasterror,
+	entry("StrRStrIW"),
+	helpstring("Searches (case insensitive) for the last occurrence of a substring within a string")
+	]
+	PTR WINAPI StrRStrI(LPCWSTR lpSource, PTR lpLast, LPCWSTR lpSrch);
+    
+	[
+	usesgetlasterror,
+	entry("StrSpnW"),
+	helpstring("Obtains the length of a substring within a string that consists entirely of characters contained in a specified buffer")
+	]
+	int WINAPI StrSpn(PTR psz, LPCWSTR pszSet);
+    
+	[
+	usesgetlasterror,
+	entry("StrStrW"),
+	helpstring("Finds (case sensitive) the first occurrence of a substring within a string")
+	]
+	PTR WINAPI StrStr(PTR lpFirst, LPCWSTR lpSrch);
+    
+	[
+	usesgetlasterror,
+	entry("StrStrIW"),
+	helpstring("Finds (case insensitive) the first occurrence of a substring within a string")
+	]
+	PTR WINAPI StrStrI(PTR lpFirst, LPCWSTR lpSrch);
+    
+	[
+	usesgetlasterror,
+	entry("StrToIntW"),
+	helpstring("Converts a decimal string to an integer")
+	]
+	int WINAPI StrToInt(LPCWSTR lpSrc);
+    
+	[
+	usesgetlasterror,
+	entry("StrToIntW"),
+	helpstring("Converts a decimal string to an integer")
+	]
+	int WINAPI StrToLong(LPCWSTR lpSrc);
+
+	[
+	usesgetlasterror,
+	entry("StrToIntExW"),
+	helpstring("Converts a decimal or hexadecimal string to an integer")
+	]
+	BOOL WINAPI StrToIntEx(LPCWSTR pszString, DWORD dwFlags, int * piRet);
+    
+	[
+	usesgetlasterror,
+	entry("StrTrimW"),
+	helpstring("Removes (trims) any leading and trailing characters from a string")
+	]
+	BOOL WINAPI StrTrim(LPWSTR psz, LPCWSTR pszTrimChars);
+	
+	[
+	usesgetlasterror,
+	entry("StrCatW"),
+	helpstring("Copies and appends one string onto the end of another string")
+	]
+	PTR WINAPI StrCat(LPWSTR psz1, LPCWSTR psz2);
+    
+	[
+	usesgetlasterror,
+	entry("StrCmpW"),
+	helpstring("Compares (case sensitive) two strings to determine if they are the same")
+	]
+	int WINAPI StrCmp(LPCWSTR psz1, LPCWSTR psz2);
+    
+	[
+	usesgetlasterror,
+	entry("StrCmpIW"),
+	helpstring("Compares (case insensitive) two strings to determine if they are the same")
+	]
+	int WINAPI StrCmpI(LPCWSTR psz1, LPCWSTR psz2);
+    
+	[
+	usesgetlasterror,
+	entry("StrCpyW"),
+	helpstring("Copies a string to the start of a given string buffer")
+	]
+	PTR WINAPI StrCpy(LPWSTR psz1, LPCWSTR psz2);
+    
+	[
+	usesgetlasterror,
+	entry("StrCpyW"),
+	helpstring("Copies a string to the start of a given string buffer")
+	]
+	PTR WINAPI StrCpyPtr(PTR psz1, PTR psz2);
+    
+	[
+	usesgetlasterror,
+	entry("StrCpyNW"),
+	helpstring("Copies a specified number of characters from a string to the start of a given string buffer")
+	]
+	PTR WINAPI StrCpyN(LPWSTR psz1, LPCWSTR psz2, int cchMax);
+
+	[
+	usesgetlasterror,
+	entry("StrCpyNW"),
+	helpstring("Copies a specified number of characters from a string to the start of a given string buffer")
+	]
+	PTR WINAPI StrCpyNPtr(PTR psz1, PTR psz2, int cchMax);
+
+	[
+	usesgetlasterror,
+	entry("StrCpyNW"),
+	helpstring("Copies a specified number of characters from a string to the start of a given string buffer")
+	]
+	PTR WINAPI StrNCpy(LPWSTR psz1, LPCWSTR psz2, int cchMax);
+
+	[
+	usesgetlasterror,
+	entry("ChrCmpIW"),
+	helpstring("Compares two characters (case insensitive)")
+	]
+	BOOL WINAPI ChrCmpI(WORD w1, WORD w2);
+
+    // Flags for StrToIntEx
+    [ helpstring("StrToIntEx: String contains decimal value") ]
+    const long STIF_DEFAULT        = 0x00000000;
+    [ helpstring("StrToIntEx: String contains hexadecimal value") ]
+    const long STIF_SUPPORT_HEX    = 0x00000001L;
+
+    #endif //  NO_SHLWAPI_STRFCNS
+
+    #ifndef NO_SHLWAPI_PATH
+    //
+    //=============== Path Routines ===================================
+    //
+    [
+    usesgetlasterror,
+    entry("PathAddBackslashW"),
+    helpstring("Adds a backslash to the end of a string to create the correct syntax for a path. If the source path already has a trailing backslash, no backslash will be added")
+    ]
+    PTR WINAPI PathAddBackslash(LPWSTR pszPath);
+  
+    [
+    usesgetlasterror,
+    entry("PathAddExtensionW"),
+    helpstring("Adds a file extension to a string")
+    ]
+    BOOL WINAPI PathAddExtension(LPWSTR pszPath, LPCWSTR pszExt);
+
+    [
+    usesgetlasterror,
+    entry("PathAppendW"),
+    helpstring("Appends one path to the end of another")
+    ]
+    BOOL WINAPI PathAppend(LPWSTR pszPath, LPCWSTR pMore);
+    
+    [
+    usesgetlasterror,
+    entry("PathBuildRootW"),
+    helpstring("Creates a root path from a given drive number")
+    ]
+    PTR WINAPI PathBuildRoot(LPWSTR szRoot, int iDrive);
+    
+    [
+    usesgetlasterror,
+    entry("PathCanonicalizeW"),
+    helpstring("Canonicalizes a path")
+    ]
+    BOOL WINAPI PathCanonicalize(LPWSTR pszBuf, LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathCombineW"),
+    helpstring("Concatenates two strings that represent properly formed paths into one path, as well as any relative path pieces")
+    ]
+    PTR WINAPI PathCombine(LPWSTR szDest, LPCWSTR lpszDir, LPCWSTR lpszFile);
+    
+    [
+    usesgetlasterror,
+    entry("PathCompactPathW"),
+    helpstring("Truncates a file path to fit within a given pixel width by replacing path components with ellipses")
+    ]
+    BOOL WINAPI PathCompactPath(HDC hDC, LPWSTR pszPath, UINT dx);
+    
+    [
+    usesgetlasterror,
+    entry("PathCompactPathExW"),
+    helpstring("Truncates a path to fit within a certain number of characters by replacing path components with ellipses")
+    ]
+    BOOL WINAPI PathCompactPathEx(LPWSTR pszOut, LPCWSTR pszSrc, UINT cchMax, DWORD dwFlags);
+    
+    [
+    usesgetlasterror,
+    entry("PathCommonPrefixW"),
+    helpstring("Compares two paths to determine if they share a common prefix. A prefix is one of these types: 'C:\', '.', '..', '..\'. ")		
+    ]
+    int WINAPI PathCommonPrefix(LPCWSTR pszFile1, LPCWSTR pszFile2, LPWSTR achPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathFileExistsW"),
+    helpstring("Determines if a file exists")
+    ]
+    BOOL WINAPI PathFileExists(LPCWSTR pszPath);
+
+    [
+    usesgetlasterror,
+    entry("PathFindExtensionW"),
+    helpstring("Searches a path for an extension")
+    ]
+    PTR WINAPI PathFindExtension(LPCWSTR pszPath);
+
+    [
+    usesgetlasterror,
+    entry("PathFindFileNameW"),
+    helpstring("Searches a path for a file name")
+    ]
+    PTR WINAPI WINAPI PathFindFileName(LPCWSTR pszPath);
+
+    [
+    usesgetlasterror,
+    entry("PathFindNextComponentW"),
+    helpstring("Parses a path for the next path component. Paths are delimited by backslashes or by the NULL at the end of the path")
+    ]
+    PTR WINAPI PathFindNextComponent(LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathFindOnPathW"),
+    helpstring("Finds a file within a given path")
+    ]
+    BOOL WINAPI PathFindOnPath(LPWSTR pszPath, PTR ppszOtherDirs);
+
+    [
+    usesgetlasterror,
+    entry("PathGetArgsW"),
+    helpstring("Finds the command line arguments within a given path")
+    ]
+    PTR WINAPI PathGetArgs(LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathGetCharTypeW"),
+    helpstring("Determines the type of character with respect to a path")
+    ]
+    UINT WINAPI PathGetCharType(TCHAR ch);
+
+    // Return flags for PathGetCharType
+    const UINT GCT_INVALID   =         0x0000;
+    const UINT GCT_LFNCHAR   =         0x0001;
+    const UINT GCT_SHORTCHAR =         0x0002;
+    const UINT GCT_WILD      =         0x0004;
+    const UINT GCT_SEPARATOR =         0x0008;
+
+    [
+    usesgetlasterror,
+    entry("PathGetDriveNumberW"),
+    helpstring("Searches a path for a drive letter within the range of 'A' to 'Z' and returns the corresponding drive number")
+    ]
+    int WINAPI PathGetDriveNumber(LPCWSTR pszPath);
+
+    [
+    usesgetlasterror,
+    entry("PathIsDirectoryW"),
+    helpstring("Verifies that a path is a valid directory")
+    ]
+    BOOL WINAPI PathIsDirectory(LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathIsFileSpecW"),
+    helpstring("Searches a path for any path delimiting characters (for example, ':' or '\' ). If there are no path delimiting characters present, the path is considered to be a File Spec path")
+    ]
+    BOOL WINAPI PathIsFileSpec(LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathIsPrefixW"),
+    helpstring("Searches a path to determine if it contains a valid prefix of the type passed by pszPrefix. A prefix is one of these types: 'C:\', '.', '..', '..\'")
+    ]
+    BOOL WINAPI PathIsPrefix(LPCWSTR pszPrefix, LPCWSTR pszPath);
+
+    [
+    usesgetlasterror,
+    entry("PathIsRelativeW"),
+    helpstring("Searches a path and determines if it is relative")
+    ]
+    BOOL WINAPI PathIsRelative(LPCWSTR pszPath);
+
+    [
+    usesgetlasterror,
+    entry("PathIsRootW"),
+    helpstring("Parses a path to determine if a root directory path part exists")
+    ]
+    BOOL WINAPI PathIsRoot(LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathIsSameRootW"),
+    helpstring("Compares two paths to determine if they have a common root component")
+    ]
+    BOOL WINAPI PathIsSameRoot(LPCWSTR pszPath1, LPCWSTR pszPath2);
+
+    [
+    usesgetlasterror,
+    entry("PathIsUNCW"),
+    helpstring("Determines if the string is a valid UNC (universal naming convention) for a server and share path")
+    ]
+    BOOL WINAPI PathIsUNC(LPCWSTR pszPath);
+
+    [
+    usesgetlasterror,
+    entry("PathIsUNCServerW"),
+    helpstring("Determines if a string is a valid UNC (universal naming convention) for a server path only")
+    ]
+    BOOL WINAPI PathIsUNCServer(LPCWSTR pszPath);
+
+    [
+    usesgetlasterror,
+    entry("PathIsUNCServerShareW"),
+    helpstring("Determines if the string is a valid UNC (universal naming convention) for a share path only")
+    ]
+    BOOL WINAPI PathIsUNCServerShare(LPCWSTR pszPath);
+
+    [
+    usesgetlasterror,
+    entry("PathIsContentTypeW"),
+    helpstring("Determines if a file's registered content type matches the specified content type. This function obtains the content type for the specified file type and compares that string with the pszContentType. The comparison is not case sensitive")
+    ]
+    BOOL WINAPI PathIsContentType(LPCWSTR pszPath, LPCWSTR pszContentType);
+
+    [
+    usesgetlasterror,
+    entry("PathIsURLW"),
+    helpstring("Tests a given string to determine if it conforms to the URL format. This function does not verify that the path points to an existing site only that it is a legal URL format")
+    ]
+    BOOL WINAPI PathIsURL(LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathMakePrettyW"),
+    helpstring("Converts a path to all lowercase characters to give the path a consistent appearance")
+    ]
+    BOOL WINAPI PathMakePretty(LPWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathMatchSpecW"),
+    helpstring("Searches a string using a DOS wild card match type. The string can be searched for a particular file extension, such as *.bmp, *.doc, and so on")
+    ]
+    BOOL WINAPI PathMatchSpec(LPCWSTR pszFile, LPCWSTR pszSpec);
+    
+    [
+    usesgetlasterror,
+    entry("PathParseIconLocationW"),
+    helpstring("Parses a file location string for its file component and icon index")
+    ]
+    int WINAPI PathParseIconLocation(LPWSTR pszIconFile);
+    
+    [
+    usesgetlasterror,
+    entry("PathQuoteSpacesW"),
+    helpstring("Searches a path for spaces. If spaces are found, the entire path is quoted")
+    ]
+    void WINAPI PathQuoteSpaces(LPWSTR lpsz);
+    
+    [
+    usesgetlasterror,
+    entry("PathRelativePathToW"),
+    helpstring("Creates a relative path from two paths")
+    ]
+    BOOL WINAPI PathRelativePathTo(LPWSTR pszPath, LPCWSTR pszFrom, DWORD dwAttrFrom, LPCWSTR pszTo, DWORD dwAttrTo);
+    
+    [
+    usesgetlasterror,
+    entry("PathRemoveArgsW"),
+    helpstring("Removes any arguments from a given path")
+    ]
+    void WINAPI PathRemoveArgs(LPWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathRemoveBackslashW"),
+    helpstring("Removes the trailing backslash from a given path")
+    ]
+    PTR WINAPI PathRemoveBackslash(LPWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathRemoveBlanksW"),
+    helpstring("Removes all leading and trailing spaces from a string")
+    ]
+    void WINAPI PathRemoveBlanks(LPWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathRemoveExtensionW"),
+    helpstring("Removes the file extension from a path, if there is one")
+    ]
+    void WINAPI PathRemoveExtension(LPWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathRemoveFileSpecW"),
+    helpstring("Removes the trailing file name and backslash from a path, if it has them")
+    ]
+    BOOL WINAPI PathRemoveFileSpec(LPWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathRenameExtensionW"),
+    helpstring("Replaces the extension of a file name with a new extension. If the file name does not contain an extension, the extension will be attached to the end of the string")
+    ]
+    BOOL WINAPI PathRenameExtension(LPWSTR pszPath, LPCWSTR pszExt);
+    
+    [
+    usesgetlasterror,
+    entry("PathSearchAndQualifyW"),
+    helpstring("Determines if a given path is correctly formatted and fully qualified")
+    ]
+    BOOL WINAPI PathSearchAndQualify(LPCWSTR pszPath, LPWSTR pszBuf, UINT cchBuf);
+    
+    [
+    usesgetlasterror,
+    entry("PathSetDlgItemPathW"),
+    helpstring("Sets the text of a child control in a window or dialog box, using PathCompactPath to make sure the path fits in the control")
+    ]
+    void WINAPI PathSetDlgItemPath(HWND hDlg, int id, LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathSkipRootW"),
+    helpstring("Parses a path, ignoring the drive letter or UNC server/share path parts")
+    ]
+    PTR WINAPI PathSkipRoot(LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathStripPathW"),
+    helpstring("Removes the path portion of a fully qualified path and file")
+    ]
+    void WINAPI PathStripPath(LPWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathStripToRootW"),
+    helpstring("Removes all parts of the path except for the root information")
+    ]
+    BOOL WINAPI PathStripToRoot(LPWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathUnquoteSpacesW"),
+    helpstring("Removes quotes from the beginning and end of a path")
+    ]
+    void WINAPI PathUnquoteSpaces(LPWSTR lpsz);
+    
+    [
+    usesgetlasterror,
+    entry("PathMakeSystemFolderW"),
+    helpstring("Gives an existing folder the proper attributes to become a system folder")
+    ]
+    BOOL WINAPI PathMakeSystemFolder(LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathUnmakeSystemFolderW"),
+    helpstring("Removes the attributes from a folder that make it a system folder. This folder must actually exist in the file system")
+    ]
+    BOOL WINAPI PathUnmakeSystemFolder(LPCWSTR pszPath);
+    
+    [
+    usesgetlasterror,
+    entry("PathIsSystemFolderW"),
+    helpstring("Determines if an existing folder contains the attributes that make it a system folder. Alternately indicates if certain attributes qualify a folder to be a system folder")
+    ]
+    BOOL WINAPI PathIsSystemFolder(LPCWSTR pszPath, DWORD dwAttrb);
+
+    #endif //  NO_SHLWAPI_PATH
+
+    #ifndef NO_SHLWAPI_REG
+    //
+    //=============== Registry Routines ===================================
+    //
+
+    // SHDeleteEmptyKey mimics RegDeleteKey as it behaves on NT.
+    // SHDeleteKey mimics RegDeleteKey as it behaves on Win95.
+
+    [
+	usesgetlasterror,
+	entry("SHDeleteEmptyKeyW"),     
+	helpstring("Deletes an empty key with all its associated values")
+	]
+	DWORD WINAPI SHDeleteEmptyKey(HKEY hkey, LPCWSTR pszSubKey);
+    
+	[
+	usesgetlasterror,
+	entry("SHDeleteKeyW"),
+	helpstring("Deletes a subkey with its values and all of its descendants with their values")
+	]
+	DWORD WINAPI SHDeleteKey(HKEY hkey, LPCWSTR pszSubKey);
+
+
+    // These functions open the key, get/set/delete the value, then close
+    // the key.
+
+    
+	[
+	usesgetlasterror,
+	entry("SHDeleteValueW"),
+	helpstring("Deletes a named value from the specified registry key")
+	]
+	DWORD WINAPI SHDeleteValue(HKEY hkey, LPCWSTR pszSubKey, LPCWSTR pszValue);
+    
+	[
+	usesgetlasterror,
+	entry("SHGetValueW"),
+	helpstring("Retrieves a registry value")
+	]
+	DWORD WINAPI SHGetValue(HKEY hkey, LPCWSTR pszSubKey, LPCWSTR pszValue, 
+						    LPDWORD pdwType, LPVOID pvData, LPDWORD pcbData);
+    
+	[
+	usesgetlasterror,
+	entry("SHGetValueW"),
+	helpstring("Retrieves a string registry value")
+	]
+	DWORD WINAPI SHGetValueStr(HKEY hkey, LPCWSTR pszSubKey, LPCWSTR pszValue, 
+							   LPDWORD pdwType, LPWSTR pvData, LPDWORD pcbData);
+
+	[
+	usesgetlasterror,
+	entry("SHSetValueW"),
+	helpstring("Sets the value of a registry key")
+	]
+	DWORD WINAPI SHSetValue(HKEY hkey, LPCWSTR pszSubKey, LPCWSTR pszValue, 
+							DWORD dwType, LPCVOID pvData, DWORD cbData);
+
+	[
+	usesgetlasterror,
+	entry("SHSetValueW"),
+	helpstring("Sets the value of a registry key to a string")
+	]
+	DWORD WINAPI SHSetValueStr(HKEY hkey, LPCWSTR pszSubKey, LPCWSTR pszValue, 
+							   DWORD dwType, LPCWSTR pvData, DWORD cbData);
+
+    // These functions work just like RegQueryValueEx, except if the
+    // data type is REG_EXPAND_SZ, then these will go ahead and expand
+    // out the string.  *pdwType will always be massaged to REG_SZ
+    // if this happens.  REG_SZ values are also guaranteed to be null
+    // terminated.
+
+    
+	[
+	usesgetlasterror,
+	entry("SHQueryValueExW"),
+	helpstring("Opens a registry key and queries it for a specific value")
+	]
+	DWORD WINAPI SHQueryValueEx(HKEY hkey, LPCWSTR pszValue, LPDWORD pdwReserved, 
+								LPDWORD pdwType, LPVOID pvData, LPDWORD pcbData);
+
+	[
+	usesgetlasterror,
+	entry("SHQueryValueExW"),
+	helpstring("Opens a registry key and queries it for a specific value")
+	]
+	DWORD WINAPI SHQueryValueExStr(HKEY hkey, LPCWSTR pszValue, LPDWORD pdwReserved, 
+								   LPDWORD pdwType, LPWSTR pvData, LPDWORD pcbData);
+
+    // Enumeration functions support.
+	[
+	usesgetlasterror,
+	entry("SHEnumKeyExW"),
+	helpstring("Enumerates the subkeys of the specified open registry key")
+	]
+	LONG WINAPI SHEnumKeyEx(HKEY hkey, DWORD dwIndex, LPWSTR pszName, 
+						    LPDWORD pcchName);
+    
+	[
+	usesgetlasterror,
+	entry("SHEnumValueW"),
+	helpstring("Enumerates the values of the specified open registry key")
+	]
+	LONG WINAPI SHEnumValue(HKEY hkey, DWORD dwIndex, LPWSTR pszValueName, 
+							LPDWORD pcchValueName, LPDWORD pdwType, 
+							LPVOID pvData, LPDWORD pcbData);
+    
+	[
+	usesgetlasterror,
+	entry("SHEnumValueW"),
+	helpstring("Enumerates the values of the specified open registry key")
+	]
+	LONG WINAPI SHEnumValueStr(HKEY hkey, DWORD dwIndex, LPWSTR pszValueName, 
+							   LPDWORD pcchValueName, LPDWORD pdwType, 
+							   LPWSTR pvData, LPDWORD pcbData);
+
+	[
+	usesgetlasterror,
+	entry("SHQueryInfoKeyW"),
+	helpstring("Retrieves information about a specified registry key")
+	]
+	LONG WINAPI SHQueryInfoKey(HKEY hkey, LPDWORD pcSubKeys, 
+							   LPDWORD pcchMaxSubKeyLen, LPDWORD pcValues, 
+							   LPDWORD pcchMaxValueNameLen);
+
+    //////////////////////////////////////////////
+    // User Specific Registry Access Functions
+    //////////////////////////////////////////////
+
+    // Flags for StrToIntEx
+    [ helpstring("Create/open the key under HKEY_CURRENT_USER") ]
+    const long SHREGSET_HKCU           = 0x00000001;       // Write to HKCU if empty
+    [ helpstring("Force create/open the key under HKEY_CURRENT_USER") ]
+    const long SHREGSET_FORCE_HKCU     = 0x00000002;       // Write to HKCU
+    [ helpstring("Create/open the key under HKEY_LOCAL_MACHINE") ]
+    const long SHREGSET_HKLM           = 0x00000004;       // Write to HKLM if empty
+    [ helpstring("Force create/open the key under HKEY_LOCAL_MACHINE") ]
+    const long SHREGSET_FORCE_HKLM     = 0x00000008;       // Write to HKLM
+    [ helpstring("Create/open the key under both HKEY_CURRENT_USER and HKEY_LOCAL_MACHINE") ]
+    const long SHREGSET_DEFAULT        = 0x00000006;	   // Default is SHREGSET_FORCE_HKCU | SHREGSET_HKLM.
+ 
+	[
+	usesgetlasterror,
+	entry("SHRegCreateUSKeyW"),
+	helpstring("Creates or opens a user-specific registry key")
+	]
+	LONG WINAPI SHRegCreateUSKey(LPCWSTR pwzPath, REGSAM samDesired, 
+								 HUSKEY hRelativeUSKey, PHUSKEY phNewUSKey, 
+								 DWORD dwFlags);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegOpenUSKeyW"),
+	helpstring("Opens a user-specific registry key")
+	]
+	LONG WINAPI SHRegOpenUSKey(LPCWSTR pwzPath, REGSAM samDesired, 
+							   HUSKEY hRelativeUSKey, PHUSKEY phNewUSKey, 
+							   BOOL fIgnoreHKCU);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegQueryUSValueW"),
+	helpstring("Retrieves the type and data for a specified name associated with an open user-specific key")
+	]
+	LONG WINAPI SHRegQueryUSValue(HUSKEY hUSKey, LPCWSTR pwzValue, 
+								  LPDWORD pdwType, LPVOID pvData, 
+								  LPDWORD pcbData, BOOL fIgnoreHKCU, 
+								  LPVOID pvDefaultData, DWORD dwDefaultDataSize);
+
+	[
+	usesgetlasterror,
+	entry("SHRegQueryUSValueW"),
+	helpstring("Retrieves the type and data for a specified name associated with an open user-specific key")
+	]
+	LONG WINAPI SHRegQueryUSValueStr(HUSKEY hUSKey, LPCWSTR pwzValue, 
+								     LPDWORD pdwType, LPWSTR pvData, 
+									 LPDWORD pcbData, BOOL fIgnoreHKCU, 
+									 LPWSTR pvDefaultData, DWORD dwDefaultDataSize);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegWriteUSValueW"),
+	helpstring("Writes a user-specific registry value")
+	]
+	LONG WINAPI SHRegWriteUSValue(HUSKEY hUSKey, LPCWSTR pwzValue, DWORD dwType, 
+								  LPVOID pvData, DWORD cbData, DWORD dwFlags);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegWriteUSValueW"),
+	helpstring("Writes a user-specific registry value")
+	]
+	LONG WINAPI SHRegWriteUSValueStr(HUSKEY hUSKey, LPCWSTR pwzValue, DWORD dwType, 
+								     LPWSTR pvData, DWORD cbData, DWORD dwFlags);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegDeleteEmptyUSKeyW"),
+	helpstring("Deletes an empty user-specific registry key")
+	]
+	LONG WINAPI SHRegDeleteEmptyUSKey(HUSKEY hUSKey, LPCWSTR pwzSubKey, 
+									  SHREGDEL_FLAGS delRegFlags);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegDeleteUSValueW"),
+	helpstring("Deletes a user-specific registry value")
+	]
+	LONG WINAPI SHRegDeleteUSValue(HUSKEY hUSKey, LPCWSTR pwzValue, 
+								   SHREGDEL_FLAGS delRegFlags);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegEnumUSKeyW"),
+	helpstring("Enumerates the subkeys of a user-specific key")
+	]
+	LONG WINAPI SHRegEnumUSKey(HUSKEY hUSKey, DWORD dwIndex, LPWSTR pwzName, 
+						       LPDWORD pcchName, SHREGENUM_FLAGS enumRegFlags);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegEnumUSValueW"),
+	helpstring("Enumerates the values of the specified user-specific registry key")
+	]
+	LONG WINAPI SHRegEnumUSValue(HUSKEY hUSkey, DWORD dwIndex, 
+								 LPWSTR pszValueName, LPDWORD pcchValueName, 
+								 LPDWORD pdwType, LPVOID pvData, 
+								 LPDWORD pcbData, SHREGENUM_FLAGS enumRegFlags);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegEnumUSValueW"),
+	helpstring("Enumerates the values of the specified user-specific registry key")
+	]
+	LONG WINAPI SHRegEnumUSValueStr(HUSKEY hUSkey, DWORD dwIndex, 
+								    LPWSTR pszValueName, LPDWORD pcchValueName, 
+								    LPDWORD pdwType, LPWSTR pvData, 
+									LPDWORD pcbData, SHREGENUM_FLAGS enumRegFlags);
+
+	[
+	usesgetlasterror,
+	entry("SHRegQueryInfoUSKeyW"),
+	helpstring("Retrieves information about a specified user-specific registry key")
+	]
+	LONG WINAPI SHRegQueryInfoUSKey(HUSKEY hUSKey, LPDWORD pcSubKeys, 
+									LPDWORD pcchMaxSubKeyLen, LPDWORD pcValues, 
+									LPDWORD pcchMaxValueNameLen, 
+									SHREGENUM_FLAGS enumRegFlags);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegCloseUSKey"),
+	helpstring("Closes a user-specific registry key")
+	]
+	LONG WINAPI SHRegCloseUSKey(HUSKEY hUSKey);
+
+    // These calls are equal to an SHRegOpenUSKey, SHRegQueryUSValue, and then a SHRegCloseUSKey
+    
+	[
+	usesgetlasterror,
+	entry("SHRegGetUSValueW"),
+	helpstring("Retrieves a user-specific registry value")
+	]
+	LONG WINAPI SHRegGetUSValue(LPCWSTR pwzSubKey, LPCWSTR pwzValue, 
+								LPDWORD pdwType, LPVOID  pvData, LPDWORD pcbData, 
+								BOOL fIgnoreHKCU, LPVOID pvDefaultData, 
+								DWORD dwDefaultDataSize);
+    
+	[
+	usesgetlasterror,
+	entry("SHRegGetUSValueW"),
+	helpstring("Retrieves a user-specific registry value")
+	]
+	LONG WINAPI SHRegGetUSValueStr(LPCWSTR pwzSubKey, LPCWSTR pwzValue, 
+								   LPDWORD pdwType, LPWSTR pvData, LPDWORD pcbData, 
+								   BOOL fIgnoreHKCU, LPWSTR pvDefaultData, 
+								   DWORD dwDefaultDataSize);
+	[
+	usesgetlasterror,
+	entry("SHRegSetUSValueW"),
+	helpstring("Sets a user-specific registry value")
+	]
+	LONG WINAPI SHRegSetUSValue(LPCWSTR pwzSubKey, LPCWSTR pwzValue, 
+								DWORD dwType, LPVOID pvData, DWORD cbData, 
+								DWORD dwFlags);
+
+	[
+	usesgetlasterror,
+	entry("SHRegSetUSValueW"),
+	helpstring("Sets a user-specific registry value")
+	]
+	LONG WINAPI SHRegSetUSValueStr(LPCWSTR pwzSubKey, LPCWSTR pwzValue, 
+								   DWORD dwType, LPWSTR pvData, DWORD cbData, 
+								   DWORD dwFlags);
+
+	/*
+	[
+	usesgetlasterror,
+	entry("SHRegGetBoolUSValueW"),
+	helpstring("")
+	]
+	BOOL WINAPI SHRegGetBoolUSValue(LPCWSTR pszSubKey, LPCWSTR pszValue, BOOL fIgnoreHKCU, BOOL fDefault);
+	*/
+
+    #endif //  NO_SHLWAPI_REG
+
+    #ifndef NO_SHLWAPI_STREAM
+    //
+    //=============== Stream Routines ===================================
+    //
+
+    [
+    usesgetlasterror,
+    entry("SHOpenRegStreamW"),
+    helpstring("Opens a registry value and supplies anIStream interface that can be used to read from or write to the value")
+    ]
+    IVBStream WINAPI SHOpenRegStream(HKEY hkey, LPCWSTR pszSubkey, 
+									 LPCWSTR pszValue, DWORD grfMode);
+
+    #endif // NO_SHLWAPI_STREAM
+
+
+    #ifndef NO_SHLWAPI_GDI
+    //
+    //====== GDI helper functions  ================================================
+    //
+
+    [
+    usesgetlasterror,
+    entry("SHCreateShellPalette"),
+    helpstring("Creates a shell palette")
+    ]
+    HPALETTE WINAPI SHCreateShellPalette(HDC hdc);
+
+    #endif // NO_SHLWAPI_GDI
+
+
+    //
+    //====== DllGetVersion  ========
+    //
+	/*
+
+    typedef struct _DllVersionInfo
+    {
+            DWORD cbSize;
+            DWORD dwMajorVersion;                   // Major version
+            DWORD dwMinorVersion;                   // Minor version
+            DWORD dwBuildNumber;                    // Build number
+            DWORD dwPlatformID;                     // DLLVER_PLATFORM_*
+    } DLLVERSIONINFO;
+
+    // Platform IDs for DLLVERSIONINFO
+    #define DLLVER_PLATFORM_WINDOWS         0x00000001      // Windows 95
+    #define DLLVER_PLATFORM_NT              0x00000002      // Windows NT
+
+    //
+    // The caller should always GetProcAddress("DllGetVersion"), not
+    // implicitly link to it.
+    //
+
+    typedef HRESULT (CALLBACK* DLLGETVERSIONPROC)(DLLVERSIONINFO *);
+
+    // DllInstall (to be implemented by self-installing DLLs)
+    STDAPI DllInstall(BOOL bInstall, LPCWSTR pszCmdLine);
+
+    */
+}
+

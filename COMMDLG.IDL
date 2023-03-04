@@ -1,0 +1,602 @@
+// commdlg.h -- Common Dialog APIs      
+
+/*
+
+  Note: I don't use these definitions in the CommonDialog module. This is 
+  because it is more convenient to use UDTs written in Visual Basic because
+  they allow you to use the String type to replace the LPSTR type commonly 
+  used in these structures. I tried using the BSTR type for these fields because
+  it should be equivalent to String. Unfortunately it isn't. BSTR types appear 
+  as String types in the object browser, but they don't act the same. The strings 
+  come out as Unicode text without the required ANSI conversion. There may be 
+  workarounds for this behavior, but the easiest is to simply use VB rather than 
+  a type library. 
+
+  Instead of BSTR, these structures use PTR (an alias for long). It's possible
+  to use these types with the right CopyMemory, VarPtr, and StrPtr hacks, but I
+  don't think it's worth the trouble. 
+
+*/
+
+#if 1
+typedef DWORD LPOFNHOOKPROC;
+// typedef UINT (WINAPI *LPOFNHOOKPROC) (HWND, UINT, WPARAM, LPARAM);
+
+typedef struct OPENFILENAME {
+   DWORD        lStructSize;
+   HWND         hwndOwner;
+   HINSTANCE    hInstance;
+   PTR /* LPSTR */ lpstrFilter;
+   PTR /* LPSTR */ lpstrCustomFilter;
+   DWORD        nMaxCustFilter;
+   DWORD        nFilterIndex;
+   PTR /* LPSTR */ lpstrFile;
+   DWORD        nMaxFile;
+   PTR /* LPSTR */ lpstrFileTitle;
+   DWORD        nMaxFileTitle;
+   PTR /* LPSTR */ lpstrInitialDir;
+   PTR /* LPSTR */ lpstrTitle;
+   DWORD        Flags;
+   WORD         nFileOffset;
+   WORD         nFileExtension;
+   PTR /* LPSTR */ lpstrDefExt;
+   DWORD /* LPARAM */ lCustData;
+   LPOFNHOOKPROC lpfnHook;
+   PTR /* LPSTR */ lpTemplateName;
+} OPENFILENAME, *LPOPENFILENAME;
+
+// Structure used for all OpenFileName notifications
+typedef struct OFNOTIFY {
+    NMHDR           hdr;
+    LPOPENFILENAME  lpOFN;
+    PTR /* LPSTR */ pszFile;        // May be NULL
+} OFNOTIFY, *LPOFNOTIFY;
+
+typedef enum EOpenFile {
+    OFN_READONLY                 = 0x00000001,
+    OFN_OVERWRITEPROMPT          = 0x00000002,
+    OFN_HIDEREADONLY             = 0x00000004,
+    OFN_NOCHANGEDIR              = 0x00000008,
+    OFN_SHOWHELP                 = 0x00000010,
+    OFN_ENABLEHOOK               = 0x00000020,
+    OFN_ENABLETEMPLATE           = 0x00000040,
+    OFN_ENABLETEMPLATEHANDLE     = 0x00000080,
+    OFN_NOVALIDATE               = 0x00000100,
+    OFN_ALLOWMULTISELECT         = 0x00000200,
+    OFN_EXTENSIONDIFFERENT       = 0x00000400,
+    OFN_PATHMUSTEXIST            = 0x00000800,
+    OFN_FILEMUSTEXIST            = 0x00001000,
+    OFN_CREATEPROMPT             = 0x00002000,
+    OFN_SHAREAWARE               = 0x00004000,
+    OFN_NOREADONLYRETURN         = 0x00008000,
+    OFN_NOTESTFILECREATE         = 0x00010000,
+    OFN_NONETWORKBUTTON          = 0x00020000,
+    OFN_NOLONGNAMES              = 0x00040000,    // force no long names for 4.x modules
+    OFN_EXPLORER                 = 0x00080000,    // new look commdlg
+    OFN_NODEREFERENCELINKS       = 0x00100000,
+    OFN_LONGNAMES                = 0x00200000     // force long names for 3.x modules
+} EOpenFile;
+
+typedef DWORD LPCCHOOKPROC;
+//typedef UINT (WINAPI *LPCCHOOKPROC) (HWND, UINT, WPARAM, LPARAM);
+
+typedef struct TCHOOSECOLOR {
+   DWORD        lStructSize;
+   HWND         hwndOwner;
+   HWND         hInstance;
+   COLORREF     rgbResult;
+   PTR /* COLORREF * */ lpCustColors;
+   DWORD        Flags;
+   DWORD /* LPARAM */ lCustData;
+   LPCCHOOKPROC lpfnHook;
+   PTR /* LPSTR */ lpTemplateName;
+} TCHOOSECOLOR, *LPCHOOSECOLOR;
+
+typedef enum EChooseColor {
+    CC_RGBINIT               = 0x00000001,
+    CC_FULLOPEN              = 0x00000002,
+    CC_PREVENTFULLOPEN       = 0x00000004,
+    CC_SHOWHELP              = 0x00000008,
+    CC_ENABLEHOOK            = 0x00000010,
+    CC_ENABLETEMPLATE        = 0x00000020,
+    CC_ENABLETEMPLATEHANDLE  = 0x00000040,
+    CC_SOLIDCOLOR            = 0x00000080,
+    CC_ANYCOLOR              = 0x00000100 
+} EChooseColor;
+
+typedef DWORD LPFRHOOKPROC;
+//typedef UINT (WINAPI *LPFRHOOKPROC) (HWND, UINT, WPARAM, LPARAM);
+
+typedef struct FINDREPLACE {
+   DWORD        lStructSize;        // size of this struct 0x20
+   HWND         hwndOwner;          // handle to owner's window
+   HINSTANCE    hInstance;          // instance handle of.EXE that
+                                    //   contains cust. dlg. template
+   DWORD        dwFlags;            // one or more of the FR_??
+   PTR /* LPSTR */ lpstrFindWhat;   // ptr. to search string
+   PTR /* LPSTR */ lpstrReplaceWith;// ptr. to replace string
+   WORD         wFindWhatLen;       // size of find buffer
+   WORD         wReplaceWithLen;    // size of replace buffer
+   DWORD /* LPARAM */ lCustData;
+   LPFRHOOKPROC lpfnHook;           // ptr. to hook fn. or NULL
+   PTR /* LPSTR */ lpTemplateName;  // custom template name
+} FINDREPLACE, *LPFINDREPLACE;
+
+typedef enum EFindReplace {
+    FR_DOWN                         = 0x00000001,
+    FR_WHOLEWORD                    = 0x00000002,
+    FR_MATCHCASE                    = 0x00000004,
+    FR_FINDNEXT                     = 0x00000008,
+    FR_REPLACE                      = 0x00000010,
+    FR_REPLACEALL                   = 0x00000020,
+    FR_DIALOGTERM                   = 0x00000040,
+    FR_SHOWHELP                     = 0x00000080,
+    FR_ENABLEHOOK                   = 0x00000100,
+    FR_ENABLETEMPLATE               = 0x00000200,
+    FR_NOUPDOWN                     = 0x00000400,
+    FR_NOMATCHCASE                  = 0x00000800,
+    FR_NOWHOLEWORD                  = 0x00001000,
+    FR_ENABLETEMPLATEHANDLE         = 0x00002000,
+    FR_HIDEUPDOWN                   = 0x00004000,
+    FR_HIDEMATCHCASE                = 0x00008000,
+    FR_HIDEWHOLEWORD                = 0x00010000,
+} EFindReplace;
+
+typedef DWORD LPCFHOOKPROC;
+//typedef UINT (WINAPI *LPCFHOOKPROC) (HWND, UINT, WPARAM, LPARAM);
+
+typedef struct TCHOOSEFONT {
+   DWORD           lStructSize;
+   HWND            hwndOwner;          // caller's window handle
+   HDC             hDC;                // printer DC/IC or NULL
+   PTR /*LPLOGFONT */ lpLogFont;       // ptr. to a LOGFONT struct
+   INT             iPointSize;         // 10 * size in points of selected font
+   DWORD           Flags;              // enum. type flags
+   COLORREF        rgbColors;          // returned text color
+   DWORD /* LPARAM */ lCustData;
+   LPCFHOOKPROC    lpfnHook;           // ptr. to hook function
+   PTR /* LPSTR */ lpTemplateName;     // custom template name
+   HINSTANCE       hInstance;          // instance handle of.EXE that
+                                       //   contains cust. dlg. template
+   PTR /* LPSTR */ lpszStyle;          // return the style field here
+                                       // must be LF_FACESIZE or bigger
+   WORD            nFontType;          // same value reported to the EnumFonts
+                                       //   call back with the extra FONTTYPE_
+                                       //   bits added
+   WORD            ___MISSING_ALIGNMENT__;
+   INT             nSizeMin;           // minimum pt size allowed &
+   INT             nSizeMax;           // max pt size allowed if
+                                       //   CF_LIMITSIZE is used
+} TCHOOSEFONT, *LPCHOOSEFONT;
+
+typedef enum EChooseFont {
+    CF_SCREENFONTS             = 0x00000001,
+    CF_PRINTERFONTS            = 0x00000002,
+    CF_BOTH                    = 0x00000003, // (CF_SCREENFONTS | CF_PRINTERFONTS)
+    CF_SHOWHELP                = 0x00000004,
+    CF_FONTSHOWHELP            = 0x00000004,
+    CF_ENABLEHOOK              = 0x00000008,
+    CF_ENABLETEMPLATE          = 0x00000010,
+    CF_ENABLETEMPLATEHANDLE    = 0x00000020,
+    CF_INITTOLOGFONTSTRUCT     = 0x00000040,
+    CF_USESTYLE                = 0x00000080,
+    CF_EFFECTS                 = 0x00000100,
+    CF_APPLY                   = 0x00000200,
+    CF_ANSIONLY                = 0x00000400,
+    CF_SCRIPTSONLY             = 0x00000400, // CF_ANSIONLY
+    CF_NOVECTORFONTS           = 0x00000800,
+    CF_NOOEMFONTS              = 0x00000800, // CF_NOVECTORFONTS
+    CF_NOSIMULATIONS           = 0x00001000,
+    CF_LIMITSIZE               = 0x00002000,
+    CF_FIXEDPITCHONLY          = 0x00004000,
+    CF_WYSIWYG                 = 0x00008000, // must also have CF_SCREENFONTS & CF_PRINTERFONTS
+    CF_FORCEFONTEXIST          = 0x00010000,
+    CF_SCALABLEONLY            = 0x00020000,
+    CF_TTONLY                  = 0x00040000,
+    CF_NOFACESEL               = 0x00080000,
+    CF_NOSTYLESEL              = 0x00100000,
+    CF_NOSIZESEL               = 0x00200000,
+    CF_SELECTSCRIPT            = 0x00400000,
+    CF_NOSCRIPTSEL             = 0x00800000,
+    CF_NOVERTFONTS             = 0x01000000 
+} EChooseFont;
+
+    // these are extra nFontType bits that are added to what is returned to the
+    // EnumFonts callback routine
+
+typedef enum EFontType { 
+    SIMULATED_FONTTYPE    = 0x8000,
+    PRINTER_FONTTYPE      = 0x4000,
+    SCREEN_FONTTYPE       = 0x2000,
+    BOLD_FONTTYPE         = 0x0100,
+    ITALIC_FONTTYPE       = 0x0200,
+    REGULAR_FONTTYPE      = 0x0400 
+} EFontType;
+
+typedef DWORD LPPRINTHOOKPROC;
+typedef DWORD LPSETUPHOOKPROC;
+//typedef UINT (WINAPI *LPPRINTHOOKPROC) (HWND, UINT, WPARAM, LPARAM);
+//typedef UINT (WINAPI *LPSETUPHOOKPROC) (HWND, UINT, WPARAM, LPARAM);
+
+typedef struct TPRINTDLG {
+   DWORD            lStructSize;
+   HWND             hwndOwner;
+   HGLOBAL          hDevMode;
+   HGLOBAL          hDevNames;
+   HDC              hDC;
+   DWORD            Flags;
+   WORD             nFromPage;
+   WORD             nToPage;
+   WORD             nMinPage;
+   WORD             nMaxPage;
+   WORD             nCopies;
+   HINSTANCE        hInstance;
+   DWORD /* LPARAM */ lCustData;
+   LPPRINTHOOKPROC  lpfnPrintHook;
+   LPSETUPHOOKPROC  lpfnSetupHook;
+   PTR /* LPSTR */  lpPrintTemplateName;
+   PTR /* LPSTR */  lpSetupTemplateName;
+   HGLOBAL          hPrintTemplate;
+   HGLOBAL          hSetupTemplate;
+} TPRINTDLG, *LPPRINTDLG;
+
+typedef enum EPrintDialog {
+    PD_ALLPAGES                  = 0x00000000,
+    PD_SELECTION                 = 0x00000001,
+    PD_PAGENUMS                  = 0x00000002,
+    PD_NOSELECTION               = 0x00000004,
+    PD_NOPAGENUMS                = 0x00000008,
+    PD_COLLATE                   = 0x00000010,
+    PD_PRINTTOFILE               = 0x00000020,
+    PD_PRINTSETUP                = 0x00000040,
+    PD_NOWARNING                 = 0x00000080,
+    PD_RETURNDC                  = 0x00000100,
+    PD_RETURNIC                  = 0x00000200,
+    PD_RETURNDEFAULT             = 0x00000400,
+    PD_SHOWHELP                  = 0x00000800,
+    PD_ENABLEPRINTHOOK           = 0x00001000,
+    PD_ENABLESETUPHOOK           = 0x00002000,
+    PD_ENABLEPRINTTEMPLATE       = 0x00004000,
+    PD_ENABLESETUPTEMPLATE       = 0x00008000,
+    PD_ENABLEPRINTTEMPLATEHANDLE = 0x00010000,
+    PD_ENABLESETUPTEMPLATEHANDLE = 0x00020000,
+    PD_USEDEVMODECOPIES          = 0x00040000,
+    PD_USEDEVMODECOPIESANDCOLLATE = 0x00040000,
+    PD_DISABLEPRINTTOFILE        = 0x00080000,
+    PD_HIDEPRINTTOFILE           = 0x00100000,
+    PD_NONETWORKBUTTON           = 0x00200000 
+} EPrintDialog;
+
+typedef struct DEVNAMES {
+   WORD wDriverOffset;
+   WORD wDeviceOffset;
+   WORD wOutputOffset;
+   WORD wDefault;
+} DEVNAMES;
+
+typedef DEVNAMES * LPDEVNAMES;
+
+typedef DWORD LPPAGEPAINTHOOK;
+typedef DWORD LPPAGESETUPHOOK;
+//typedef UINT (WINAPI* LPPAGEPAINTHOOK)( HWND, UINT, WPARAM, LPARAM );
+//typedef UINT (WINAPI* LPPAGESETUPHOOK)( HWND, UINT, WPARAM, LPARAM );
+
+typedef struct TPAGESETUPDLG {
+    DWORD           lStructSize;
+    HWND            hwndOwner;
+    HGLOBAL         hDevMode;
+    HGLOBAL         hDevNames;
+    DWORD           Flags;
+    POINTL          ptPaperSize;
+    RECT            rtMinMargin;
+    RECT            rtMargin;
+    HINSTANCE       hInstance;
+    DWORD /* LPARAM */ lCustData;
+    LPPAGESETUPHOOK lpfnPageSetupHook;
+    LPPAGEPAINTHOOK lpfnPagePaintHook;
+    PTR /* LPSTR */ lpPageSetupTemplateName;
+    HGLOBAL         hPageSetupTemplate;
+} TPAGESETUPDLG, * LPPAGESETUPDLG;
+
+typedef enum EPageSetup {
+    PSD_DEFAULTMINMARGINS             = 0x00000000, // default (printer's)
+    PSD_INWININIINTLMEASURE           = 0x00000000, // 1st of 4 possible
+
+    PSD_MINMARGINS                    = 0x00000001, // use caller's
+    PSD_MARGINS                       = 0x00000002, // use caller's
+    PSD_INTHOUSANDTHSOFINCHES         = 0x00000004, // 2nd of 4 possible
+    PSD_INHUNDREDTHSOFMILLIMETERS     = 0x00000008, // 3rd of 4 possible
+    PSD_DISABLEMARGINS                = 0x00000010,
+    PSD_DISABLEPRINTER                = 0x00000020,
+    PSD_NOWARNING                     = 0x00000080, // must be same as PD_*
+    PSD_DISABLEORIENTATION            = 0x00000100,
+    PSD_RETURNDEFAULT                 = 0x00000400, // must be same as PD_*
+    PSD_DISABLEPAPER                  = 0x00000200,
+    PSD_SHOWHELP                      = 0x00000800, // must be same as PD_*
+    PSD_ENABLEPAGESETUPHOOK           = 0x00002000, // must be same as PD_*
+    PSD_ENABLEPAGESETUPTEMPLATE       = 0x00008000, // must be same as PD_*
+    PSD_ENABLEPAGESETUPTEMPLATEHANDLE = 0x00020000, // must be same as PD_*
+    PSD_ENABLEPAGEPAINTHOOK           = 0x00040000,
+    PSD_DISABLEPAGEPAINTING           = 0x00080000,
+} EPageSetup;
+
+[
+#ifdef UNICODE
+uuid(6467505A-3A82-101B-8181-00AA003743D3),
+#else
+uuid(6467405A-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("Common Dialog"),
+dllname("COMDLG32.DLL")
+]
+module CommonDlg {
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetOpenFileNameW"),
+    #else
+    entry("GetOpenFileNameA"),
+    #endif
+    helpstring("Creates an Open common dialog box that lets the user specify the drive, directory, and the name of a file or set of files to open")
+    ]
+    BOOL WINAPI GetOpenFileName(OPENFILENAME * lpofn);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetSaveFileNameW"),
+    #else
+    entry("GetSaveFileNameA"),
+    #endif
+    helpstring("Creates a Save common dialog box that lets the user specify the drive, directory, and name of a file to save"),
+    ]
+    BOOL WINAPI GetSaveFileName(LPOPENFILENAME lpofn);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetFileTitleW"),
+    #else
+    entry("GetFileTitleA"),
+    #endif
+    helpstring("Returns the name of the file identified by the lpszFile parameter"),
+    ]
+    short WINAPI GetFileTitle(LPCTSTR lpszFile, LPTSTR lpszTitle, WORD cbBuf);
+
+    // Return values for the registered message sent to the hook function
+    // when a sharing violation occurs.  OFN_SHAREFALLTHROUGH allows the
+    // filename to be accepted, OFN_SHARENOWARN rejects the name but puts
+    // up no warning (returned when the app has already put up a warning
+    // message), and OFN_SHAREWARN puts up the default warning message
+    // for sharing violations.
+    //
+    // Note:  Undefined return values map to OFN_SHAREWARN, but are
+    //        reserved for future use.
+
+    const DWORD OFN_SHAREFALLTHROUGH     = 2;
+    const DWORD OFN_SHARENOWARN          = 1;
+    const DWORD OFN_SHAREWARN            = 0;
+
+    #define CDN_FIRST   (0U-601U)
+    #define CDN_LAST    (0U-699U)
+
+    // Notifications when Open or Save dialog status changes
+    const DWORD CDN_INITDONE            = (CDN_FIRST - 0x0000);
+    const DWORD CDN_SELCHANGE           = (CDN_FIRST - 0x0001);
+    const DWORD CDN_FOLDERCHANGE        = (CDN_FIRST - 0x0002);
+    const DWORD CDN_SHAREVIOLATION      = (CDN_FIRST - 0x0003);
+    const DWORD CDN_HELP                = (CDN_FIRST - 0x0004);
+    const DWORD CDN_FILEOK              = (CDN_FIRST - 0x0005);
+    const DWORD CDN_TYPECHANGE          = (CDN_FIRST - 0x0006);
+
+    #define WM_USER        0x0400
+
+    #define CDM_FIRST       (WM_USER + 100)
+    #define CDM_LAST        (WM_USER + 200)
+
+    // Messages to query information from the Open or Save dialogs
+
+    // lParam = pointer to text buffer that gets filled in
+    // wParam = max number of characters of the text buffer (including NULL)
+    // return = < 0 if error; number of characters needed (including NULL)
+    const DWORD CDM_GETSPEC             = (CDM_FIRST + 0x0000);
+    /*
+    #ifndef UNICODE_ONLY
+    #define CommDlg_OpenSave_GetSpecA(_hdlg, _psz, _cbmax) \
+            (int)SNDMSG(_hdlg, CDM_GETSPEC, (WPARAM)_cbmax, (LPARAM)(LPSTR)_psz)
+    #endif //!UNICODE_ONLY
+    #ifndef ANSI_ONLY
+    #define CommDlg_OpenSave_GetSpecW(_hdlg, _psz, _cbmax) \
+            (int)SNDMSG(_hdlg, CDM_GETSPEC, (WPARAM)_cbmax, (LPARAM)(LPWSTR)_psz)
+    #endif //!ANSI_ONLY
+    #ifdef UNICODE
+    #define CommDlg_OpenSave_GetSpec  CommDlg_OpenSave_GetSpecW
+    #else
+    #define CommDlg_OpenSave_GetSpec  CommDlg_OpenSave_GetSpecA
+    #endif // !UNICODE
+    */
+
+    // lParam = pointer to text buffer that gets filled in
+    // wParam = max number of characters of the text buffer (including NULL)
+    // return = < 0 if error; number of characters needed (including NULL)
+    const DWORD CDM_GETFILEPATH        = (CDM_FIRST + 0x0001);
+    /*
+    #ifndef UNICODE_ONLY
+    #define CommDlg_OpenSave_GetFilePathA(_hdlg, _psz, _cbmax) \
+            (int)SNDMSG(_hdlg, CDM_GETFILEPATH, (WPARAM)_cbmax, (LPARAM)(LPSTR)_psz)
+    #endif //!UNICODE_ONLY
+    #ifndef ANSI_ONLY
+    #define CommDlg_OpenSave_GetFilePathW(_hdlg, _psz, _cbmax) \
+            (int)SNDMSG(_hdlg, CDM_GETFILEPATH, (WPARAM)_cbmax, (LPARAM)(LPWSTR)_psz)
+    #endif //!ANSI_ONLY
+    #ifdef UNICODE
+    #define CommDlg_OpenSave_GetFilePath  CommDlg_OpenSave_GetFilePathW
+    #else
+    #define CommDlg_OpenSave_GetFilePath  CommDlg_OpenSave_GetFilePathA
+    #endif // !UNICODE
+    */
+
+    // lParam = pointer to text buffer that gets filled in
+    // wParam = max number of characters of the text buffer (including NULL)
+    // return = < 0 if error; number of characters needed (including NULL)
+    const DWORD CDM_GETFOLDERPATH       = (CDM_FIRST + 0x0002);
+    /*
+    #ifndef UNICODE_ONLY
+    #define CommDlg_OpenSave_GetFolderPathA(_hdlg, _psz, _cbmax) \
+            (int)SNDMSG(_hdlg, CDM_GETFOLDERPATH, (WPARAM)_cbmax, (LPARAM)(LPSTR)_psz)
+    #endif //!UNICODE_ONLY
+    #ifndef ANSI_ONLY
+    #define CommDlg_OpenSave_GetFolderPathW(_hdlg, _psz, _cbmax) \
+            (int)SNDMSG(_hdlg, CDM_GETFOLDERPATH, (WPARAM)_cbmax, (LPARAM)(LPWSTR)_psz)
+    #endif //!ANSI_ONLY
+    #ifdef UNICODE
+    #define CommDlg_OpenSave_GetFolderPath  CommDlg_OpenSave_GetFolderPathW
+    #else
+    #define CommDlg_OpenSave_GetFolderPath  CommDlg_OpenSave_GetFolderPathA
+    #endif // !UNICODE
+    */
+
+    // lParam = pointer to ITEMIDLIST buffer that gets filled in
+    // wParam = size of the ITEMIDLIST buffer
+    // return = < 0 if error; length of buffer needed
+    const DWORD CDM_GETFOLDERIDLIST     = (CDM_FIRST + 0x0003);
+    /*
+    #define CommDlg_OpenSave_GetFolderIDList(_hdlg, _pidl, _cbmax) \
+            (int)SNDMSG(_hdlg, CDM_GETFOLDERIDLIST, (WPARAM)_cbmax, (LPARAM)(LPVOID)_pidl)
+    */
+
+    // lParam = pointer to a string
+    // wParam = ID of control to change
+    // return = not used
+    const DWORD CDM_SETCONTROLTEXT      = (CDM_FIRST + 0x0004);
+    /*
+    #define CommDlg_OpenSave_SetControlText(_hdlg, _id, _text) \
+            (void)SNDMSG(_hdlg, CDM_SETCONTROLTEXT, (WPARAM)_id, (LPARAM)(LPSTR)_text)
+    */
+
+    // lParam = not used
+    // wParam = ID of control to change
+    // return = not used
+    const DWORD CDM_HIDECONTROL         = (CDM_FIRST + 0x0005);
+    /*
+    #define CommDlg_OpenSave_HideControl(_hdlg, _id) \
+            (void)SNDMSG(_hdlg, CDM_HIDECONTROL, (WPARAM)_id, 0)
+    */
+
+    // lParam = pointer to default extension (no dot)
+    // wParam = not used
+    // return = not used
+    const DWORD CDM_SETDEFEXT           = (CDM_FIRST + 0x0006);
+    /*
+    #define CommDlg_OpenSave_SetDefExt(_hdlg, _pszext) \
+            (void)SNDMSG(_hdlg, CDM_SETDEFEXT, 0, (LPARAM)(LPSTR)_pszext)
+    */
+
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("ChooseColorW"),
+    #else
+    entry("ChooseColorA"),
+    #endif
+    helpstring("Creates a Color common dialog box that enables the user to select a color"),
+    ]
+    BOOL WINAPI ChooseColor(LPCHOOSECOLOR lpcc);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("FindTextW"),
+    #else
+    entry("FindTextA"),
+    #endif
+    helpstring("Creates a system-defined modeless dialog box that lets the user specify a string to search for and options to use when searching for text in a document"),
+    ]
+    HWND WINAPI FindText(LPFINDREPLACE lpfr);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("ReplaceTextW"),
+    #else
+    entry("ReplaceTextA"),
+    #endif
+    helpstring("Creates a system-defined modeless dialog box that lets the user specify a string to search for and a replacement string, as well as options to control the find and replace operations"),
+    ]
+    HWND WINAPI ReplaceText(LPFINDREPLACE lpfr);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("ChooseFontW"),
+    #else
+    entry("ChooseFontA"),
+    #endif
+    helpstring("Creates a Font common dialog box that enables the user to choose attributes for a logical font"),
+    ]
+    BOOL WINAPI ChooseFont(LPCHOOSEFONT lpcf);
+
+    const DWORD WM_CHOOSEFONT_GETLOGFONT      = (WM_USER + 1);   
+    const DWORD WM_CHOOSEFONT_SETLOGFONT      = (WM_USER + 101); 
+    const DWORD WM_CHOOSEFONT_SETFLAGS        = (WM_USER + 102); 
+
+    // strings used to obtain unique window message for communication
+    // between dialog and caller
+
+    const LPTSTR LBSELCHSTRING  = "commdlg_LBSelChangedNotify";
+    const LPTSTR SHAREVISTRING  = "commdlg_ShareViolation";
+    const LPTSTR FILEOKSTRING   = "commdlg_FileNameOK";
+    const LPTSTR COLOROKSTRING  = "commdlg_ColorOK";
+    const LPTSTR SETRGBSTRING   = "commdlg_SetRGBColor";
+    const LPTSTR HELPMSGSTRING  = "commdlg_help";
+    const LPTSTR FINDMSGSTRING  = "commdlg_FindReplace";
+
+    // HIWORD values for lParam of commdlg_LBSelChangeNotify message
+    const DWORD CD_LBSELNOITEMS  = -1;
+    const DWORD CD_LBSELCHANGE   = 0;
+    const DWORD CD_LBSELSUB      = 1;
+    const DWORD CD_LBSELADD      = 2;
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("PrintDlgW"),
+    #else
+    entry("PrintDlgA"),
+    #endif
+    helpstring("Displays a Print dialog box or a Print Setup dialog box"),
+    ]
+    BOOL WINAPI PrintDlg(LPPRINTDLG lppd);
+
+    const WORD DN_DEFAULTPRN      = 0x0001;
+
+    [
+    usesgetlasterror,
+    entry("CommDlgExtendedError"),
+    helpstring("Returns a common dialog box error code from the most recent common dialog function"),
+    ]
+    DWORD WINAPI CommDlgExtendedError(VOID);
+
+    const DWORD WM_PSD_PAGESETUPDLG     = (WM_USER  );
+    const DWORD WM_PSD_FULLPAGERECT     = (WM_USER+1);
+    const DWORD WM_PSD_MINMARGINRECT    = (WM_USER+2);
+    const DWORD WM_PSD_MARGINRECT       = (WM_USER+3);
+    const DWORD WM_PSD_GREEKTEXTRECT    = (WM_USER+4);
+    const DWORD WM_PSD_ENVSTAMPRECT     = (WM_USER+5);
+    const DWORD WM_PSD_YAFULLPAGERECT   = (WM_USER+6);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("PageSetupDlgW"),
+    #else
+    entry("PageSetupDlgA"),
+    #endif
+    helpstring("Creates a Page Setup dialog box that enables the user to specify the attributes of a printed page"),
+    ]
+    BOOL WINAPI PageSetupDlg(LPPAGESETUPDLG lppsd);
+
+}
+#endif

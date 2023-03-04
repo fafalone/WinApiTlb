@@ -1,0 +1,541 @@
+
+// ITypeLib                    
+
+typedef IVBTypeLib * LPTYPELIB;
+
+
+// ITypeInfo                    
+
+typedef LONG DISPID;
+typedef DISPID MEMBERID;
+
+
+typedef IVBTypeInfo * LPTYPEINFO;
+
+// ITypeComp                   
+typedef IVBTypeComp * LPTYPECOMP;
+
+// ICreateTypeLib                  
+typedef IVBCreateTypeLib * LPCREATETYPELIB;
+typedef IVBCreateTypeInfo * LPCREATETYPEINFO;
+
+// IDispatch                   
+
+typedef IVBDispatch * LPDISPATCH;
+
+// IDispatch implementation support              
+/*
+typedef struct PARAMDATA {
+	OLECHAR * szName;    // parameter name 
+	VARTYPE vt;          // parameter type 
+} PARAMDATA, * LPPARAMDATA;
+
+typedef struct METHODDATA {
+	OLECHAR * szName;    // method name 
+	PARAMDATA * ppdata;  // pointer to an array of PARAMDATAs 
+	DISPID dispid;       // method ID 
+	UINT iMeth;          // method index 
+	CALLCONV cc;         // calling convention 
+	UINT cArgs;          // count of arguments 
+	WORD wFlags;         // same wFlags as on IDispatch::Invoke() 
+	VARTYPE vtReturn;
+} METHODDATA, * LPMETHODDATA;
+
+typedef struct INTERFACEDATA {
+	METHODDATA * pmethdata; // pointer to an array of METHODDATAs 
+	UINT cMembers;			// count of members 
+} INTERFACEDATA, * LPINTERFACEDATA;
+*/
+
+[
+#ifdef UNICODE
+uuid(6467504A-3A82-101B-8181-00AA003743D3),
+#else
+uuid(6467404A-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("OLE Automation Functions"),
+dllname("OLEAUT32.DLL")
+]
+module OleAuto {
+
+	#define WINOLEAUTAPI        HRESULT WINAPI
+	#define WINOLEAUTAPI_(type) type WINAPI
+
+	const WORD STDOLE_MAJORVERNUM = 0x1;
+	const WORD STDOLE_MINORVERNUM = 0x0;
+	const WORD STDOLE_LCID        = 0x0000;
+
+    //----------
+    // BSTR API
+    //----------
+
+    [
+    usesgetlasterror,
+    entry("SysAllocString"),
+    helpstring("Allocates and returns a BSTR for a given LPSTR"),
+    ]
+    BSTR WINAPI SysAllocString(LPTSTR sz);
+
+    [
+    usesgetlasterror,
+    entry("SysReAllocString"),
+    helpstring("Reallocates a BSTR, assigning it the value of a given BSTR and freeing the old data (returns true or false)"),
+    ]
+    BOOL WINAPI SysReAllocString(BSTR pbstr,
+                                 LPTSTR sz);
+
+    [
+    usesgetlasterror,
+    entry("SysAllocStringLen"),
+    helpstring("Allocates and returns a BSTR using the given number of characters from a given LPSTR"),
+    ]
+    BSTR WINAPI SysAllocStringLen(LPTSTR sz, UINT len);
+
+    [
+    usesgetlasterror,
+    entry("SysReAllocStringLen"),
+    helpstring("Reallocates a BSTR, assigning it a given number of characters from a given BSTR and freeing the old data (returns true or false)"),
+    ]
+    int  WINAPI SysReAllocStringLen(BSTR pbstr,
+                                    LPTSTR pch,
+                                    UINT cch);
+
+    [
+    usesgetlasterror,
+    entry("SysFreeString"),
+    helpstring("Frees a BSTR"),
+    ]
+    void WINAPI SysFreeString(BSTR bstr);
+
+    [
+    usesgetlasterror,
+    entry("SysStringLen"),
+    helpstring("Returns the length in characters of a BSTR"),
+    ]
+    UINT WINAPI SysStringLen(BSTR bstr);
+
+    [
+    usesgetlasterror,
+    entry("SysStringByteLen"),
+    helpstring("Returns the length in bytes of a BSTR"),
+    ]
+    UINT WINAPI SysStringByteLen(BSTR bstr);
+
+    [
+    usesgetlasterror,
+    entry("SysAllocStringByteLen"),
+    helpstring("Allocates and returns a BSTR using the given number of bytes from a given LPSTR"),
+    ]
+    BSTR WINAPI SysAllocStringByteLen(LPTSTR psz,
+                                      UINT len);
+
+    //----------
+    // Time API
+    //----------
+
+    [
+    usesgetlasterror,
+    entry("DosDateTimeToVariantTime"),
+    helpstring("Converts a DOS packed date and time to the floating point format stored in variants"),
+    ]
+    int WINAPI DosDateTimeToVariantTime(
+        unsigned short wDosDate,
+        unsigned short wDosTime,
+        double * pvtime);
+
+    [
+    usesgetlasterror,
+    entry("VariantTimeToDosDateTime"),
+    helpstring("Converts the floating point format stored in variants to a DOS packed date and time"),
+    ]
+    int WINAPI VariantTimeToDosDateTime(
+        double vtime,
+        unsigned short * pwDosDate,
+        unsigned short * pwDosTime);
+
+
+    //---------------
+    // SafeArray API
+    //---------------
+
+    /* SafeArray omitted
+
+    STDAPI
+    SafeArrayAllocDescriptor(unsigned int cDims, SAFEARRAY * * ppsaOut);
+
+    STDAPI SafeArrayAllocData(SAFEARRAY * psa);
+
+    STDAPI_(SAFEARRAY *)
+    SafeArrayCreate(
+        VARTYPE vt,
+        unsigned int cDims,
+        SAFEARRAYBOUND * rgsabound);
+
+    STDAPI SafeArrayDestroyDescriptor(SAFEARRAY * psa);
+
+    STDAPI SafeArrayDestroyData(SAFEARRAY * psa);
+
+    STDAPI SafeArrayDestroy(SAFEARRAY * psa);
+
+    STDAPI SafeArrayRedim(SAFEARRAY * psa, SAFEARRAYBOUND * psaboundNew);
+
+    STDAPI_(unsigned int) SafeArrayGetDim(SAFEARRAY * psa);
+
+    STDAPI_(unsigned int) SafeArrayGetElemsize(SAFEARRAY * psa);
+
+    STDAPI
+    SafeArrayGetUBound(SAFEARRAY * psa, unsigned int nDim, long * plUbound);
+
+    STDAPI
+    SafeArrayGetLBound(SAFEARRAY * psa, unsigned int nDim, long * plLbound);
+
+    STDAPI SafeArrayLock(SAFEARRAY * psa);
+
+    STDAPI SafeArrayUnlock(SAFEARRAY * psa);
+
+    STDAPI SafeArrayAccessData(SAFEARRAY * psa, void HUGEP* * ppvData);
+
+    STDAPI SafeArrayUnaccessData(SAFEARRAY * psa);
+
+    STDAPI
+    SafeArrayGetElement(
+        SAFEARRAY * psa,
+        long * rgIndices,
+        void * pv);
+
+    STDAPI
+    SafeArrayPutElement(
+        SAFEARRAY * psa,
+        long * rgIndices,
+        void * pv);
+
+    STDAPI
+    SafeArrayCopy(
+        SAFEARRAY * psa,
+        SAFEARRAY * * ppsaOut);
+    */
+
+    //-------------
+    // VARIANT API
+    //-------------
+
+    /* Variant omitted
+    STDAPI_(void)
+    VariantInit(VARIANTARG * pvarg);
+
+    STDAPI
+    VariantClear(VARIANTARG * pvarg);
+
+    STDAPI
+    VariantCopy(
+        VARIANTARG * pvargDest,
+        VARIANTARG * pvargSrc);
+
+    STDAPI
+    VariantCopyInd(
+        VARIANT * pvarDest,
+        VARIANTARG * pvargSrc);
+
+    STDAPI
+    VariantChangeType(
+        VARIANTARG * pvargDest,
+        VARIANTARG * pvarSrc,
+        unsigned short wFlags,
+        VARTYPE vt);
+
+    STDAPI
+    VariantChangeTypeEx(
+        VARIANTARG * pvargDest,
+        VARIANTARG * pvarSrc,
+        LCID lcid,
+        unsigned short wFlags,
+        VARTYPE vt);
+	
+    const long VARIANT_NOVALUEPROP = 1;
+	*/
+
+    //----------------------
+    // VARTYPE Coercion API
+    //----------------------
+
+    // Note: The routines that convert *from* a string are defined
+    // to take a char* rather than a BSTR because no allocation is
+    // required, and this makes the routines a bit more generic.
+    // They may of course still be passed a BSTR as the strIn param.
+
+    // Any of the coersion functions that converts either from or to a string
+    // takes an additional lcid and dwFlags arguments. The lcid argument allows
+    // locale specific parsing to occur.  The dwFlags allow additional function
+    // specific condition to occur.  All function that accept the dwFlags argument
+    // can include either 0 or LOCALE_NOUSEROVERRIDE flag. In addition, the
+    // VarDateFromStr functions also accepts the VAR_TIMEVALUEONLY and
+    // VAR_DATEVALUEONLY flags
+
+    /* Omitted
+    const DWORD VAR_TIMEVALUEONLY = 0x0001;    // return time value
+    const DWORD VAR_DATEVALUEONLY = 0x0002;    // return date value
+
+    STDAPI VarI2FromI4(long lIn, short * psOut);
+    STDAPI VarI2FromR4(float fltIn, short * psOut);
+    STDAPI VarI2FromR8(double dblIn, short * psOut);
+    STDAPI VarI2FromCy(CY cyIn, short * psOut);
+    STDAPI VarI2FromDate(DATE dateIn, short * psOut);
+    STDAPI VarI2FromStr(TCHAR * strIn, LCID lcid, unsigned long dwFlags, short * psOut);
+    STDAPI VarI2FromDisp(IDispatch * pdispIn, LCID lcid, short * psOut);
+    STDAPI VarI2FromBool(VARIANT_BOOL boolIn, short * psOut);
+
+    STDAPI VarI4FromI2(short sIn, long * plOut);
+    STDAPI VarI4FromR4(float fltIn, long * plOut);
+    STDAPI VarI4FromR8(double dblIn, long * plOut);
+    STDAPI VarI4FromCy(CY cyIn, long * plOut);
+    STDAPI VarI4FromDate(DATE dateIn, long * plOut);
+    STDAPI VarI4FromStr(TCHAR * strIn, LCID lcid, unsigned long dwFlags, long * plOut);
+    STDAPI VarI4FromDisp(IDispatch * pdispIn, LCID lcid, long * plOut);
+    STDAPI VarI4FromBool(VARIANT_BOOL boolIn, long * plOut);
+
+    STDAPI VarR4FromI2(short sIn, float * pfltOut);
+    STDAPI VarR4FromI4(long lIn, float * pfltOut);
+    STDAPI VarR4FromR8(double dblIn, float * pfltOut);
+    STDAPI VarR4FromCy(CY cyIn, float * pfltOut);
+    STDAPI VarR4FromDate(DATE dateIn, float * pfltOut);
+    STDAPI VarR4FromStr(TCHAR * strIn, LCID lcid, unsigned long dwFlags, float * pfltOut);
+    STDAPI VarR4FromDisp(IDispatch * pdispIn, LCID lcid, float * pfltOut);
+    STDAPI VarR4FromBool(VARIANT_BOOL boolIn, float * pfltOut);
+
+    STDAPI VarR8FromI2(short sIn, double * pdblOut);
+    STDAPI VarR8FromI4(long lIn, double * pdblOut);
+    STDAPI VarR8FromR4(float fltIn, double * pdblOut);
+    STDAPI VarR8FromCy(CY cyIn, double * pdblOut);
+    STDAPI VarR8FromDate(DATE dateIn, double * pdblOut);
+    STDAPI VarR8FromStr(TCHAR * strIn, LCID lcid, unsigned long dwFlags, double * pdblOut);
+    STDAPI VarR8FromDisp(IDispatch * pdispIn, LCID lcid, double * pdblOut);
+    STDAPI VarR8FromBool(VARIANT_BOOL boolIn, double * pdblOut);
+
+    STDAPI VarDateFromI2(short sIn, DATE * pdateOut);
+    STDAPI VarDateFromI4(long lIn, DATE * pdateOut);
+    STDAPI VarDateFromR4(float fltIn, DATE * pdateOut);
+    STDAPI VarDateFromR8(double dblIn, DATE * pdateOut);
+    STDAPI VarDateFromCy(CY cyIn, DATE * pdateOut);
+    STDAPI VarDateFromStr(TCHAR * strIn, LCID lcid, unsigned long dwFlags, DATE * pdateOut);
+    STDAPI VarDateFromDisp(IDispatch * pdispIn, LCID lcid, DATE * pdateOut);
+    STDAPI VarDateFromBool(VARIANT_BOOL boolIn, DATE * pdateOut);
+
+    STDAPI VarCyFromI2(short sIn, CY * pcyOut);
+    STDAPI VarCyFromI4(long lIn, CY * pcyOut);
+    STDAPI VarCyFromR4(float fltIn, CY * pcyOut);
+    STDAPI VarCyFromR8(double dblIn, CY * pcyOut);
+    STDAPI VarCyFromDate(DATE dateIn, CY * pcyOut);
+    STDAPI VarCyFromStr(TCHAR * strIn, LCID lcid, unsigned long dwFlags, CY * pcyOut);
+    STDAPI VarCyFromDisp(IDispatch * pdispIn, LCID lcid, CY * pcyOut);
+    STDAPI VarCyFromBool(VARIANT_BOOL boolIn, CY * pcyOut);
+
+    STDAPI VarBstrFromI2(short iVal, LCID lcid, unsigned long dwFlags, BSTR * pbstrOut);
+    STDAPI VarBstrFromI4(long lIn, LCID lcid, unsigned long dwFlags, BSTR * pbstrOut);
+    STDAPI VarBstrFromR4(float fltIn, LCID lcid, unsigned long dwFlags, BSTR * pbstrOut);
+    STDAPI VarBstrFromR8(double dblIn, LCID lcid, unsigned long dwFlags, BSTR * pbstrOut);
+    STDAPI VarBstrFromCy(CY cyIn, LCID lcid, unsigned long dwFlags, BSTR * pbstrOut);
+    STDAPI VarBstrFromDate(DATE dateIn, LCID lcid, unsigned long dwFlags, BSTR * pbstrOut);
+    STDAPI VarBstrFromDisp(IDispatch * pdispIn, LCID lcid, unsigned long dwFlags, BSTR * pbstrOut);
+    STDAPI VarBstrFromBool(VARIANT_BOOL boolIn, LCID lcid, unsigned long dwFlags, BSTR * pbstrOut);
+
+    STDAPI VarBoolFromI2(short sIn, VARIANT_BOOL * pboolOut);
+    STDAPI VarBoolFromI4(long lIn, VARIANT_BOOL * pboolOut);
+    STDAPI VarBoolFromR4(float fltIn, VARIANT_BOOL * pboolOut);
+    STDAPI VarBoolFromR8(double dblIn, VARIANT_BOOL * pboolOut);
+    STDAPI VarBoolFromDate(DATE dateIn, VARIANT_BOOL * pboolOut);
+    STDAPI VarBoolFromCy(CY cyIn, VARIANT_BOOL * pboolOut);
+    STDAPI VarBoolFromStr(TCHAR * strIn, LCID lcid, unsigned long dwFlags, VARIANT_BOOL * pboolOut);
+    STDAPI VarBoolFromDisp(IDispatch * pdispIn, LCID lcid, VARIANT_BOOL * pboolOut);
+    */
+
+
+	//define MEMBERID_NIL DISPID_UNKNOWN
+	const DWORD ID_DEFAULTINST  = -2;
+
+
+	const DWORD IDLFLAG_NONE    = 0;
+	const DWORD IDLFLAG_FIN     = 0x1;
+	const DWORD IDLFLAG_FOUT    = 0x2;
+	const DWORD IDLFLAG_FLCID   = 0x4;
+	const DWORD IDLFLAG_FRETVAL = 0x8;
+
+
+	// Flags for IDispatch::Invoke 
+	const DWORD DISPATCH_METHOD         = 0x1;
+	const DWORD DISPATCH_PROPERTYGET    = 0x2;
+	const DWORD DISPATCH_PROPERTYPUT    = 0x4;
+	const DWORD DISPATCH_PROPERTYPUTREF = 0x8;
+
+	// TypeInfo API                    
+
+	/* Omit
+	// compute a 16bit hash value for the given name
+	WINOLEAUTAPI_(ULONG)
+	LHashValOfNameSysA(SYSKIND syskind, LCID lcid, const char * szName);
+
+	WINOLEAUTAPI_(ULONG)
+	LHashValOfNameSys(SYSKIND syskind, LCID lcid, const OLECHAR * szName);
+
+	//define LHashValOfName(lcid, szName) 
+			LHashValOfNameSys(SYS_WIN32, lcid, szName)
+
+	//define WHashValOfLHashVal(lhashval) 
+			((unsigned short) (0x0000ffff & (lhashval)))
+
+	//define IsHashValCompatible(lhashval1, lhashval2) 
+			((BOOL) ((0x00ff0000 & (lhashval1)) == (0x00ff0000 & (lhashval2))))
+
+	*/
+
+	// load the typelib from the file with the given filename
+    [
+    entry("LoadTypeLib"),
+    helpstring("Loads and registers a type library"),
+    ]
+	WINOLEAUTAPI LoadTypeLib(
+		LPWSTR wszFile, 
+		/* ITypeLib */ IUnknown ** pptlib);
+
+	// load registered typelib
+    [
+    entry("LoadRegTypeLib"),
+    helpstring("Uses registry information to load a type library"),
+    ]
+	WINOLEAUTAPI LoadRegTypeLib(
+		REFGUID rguid,
+		WORD wVerMajor,
+		WORD wVerMinor,
+		LCID lcid,
+		IVBTypeLib ** pptlib);
+
+	// get path to registered typelib
+    [
+    entry("QueryPathOfRegTypeLib"),
+    helpstring("Retrieves the path of a registered type library"),
+    ]
+	WINOLEAUTAPI QueryPathOfRegTypeLib(
+		REFGUID guid,
+		unsigned short wMaj,
+		unsigned short wMin,
+		LCID lcid,
+		PTR /* LPBSTR */ lpbstrPathName);
+
+	// add typelib to registry
+    [
+    entry("RegisterTypeLib"),
+    helpstring("Adds information about a type library to the system registry"),
+    ]
+	WINOLEAUTAPI RegisterTypeLib(
+		/* ITypeLib */ IUnknown * ptlib, 
+		LPWSTR wszFullPath,
+		LPWSTR wszHelpDir);
+
+	// remove typelib from registry
+    [
+    entry("DeregisterTypeLib"),
+    helpstring("Deregisters a type library"),
+    ]
+	WINOLEAUTAPI DeregisterTypeLib(
+		REFGUID rguid, 
+		WORD wVerMajor, 
+		WORD wVerMinor, 
+		LCID lcid);
+
+    [
+    entry("CreateTypeLib"),
+    helpstring("Sets its output parameter (ppctlib) to point to a newly created object that supports the ICreateTypeLib interface"),
+    ]
+	WINOLEAUTAPI CreateTypeLib(
+		SYSKIND syskind, 
+		OLECHAR * szFile,
+		IVBCreateTypeLib * * ppctlib);
+
+#if 0
+	// Locate the parameter indicated by the given position, and
+	// return it coerced to the given target VARTYPE (vtTarg).
+
+	/*		 
+	WINOLEAUTAPI
+	DispGetParam(
+		DISPPARAMS * pdispparams,
+		UINT position,
+		VARTYPE vtTarg,
+		VARIANT * pvarResult,
+		UINT * puArgErr);
+
+	// Automatic TypeInfo driven implementation of IDispatch::GetIDsOfNames()
+	 
+	WINOLEAUTAPI
+	DispGetIDsOfNames(
+		ITypeInfo * ptinfo,
+		OLECHAR * * rgszNames,
+		UINT cNames,
+		DISPID * rgdispid);
+
+	// Automatic TypeInfo driven implementation of IDispatch::Invoke()
+	 
+	WINOLEAUTAPI
+	DispInvoke(
+		void * _this,
+		ITypeInfo * ptinfo,
+		DISPID dispidMember,
+		WORD wFlags,
+		DISPPARAMS * pparams,
+		VARIANT * pvarResult,
+		EXCEPINFO * pexcepinfo,
+		UINT * puArgErr);
+
+	// Construct a TypeInfo from an interface data description
+	WINOLEAUTAPI
+	CreateDispTypeInfo(
+		INTERFACEDATA * pidata,
+		LCID lcid,
+		ITypeInfo * * pptinfo);
+
+	// Create an instance of the standard TypeInfo driven IDispatch
+	// implementation.
+	WINOLEAUTAPI
+	CreateStdDispatch(
+		IUnknown * punkOuter,
+		void * pvThis,
+		ITypeInfo * ptinfo,
+		IUnknown * * ppunkStdDisp);
+
+
+	// Active Object Registration API               
+
+	// Flags for RegisterActiveObject 
+	const DWORD ACTIVEOBJECT_STRONG 0x0
+	const DWORD ACTIVEOBJECT_WEAK 0x1
+
+	WINOLEAUTAPI
+	RegisterActiveObject(
+	   IUnknown * punk,
+	   REFCLSID rclsid,
+	   DWORD dwFlags,
+	   DWORD * pdwRegister);
+
+	WINOLEAUTAPI
+	RevokeActiveObject(
+		DWORD dwRegister,
+		void * pvReserved);
+
+	WINOLEAUTAPI
+	GetActiveObject(
+		REFCLSID rclsid,
+		void * pvReserved,
+		IUnknown * * ppunk);
+
+	// ErrorInfo API                             
+
+	WINOLEAUTAPI SetErrorInfo(unsigned long dwReserved, IErrorInfo * perrinfo);
+	WINOLEAUTAPI GetErrorInfo(unsigned long dwReserved, IErrorInfo * * pperrinfo);
+	WINOLEAUTAPI CreateErrorInfo(ICreateErrorInfo * * pperrinfo);
+
+	// MISC API                                  
+
+	WINOLEAUTAPI_(unsigned long) OaBuildVersion(void);
+	*/
+#endif
+
+}

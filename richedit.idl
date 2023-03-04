@@ -1,0 +1,745 @@
+// RICHEDIT.IDL
+// *	
+// *	Purpose:
+// *		RICHEDIT v2.0 public definitions.  Note that there is additional
+// *		functionality available for v2.0 that is not in the original
+// *		Windows 95 release.
+
+
+// enum for use with undocumented EM_GET/SETTEXTMODE which don't work
+typedef enum RE_TEXTMODE {
+	TM_PLAINTEXT			= 1,
+	TM_RICHTEXT				= 2,	// default behavior 
+	TM_SINGLELEVELUNDO		= 4,
+	TM_MULTILEVELUNDO		= 8,	// default behavior 
+	TM_SINGLECODEPAGE		= 16,
+	TM_MULTICODEPAGE		= 32	// default behavior 
+} RE_TEXTMODE;
+
+typedef LONG EDITWORDBREAKPROC;
+// typedef int  (CALLBACK* EDITWORDBREAKPROC)(LPTSTR lpch, int ichCurrent, int cch, int code);
+// extended edit word break proc (character set aware)
+typedef LONG EDITWORDBREAKPROCEX;
+// typedef LONG (*EDITWORDBREAKPROCEX)(char *pchText, LONG cchText, BYTE bCharSet, INT action);
+
+// all character format measurements are in twips
+typedef struct CHARFORMAT {
+	UINT		cbSize;
+	DWORD		dwMask;
+	DWORD		dwEffects;
+	LONG		yHeight;
+	LONG		yOffset;
+	COLORREF	crTextColor;
+	BYTE		bCharSet;
+	BYTE		bPitchAndFamily;
+#ifdef UNICODE 
+    BYTE        szFaceName[32 * 2];		// LF_FACESIZE
+#else
+    BYTE        szFaceName[32];			// LF_FACESIZE
+#endif
+} CHARFORMAT;
+
+typedef struct CHARRANGE {
+	LONG	cpMin;
+	LONG	cpMax;
+} CHARRANGE;
+
+typedef struct TEXTRANGE {
+	CHARRANGE chrg;
+    PTR /* LPTSTR */ lpstrText;    // allocated by caller, zero terminated by RichEdit
+} TEXTRANGE;
+
+
+typedef LONG EDITSTREAMCALLBACK;
+// typedef DWORD (CALLBACK *EDITSTREAMCALLBACK)(DWORD dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
+
+typedef struct EDITSTREAM {
+    DWORD dwCookie;     // user value passed to callback as first parameter
+    DWORD dwError;      // last error
+	EDITSTREAMCALLBACK pfnCallback;
+} EDITSTREAM;
+
+typedef struct FINDTEXT {
+	CHARRANGE chrg;
+    PTR /* LPTSTR */ lpstrText;
+} FINDTEXT;
+
+typedef struct FINDTEXTEX {
+	CHARRANGE chrg;
+    PTR /* LPTSTR */ lpstrText;
+	CHARRANGE chrgText;
+} FINDTEXTEX;
+
+typedef struct FORMATRANGE {
+	HDC hdc;
+	HDC hdcTarget;
+	RECT rc;
+	RECT rcPage;
+	CHARRANGE chrg;
+} FORMATRANGE;
+
+typedef struct PARAFORMAT {
+	UINT	cbSize;
+	DWORD	dwMask;
+	WORD	wNumbering;
+    WORD    wEffects;
+	LONG	dxStartIndent;
+	LONG	dxRightIndent;
+	LONG	dxOffset;
+	WORD	wAlignment;
+	SHORT	cTabCount;
+	LONG	rgxTabs[32]; // MAX_TAB_STOPS
+} PARAFORMAT;
+
+// CHARFORMAT2 and PARAFORMAT2 structures
+
+typedef struct CHARFORMAT2 {
+	UINT		cbSize;
+	DWORD		dwMask;
+	DWORD		dwEffects;
+	LONG		yHeight;
+    LONG        yOffset;            // > 0 for superscript, < 0 for subscript
+	COLORREF	crTextColor;
+	BYTE		bCharSet;
+	BYTE		bPitchAndFamily;
+    TCHAR       szFaceName[32]; // LF_FACESIZE
+    WORD        wWeight;            // Font weight (LOGFONT value)
+    SHORT       sSpacing;           // Amount to space between letters
+    COLORREF    crBackColor;        // Background color
+    LCID        lcid;               // Locale ID
+    DWORD       dwReserved;         // Reserved. Must be 0
+    SHORT       sStyle;             // Style handle
+    WORD        wKerning;           // Twip size above which to kern char pair
+    BYTE        bUnderlineType;     // Underline type
+    BYTE        bAnimation;         // Animated text like marching ants
+    BYTE        bRevAuthor;         // Revision author index
+	BYTE		bReserved1;
+} CHARFORMAT2;
+
+typedef struct PARAFORMAT2 {
+	UINT	cbSize;
+	DWORD	dwMask;
+	WORD	wNumbering;
+	WORD	wReserved;
+	LONG	dxStartIndent;
+	LONG	dxRightIndent;
+	LONG	dxOffset;
+	WORD	wAlignment;
+	SHORT	cTabCount;
+	LONG	rgxTabs[32]; // MAX_TAB_STOPS
+    LONG    dySpaceBefore;          // Vertical spacing before para
+    LONG    dySpaceAfter;           // Vertical spacing after para
+    LONG    dyLineSpacing;          // Line spacing depending on Rule
+    SHORT   sStyle;                 // Style handle
+    BYTE    bLineSpacingRule;       // Rule for line spacing (see tom.doc)
+    BYTE    bCRC;                   // Reserved for CRC for rapid searching
+    WORD    wShadingWeight;         // Shading in hundredths of a per cent
+    WORD    wShadingStyle;          // Nibble 0: style, 1: cfpat, 2: cbpat
+    WORD    wNumberingStart;        // Starting value for numbering
+    WORD    wNumberingStyle;        // Alignment, roman/arabic, (), ), ., etc.
+    WORD    wNumberingTab;          // Space bet 1st indent and 1st-line text
+    WORD    wBorderSpace;           // Space between border and text (twips)
+    WORD    wBorderWidth;           // Border pen width (twips)
+    WORD    wBorders;               // Byte 0: bits specify which borders
+                                    // Nibble 2: border style, 3: color index
+} PARAFORMAT2;
+
+typedef struct REQRESIZE {
+	NMHDR nmhdr;
+	RECT rc;
+} REQRESIZE;
+
+typedef struct SELCHANGE {
+	NMHDR nmhdr;
+	CHARRANGE chrg;
+	WORD seltyp;
+} SELCHANGE;
+
+typedef struct ENDROPFILES {
+	NMHDR nmhdr;
+	HANDLE hDrop;
+	LONG cp;
+	BOOL fProtected;
+} ENDROPFILES;
+
+typedef struct ENPROTECTED {
+	NMHDR nmhdr;
+	UINT msg;
+	WPARAM wParam;
+    LONG	lParam; // LPARAM  
+	CHARRANGE chrg;
+} ENPROTECTED;
+
+typedef struct ENSAVECLIPBOARD {
+	NMHDR nmhdr;
+	LONG cObjectCount;
+    LONG cch;
+} ENSAVECLIPBOARD;
+
+typedef struct ENOLEOPFAILED {
+	NMHDR nmhdr;
+	LONG iob;
+	LONG lOper;
+	HRESULT hr;
+} ENOLEOPFAILED;
+
+typedef struct OBJECTPOSITIONS {
+    NMHDR nmhdr;
+    LONG cObjectCount;
+    LONG *pcpPositions;
+} OBJECTPOSITIONS;
+
+typedef struct ENLINK {
+    NMHDR nmhdr;
+    UINT msg;
+    WPARAM wParam;
+    LONG	lParam; // LPARAM  
+    CHARRANGE chrg;
+} ENLINK;
+
+// PenWin specific
+typedef struct ENCORRECTTEXT {
+	NMHDR nmhdr;
+	CHARRANGE chrg;
+	WORD seltyp;
+} ENCORRECTTEXT;
+
+/*
+// Far East specific
+typedef struct PUNCTUATION {
+	UINT	iSize;
+	LPSTR	szPunctuation;
+} PUNCTUATION;
+
+// Far East specific
+typedef struct COMPCOLOR {
+	COLORREF crText;
+	COLORREF crBackground;
+	DWORD dwEffects;
+}COMPCOLOR;
+*/
+
+// Paste Special
+typedef struct REPASTESPECIAL {
+	DWORD	dwAspect;
+	DWORD	dwParam;
+} REPASTESPECIAL;
+
+//  UndoName info
+typedef enum UNDONAMEID {
+    UID_UNKNOWN     = 0,
+	UID_TYPING		= 1,
+	UID_DELETE 		= 2,
+	UID_DRAGDROP	= 3,
+	UID_CUT			= 4,
+	UID_PASTE		= 5
+} UNDONAMEID;
+
+// EM_GETTEXTEX info; this struct is passed in the wparam of the message 
+typedef struct GETTEXTEX {
+	DWORD	cb;				// count of bytes in the string				
+	DWORD	flags;			// flags (see the GT_XXX defines			
+	UINT	codepage;		// code page for translation (CP_ACP for default,
+						    //    1200 for Unicode							
+	PTR /* LPCSTR */ lpDefaultChar;	// replacement for unmappable chars			
+	LPBOOL  lpUsedDefChar;	// pointer to flag set when def char used	
+} GETTEXTEX;
+
+// EM_GETTEXTLENGTHEX info; this struct is passed in the wparam of the msg 
+typedef struct GETTEXTLENGTHEX {
+	DWORD	flags;			// flags (see GTL_XXX defines)				
+	UINT	codepage;		// code page for translation (CP_ACP for default,
+							//   1200 for Unicode							
+} GETTEXTLENGTHEX;
+	
+
+// USER function entries and constants
+[
+#ifdef UNICODE
+uuid(6467504C-3A82-101B-8181-00AA003743D3),
+#else
+uuid(6467404C-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("RichEdit Functions"),
+dllname("USER32.DLL")
+]
+module RichEdit {
+
+	const int cchTextLimitDefault = 32767;
+
+
+	/* Duplicated in WINUSER
+	const int WM_CONTEXTMENU			= 0x007B;
+
+	const int WM_PRINTCLIENT			= 0x0318;
+
+	const int EM_GETLIMITTEXT			= WM_USER + 37;
+
+	const int EM_POSFROMCHAR			= WM_USER + 38;
+	const int EM_CHARFROMPOS			= WM_USER + 39;
+	*/
+
+	// RichEdit messages 
+
+
+    const int EM_SCROLLCARET          = WM_USER + 49;
+    const int EM_CANPASTE             = WM_USER + 50;
+    const int EM_DISPLAYBAND          = WM_USER + 51;
+    const int EM_EXGETSEL             = WM_USER + 52;
+    const int EM_EXLIMITTEXT          = WM_USER + 53;
+    const int EM_EXLINEFROMCHAR       = WM_USER + 54;
+    const int EM_EXSETSEL             = WM_USER + 55;
+    const int EM_FINDTEXT             = WM_USER + 56;
+    const int EM_FORMATRANGE          = WM_USER + 57;
+    const int EM_GETCHARFORMAT        = WM_USER + 58;
+    const int EM_GETEVENTMASK         = WM_USER + 59;
+    const int EM_GETOLEINTERFACE      = WM_USER + 60;
+    const int EM_GETPARAFORMAT        = WM_USER + 61;
+    const int EM_GETSELTEXT           = WM_USER + 62;
+    const int EM_HIDESELECTION        = WM_USER + 63;
+    const int EM_PASTESPECIAL         = WM_USER + 64;
+    const int EM_REQUESTRESIZE        = WM_USER + 65;
+    const int EM_SELECTIONTYPE        = WM_USER + 66;
+    const int EM_SETBKGNDCOLOR        = WM_USER + 67;
+    const int EM_SETCHARFORMAT        = WM_USER + 68;
+    const int EM_SETEVENTMASK         = WM_USER + 69;
+    const int EM_SETOLECALLBACK       = WM_USER + 70;
+    const int EM_SETPARAFORMAT        = WM_USER + 71;
+    const int EM_SETTARGETDEVICE      = WM_USER + 72;
+    const int EM_STREAMIN             = WM_USER + 73;
+    const int EM_STREAMOUT            = WM_USER + 74;
+    const int EM_GETTEXTRANGE         = WM_USER + 75;
+    const int EM_FINDWORDBREAK        = WM_USER + 76;
+    const int EM_SETOPTIONS           = WM_USER + 77;
+    const int EM_GETOPTIONS           = WM_USER + 78;
+    const int EM_FINDTEXTEX           = WM_USER + 79;
+    const int EM_GETWORDBREAKPROCEX   = WM_USER + 80;
+    const int EM_SETWORDBREAKPROCEX   = WM_USER + 81;
+
+    // Richedit v2.0 messages
+    const int EM_SETUNDOLIMIT         = WM_USER + 82;
+    const int EM_REDO                 = WM_USER + 84;
+    const int EM_CANREDO              = WM_USER + 85;
+    const int EM_GETUNDONAME          = WM_USER + 86;
+    const int EM_GETREDONAME          = WM_USER + 87;
+    const int EM_STOPGROUPTYPING      = WM_USER + 88;
+
+    const int EM_SETTEXTMODE          = WM_USER + 89;
+    const int EM_GETTEXTMODE          = WM_USER + 90;
+	const int EM_AUTOURLDETECT		  = WM_USER + 91;
+	const int EM_GETAUTOURLDETECT	  = WM_USER + 92;
+	const int EM_SETPALETTE			  = WM_USER + 93;
+	const int EM_GETTEXTEX			  = WM_USER + 94;
+	const int EM_GETTEXTLENGTHEX	  = WM_USER + 95;
+
+    // Far East specific messages
+    const int EM_SETPUNCTUATION       = WM_USER + 100;
+    const int EM_GETPUNCTUATION       = WM_USER + 101;
+    const int EM_SETWORDWRAPMODE      = WM_USER + 102;
+    const int EM_GETWORDWRAPMODE      = WM_USER + 103;
+    const int EM_SETIMECOLOR          = WM_USER + 104;
+    const int EM_GETIMECOLOR          = WM_USER + 105;
+    const int EM_SETIMEOPTIONS        = WM_USER + 106;
+    const int EM_GETIMEOPTIONS        = WM_USER + 107;
+    const int EM_CONVPOSITION         = WM_USER + 108;
+
+    const int EM_SETLANGOPTIONS       = WM_USER + 120;
+    const int EM_GETLANGOPTIONS       = WM_USER + 121;
+    const int EM_GETIMECOMPMODE       = WM_USER + 122;
+
+    // Options for EM_SETLANGOPTIONS and EM_GETLANGOPTIONS
+    const int IMF_AUTOKEYBOARD        = 0x0001;
+    const int IMF_AUTOFONT            = 0x0002;
+	const int IMF_IMECANCELCOMPLETE	  = 0x0004;	// high completes the comp string when aborting, low cancels.
+	const int IMF_IMEALWAYSSENDNOTIFY = 0x0008;
+
+    // Values for EM_GETIMECOMPMODE
+    const int ICM_NOTOPEN             = 0x0000;
+    const int ICM_LEVEL3              = 0x0001;
+    const int ICM_LEVEL2              = 0x0002;
+    const int ICM_LEVEL2_5            = 0x0003;
+    const int ICM_LEVEL2_SUI          = 0x0004;
+
+	// New notifications 
+
+    const int EN_MSGFILTER            = 0x0700;
+    const int EN_REQUESTRESIZE        = 0x0701;
+    const int EN_SELCHANGE            = 0x0702;
+    const int EN_DROPFILES            = 0x0703;
+    const int EN_PROTECTED            = 0x0704;
+    const int EN_CORRECTTEXT          = 0x0705;          // PenWin specific
+    const int EN_STOPNOUNDO           = 0x0706;
+    const int EN_IMECHANGE            = 0x0707;          // Far East specific
+    const int EN_SAVECLIPBOARD        = 0x0708;
+    const int EN_OLEOPFAILED          = 0x0709;
+    const int EN_OBJECTPOSITIONS      = 0x070a;
+    const int EN_LINK                 = 0x070b;
+	const int EN_DRAGDROPDONE			= 0x070c;
+
+    // Event notification masks
+
+    const int ENM_NONE                = 0x00000000;
+    const int ENM_CHANGE              = 0x00000001;
+    const int ENM_UPDATE              = 0x00000002;
+    const int ENM_SCROLL              = 0x00000004;
+    const int ENM_KEYEVENTS           = 0x00010000;
+    const int ENM_MOUSEEVENTS         = 0x00020000;
+    const int ENM_REQUESTRESIZE       = 0x00040000;
+    const int ENM_SELCHANGE           = 0x00080000;
+    const int ENM_DROPFILES           = 0x00100000;
+    const int ENM_PROTECTED           = 0x00200000;
+    const int ENM_CORRECTTEXT         = 0x00400000;      // PenWin specific
+
+    // Far East specific notification mask
+    const int ENM_IMECHANGE           = 0x00800000;
+    const int ENM_LANGCHANGE          = 0x01000000;
+    const int ENM_OBJECTPOSITIONS     = 0x02000000;
+    const int ENM_LINK                = 0x04000000;
+
+    // New edit control styles
+    const int ES_SAVESEL              = 0x00008000;
+    const int ES_SUNKEN               = 0x00004000;
+    const int ES_DISABLENOSCROLL      = 0x00002000;
+    // same as WS_MAXIMIZE, but that doesn't make sense so we re-use the value
+    const int ES_SELECTIONBAR         = 0x01000000;
+	// same as ES_UPPERCASE, but re-used to completely disable OLE drag'n'drop 
+	const int ES_NOOLEDRAGDROP		= 0x00000008;
+
+    // New edit control extended style
+    const int ES_EX_NOCALLOLEINIT     = 0x01000000;
+
+    // These flags are used in FE Windows
+    const int ES_VERTICAL             = 0x00400000;
+    const int ES_NOIME                = 0x00080000;
+    const int ES_SELFIME              = 0x00040000;
+
+    // Edit control options
+    const int ECO_AUTOWORDSELECTION   = 0x00000001;
+    const int ECO_AUTOVSCROLL         = 0x00000040;
+    const int ECO_AUTOHSCROLL         = 0x00000080;
+    const int ECO_NOHIDESEL           = 0x00000100;
+    const int ECO_READONLY            = 0x00000800;
+    const int ECO_WANTRETURN          = 0x00001000;
+    const int ECO_SAVESEL             = 0x00008000;
+    const int ECO_SELECTIONBAR        = 0x01000000;
+    const int ECO_VERTICAL            = 0x00400000;      // FE specific
+
+
+    // ECO operations
+    const int ECOOP_SET               = 0x0001;
+    const int ECOOP_OR                = 0x0002;
+    const int ECOOP_AND               = 0x0003;
+    const int ECOOP_XOR               = 0x0004;
+
+    // new word break function actions
+    const int WB_CLASSIFY         = 3;
+    const int WB_MOVEWORDLEFT     = 4;
+    const int WB_MOVEWORDRIGHT    = 5;
+    const int WB_LEFTBREAK        = 6;
+    const int WB_RIGHTBREAK       = 7;
+
+    // Far East specific flags
+    const int WB_MOVEWORDPREV     = 4;
+    const int WB_MOVEWORDNEXT     = 5;
+    const int WB_PREVBREAK        = 6;
+    const int WB_NEXTBREAK        = 7;
+
+    const int PC_FOLLOWING        = 1;
+    const int PC_LEADING          = 2;
+    const int PC_OVERFLOW         = 3;
+    const int PC_DELIMITER        = 4;
+    const int WBF_WORDWRAP        = 0x010;
+    const int WBF_WORDBREAK       = 0x020;
+    const int WBF_OVERFLOW        = 0x040;
+    const int WBF_LEVEL1          = 0x080;
+    const int WBF_LEVEL2          = 0x100;
+    const int WBF_CUSTOM          = 0x200;
+
+    // Far East specific flags
+    const int IMF_FORCENONE           = 0x0001;
+    const int IMF_FORCEENABLE         = 0x0002;
+    const int IMF_FORCEDISABLE        = 0x0004;
+    const int IMF_CLOSESTATUSWINDOW   = 0x0008;
+    const int IMF_VERTICAL            = 0x0020;
+    const int IMF_FORCEACTIVE         = 0x0040;
+    const int IMF_FORCEINACTIVE       = 0x0080;
+    const int IMF_FORCEREMEMBER       = 0x0100;
+    const int IMF_MULTIPLEEDIT        = 0x0400;
+
+    // Word break flags (used with WB_CLASSIFY)
+    const int WBF_CLASS           = 0x0F;
+    const int WBF_ISWHITE         = 0x10;
+    const int WBF_BREAKLINE       = 0x20;
+    const int WBF_BREAKAFTER      = 0x40;
+
+    // CHARFORMAT masks
+    const int CFM_BOLD        = 0x00000001;
+    const int CFM_ITALIC      = 0x00000002;
+    const int CFM_UNDERLINE   = 0x00000004;
+    const int CFM_STRIKEOUT   = 0x00000008;
+    const int CFM_PROTECTED   = 0x00000010;
+    const int CFM_LINK        = 0x00000020;      // Exchange hyperlink extension
+    const int CFM_SIZE        = 0x80000000;
+    const int CFM_COLOR       = 0x40000000;
+    const int CFM_FACE        = 0x20000000;
+    const int CFM_OFFSET      = 0x10000000;
+    const int CFM_CHARSET     = 0x08000000;
+
+    // CHARFORMAT effects
+    const int CFE_BOLD        = 0x0001;
+    const int CFE_ITALIC      = 0x0002;
+    const int CFE_UNDERLINE   = 0x0004;
+    const int CFE_STRIKEOUT   = 0x0008;
+    const int CFE_PROTECTED   = 0x0010;
+    const int CFE_LINK        = 0x0020;
+    const int CFE_AUTOCOLOR   = 0x40000000;      // NOTE: this corresponds to
+                                               // CFM_COLOR, which controls it
+    const int yHeightCharPtsMost = 1638;
+
+    // EM_SETCHARFORMAT wParam masks
+    const int SCF_SELECTION   = 0x0001;
+    const int SCF_WORD        = 0x0002;
+    const int SCF_DEFAULT     = 0x0000;      // set the default charformat or paraformat
+    const int SCF_ALL         = 0x0004;      // not valid with SCF_SELECTION or SCF_WORD
+	const int SCF_USEUIRULES  = 0x0008;		// modifier for SCF_SELECTION; says that
+											// the format came from a toolbar, etc. and
+											// therefore UI formatting rules should be
+											// used instead of strictly formatting the
+											// selection.
+
+
+    // stream formats
+
+    const int SF_TEXT         = 0x0001;
+    const int SF_RTF          = 0x0002;
+    const int SF_RTFNOOBJS    = 0x0003;      // outbound only
+    const int SF_TEXTIZED     = 0x0004;      // outbound only
+    const int SF_UNICODE      = 0x0010;      // Unicode file of some kind
+
+    // Flag telling stream operations to operate on the selection only
+    // EM_STREAMIN will replace the current selection
+    // EM_STREAMOUT will stream out the current selection
+    const int SFF_SELECTION   = 0x8000;
+
+    // Flag telling stream operations to operate on the common RTF keyword only
+    // EM_STREAMIN will accept the only common RTF keyword
+    // EM_STREAMOUT will stream out the only common RTF keyword
+    const int SFF_PLAINRTF    = 0x4000;
+
+    // all paragraph measurements are in twips
+
+    const int MAX_TAB_STOPS = 32;
+    const int lDefaultTab = 720;
+
+    // PARAFORMAT mask values
+    const int PFM_STARTINDENT         = 0x00000001;
+    const int PFM_RIGHTINDENT         = 0x00000002;
+    const int PFM_OFFSET              = 0x00000004;
+    const int PFM_ALIGNMENT           = 0x00000008;
+    const int PFM_TABSTOPS            = 0x00000010;
+    const int PFM_NUMBERING           = 0x00000020;
+    const int PFM_OFFSETINDENT        = 0x80000000;
+
+    // PARAFORMAT numbering options
+    const int PFN_BULLET      = 0x0001;
+
+    // PARAFORMAT alignment options
+    const int PFA_LEFT    = 0x0001;
+    const int PFA_RIGHT   = 0x0002;
+    const int PFA_CENTER  = 0x0003;
+
+    // const int CHARFORMATDELTA     (sizeof(CHARFORMAT2) - sizeof(CHARFORMAT))
+
+
+    // CHARFORMAT and PARAFORMAT "ALL" masks
+    // CFM_COLOR mirrors CFE_AUTOCOLOR, a little hack to easily deal with autocolor
+    /*
+    const int CFM_EFFECTS (CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_COLOR | \
+                         CFM_STRIKEOUT | CFE_PROTECTED | CFM_LINK)
+    const int CFM_ALL (CFM_EFFECTS | CFM_SIZE | CFM_FACE | CFM_OFFSET | CFM_CHARSET)
+
+    const int PFM_ALL (PFM_STARTINDENT | PFM_RIGHTINDENT | PFM_OFFSET | \
+                     PFM_ALIGNMENT   | PFM_TABSTOPS    | PFM_NUMBERING | \
+                     PFM_OFFSETINDENT)
+    */
+
+    // New masks and effects -- a parenthesized asterisk indicates that
+    // the data is stored by RichEdit2.0, but not displayed
+
+    const int CFM_SMALLCAPS       = 0x0040;
+    const int CFM_ALLCAPS         = 0x0080;
+    const int CFM_HIDDEN          = 0x0100;
+    const int CFM_OUTLINE         = 0x0200;
+    const int CFM_SHADOW          = 0x0400;
+    const int CFM_EMBOSS          = 0x0800;
+    const int CFM_IMPRINT         = 0x1000;
+    const int CFM_DISABLED        = 0x2000;
+    const int CFM_REVISED         = 0x4000;
+
+    const int CFM_BACKCOLOR       = 0x04000000;
+    const int CFM_LCID            = 0x02000000;
+    const int CFM_UNDERLINETYPE   = 0x00800000;
+    const int CFM_WEIGHT          = 0x00400000;
+    const int CFM_SPACING         = 0x00200000;
+    const int CFM_KERNING         = 0x00100000;
+    const int CFM_STYLE           = 0x00080000;
+    const int CFM_ANIMATION       = 0x00040000;
+    const int CFM_REVAUTHOR       = 0x00008000;
+
+    const int CFE_SUBSCRIPT       = 0x00010000;      // Superscript and subscript are
+    const int CFE_SUPERSCRIPT     = 0x00020000;      //  mutually exclusive
+
+    const int CFM_SUBSCRIPT       = 0x00030000; // CFE_SUBSCRIPT | CFE_SUPERSCRIPT
+    const int CFM_SUPERSCRIPT     = 0x00030000; // CFM_SUBSCRIPT
+
+    /*
+    const int CFM_EFFECTS2 (CFM_EFFECTS | CFM_DISABLED | CFM_SMALLCAPS | CFM_ALLCAPS \
+                        | CFM_HIDDEN  | CFM_OUTLINE | CFM_SHADOW | CFM_EMBOSS \
+                        | CFM_IMPRINT | CFM_DISABLED | CFM_REVISED \
+                        | CFM_SUBSCRIPT | CFM_SUPERSCRIPT | CFM_BACKCOLOR)
+
+    const int CFM_ALL2     (CFM_ALL | CFM_EFFECTS2 | CFM_BACKCOLOR | CFM_LCID \
+                        | CFM_UNDERLINETYPE | CFM_WEIGHT | CFM_REVAUTHOR \
+                        | CFM_SPACING | CFM_KERNING | CFM_STYLE | CFM_ANIMATION)
+
+    const int CFE_SMALLCAPS       CFM_SMALLCAPS
+    const int CFE_ALLCAPS         CFM_ALLCAPS
+    const int CFE_HIDDEN          CFM_HIDDEN
+    const int CFE_OUTLINE         CFM_OUTLINE
+    const int CFE_SHADOW          CFM_SHADOW
+    const int CFE_EMBOSS          CFM_EMBOSS
+    const int CFE_IMPRINT         CFM_IMPRINT
+    const int CFE_DISABLED        CFM_DISABLED
+    const int CFE_REVISED         CFM_REVISED
+
+    // NOTE: CFE_AUTOCOLOR and CFE_AUTOBACKCOLOR correspond to CFM_COLOR and
+    // CFM_BACKCOLOR, respectively, which control them
+    const int CFE_AUTOBACKCOLOR   CFM_BACKCOLOR
+    */
+
+    // Underline types
+    const int CFU_CF1UNDERLINE    = 0xFF;   // map charformat's bit underline to CF2.
+    const int CFU_INVERT          = 0xFE;   // For IME composition fake a selection.
+    const int CFU_UNDERLINEDOTTED = 0x3;    // (*) displayed as ordinary underline
+    const int CFU_UNDERLINEDOUBLE = 0x2;    // (*) displayed as ordinary underline
+    const int CFU_UNDERLINEWORD   = 0x1;    // (*) displayed as ordinary underline
+    const int CFU_UNDERLINE       = 0x0;
+
+
+	// this is a hack to make PARAFORMAT code more readable.
+	// it applies to the wReserved field in PARAFORMAT, which
+	// in PARAFORMAT2 is now used. 
+
+	// const int wEffects			= wReserved;
+
+    // PARAFORMAT 2.0 masks and effects
+
+    const int PFM_SPACEBEFORE         = 0x00000040;
+    const int PFM_SPACEAFTER          = 0x00000080;
+    const int PFM_LINESPACING         = 0x00000100;
+    const int PFM_STYLE               = 0x00000400;
+    const int PFM_BORDER              = 0x00000800;
+    const int PFM_SHADING             = 0x00001000;
+    const int PFM_NUMBERINGSTYLE      = 0x00002000;
+    const int PFM_NUMBERINGTAB        = 0x00004000;
+    const int PFM_NUMBERINGSTART      = 0x00008000;
+
+    const int PFM_RTLPARA             = 0x00010000;
+    const int PFM_KEEP                = 0x00020000;
+    const int PFM_KEEPNEXT            = 0x00040000;
+    const int PFM_PAGEBREAKBEFORE     = 0x00080000;
+    const int PFM_NOLINENUMBER        = 0x00100000;
+    const int PFM_NOWIDOWCONTROL      = 0x00200000;
+    const int PFM_DONOTHYPHEN         = 0x00400000;
+    const int PFM_SIDEBYSIDE          = 0x00800000;
+
+    const int PFM_TABLE               = 0xc0000000;
+
+    /*
+    // Note: PARAFORMAT has no effects
+    const int PFM_EFFECTS  (PFM_RTLPARA | PFM_KEEP | PFM_KEEPNEXT | PFM_TABLE \
+                        | PFM_PAGEBREAKBEFORE | PFM_NOLINENUMBER  \
+                        | PFM_NOWIDOWCONTROL | PFM_DONOTHYPHEN | PFM_SIDEBYSIDE \
+                        | PFM_TABLE)
+
+    const int PFM_ALL2    (PFM_ALL | PFM_EFFECTS | PFM_SPACEBEFORE | PFM_SPACEAFTER \
+                        | PFM_LINESPACING | PFM_STYLE | PFM_SHADING | PFM_BORDER \
+                        | PFM_NUMBERINGTAB | PFM_NUMBERINGSTART | PFM_NUMBERINGSTYLE)
+
+    const int PFE_RTLPARA             (PFM_RTLPARA         >> 16;
+    const int PFE_KEEP                (PFM_KEEP            >> 16;
+    const int PFE_KEEPNEXT            (PFM_KEEPNEXT        >> 16;
+    const int PFE_PAGEBREAKBEFORE     (PFM_PAGEBREAKBEFORE >> 16;
+    const int PFE_NOLINENUMBER        (PFM_NOLINENUMBER    >> 16;
+    const int PFE_NOWIDOWCONTROL      (PFM_NOWIDOWCONTROL  >> 16;
+    const int PFE_DONOTHYPHEN         (PFM_DONOTHYPHEN     >> 16;
+    const int PFE_SIDEBYSIDE          (PFM_SIDEBYSIDE      >> 16;
+    */
+    const int PFE_TABLEROW            = 0xc000;      // These 3 options are mutually
+    const int PFE_TABLECELLEND        = 0x8000;      //  exclusive and each imply
+    const int PFE_TABLECELL           = 0x4000;      //  that para is part of a table
+
+
+    /*
+     *  PARAFORMAT numbering options (values for wNumbering):
+     *
+     *      Numbering Type      Value   Meaning
+     *      tomNoNumbering        0     Turn off paragraph numbering
+     *      tomNumberAsLCLetter   1     a, b, c, ...
+     *      tomNumberAsUCLetter   2     A, B, C, ...
+     *      tomNumberAsLCRoman    3     i, ii, iii, ...
+     *      tomNumberAsUCRoman    4     I, II, III, ...
+     *      tomNumberAsSymbols    5     default is bullet
+     *      tomNumberAsNumber     6     0, 1, 2, ...
+     *      tomNumberAsSequence   7     tomNumberingStart is first Unicode to use
+     *
+     *  Other valid Unicode chars are Unicodes for bullets.
+     */
+
+
+    const int PFA_JUSTIFY         = 4;   // New paragraph-alignment option 2.0 (*)
+
+
+    // notification structures
+
+
+    // UNICODE embedding character
+    const int WCH_EMBEDDING   = 0xFFFC;
+
+    const int SEL_EMPTY       = 0x0000;
+    const int SEL_TEXT        = 0x0001;
+    const int SEL_OBJECT      = 0x0002;
+    const int SEL_MULTICHAR   = 0x0004;
+    const int SEL_MULTIOBJECT = 0x0008;
+
+
+	// used with IRichEditOleCallback::GetContextMenu, this flag will be
+	// passed as a "selection type".  It indicates that a context menu for
+	// a right-mouse drag drop should be generated.  The IOleObject parameter
+	// will really be the IDataObject for the drop
+ 
+	const int GCM_RIGHTMOUSEDROP  = 0x8000;
+
+    const int OLEOP_DOVERB    = 1;
+
+    // clipboard formats - use as parameter to RegisterClipboardFormat()
+    /*
+    #define CF_RTF          TEXT("Rich Text Format")
+    #define CF_RTFNOOBJS    TEXT("Rich Text Format Without Objects")
+    #define CF_RETEXTOBJ    TEXT("RichEdit Text and Objects")
+    */
+
+	// flags for the GETEXTEX data structure 
+	const int GT_DEFAULT		= 0;
+	const int GT_USECRLF		= 1;
+
+	// flags for the GETTEXTLENGTHEX data structure							
+	const int GTL_DEFAULT		= 0;	// do the default (return # of chars)		
+	const int GTL_USECRLF		= 1;	// compute answer using CRLFs for paragraphs
+	const int GTL_PRECISE		= 2;	// compute a precise answer					
+	const int GTL_CLOSE		= 4;	// fast computation of a "close" answer		
+	const int GTL_NUMCHARS	= 8;	// return the number of characters		
+	const int GTL_NUMBYTES	= 16;	// return the number of _bytes_				
+	
+
+} // End RichEdit module

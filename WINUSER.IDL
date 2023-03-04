@@ -1,0 +1,5872 @@
+//**********
+//
+// winuser.h -- USER procedure declarations, constant definitions and macros 
+//
+
+// Enums
+// USER structures
+
+/*
+// HCBT_CREATEWND parameters pointed to by lParam
+typedef struct CBT_CREATEWND {
+    struct CREATESTRUCT *lpcs;
+    HWND           hwndInsertAfter;
+} CBT_CREATEWND, *LPCBT_CREATEWND;
+
+// HCBT_ACTIVATE structure pointed to by lParam
+typedef struct CBTACTIVATESTRUCT {
+    BOOL    fMouse;
+    HWND    hWndActive;
+} CBTACTIVATESTRUCT, *LPCBTACTIVATESTRUCT;
+
+// Message Structure used in Journaling
+typedef struct EVENTMSG {
+    UINT    message;
+    UINT    paramL;
+    UINT    paramH;
+    DWORD    time;
+    HWND     hwnd;
+} EVENTMSG, *PEVENTMSGMSG, *LPEVENTMSGMSG;
+
+typedef struct EVENTMSG *PEVENTMSG, *LPEVENTMSG;
+
+// Message structure used by WH_CALLWNDPROC
+typedef struct CWPSTRUCT {
+    LPARAM  lParam;
+    WPARAM  wParam;
+    UINT    message;
+    HWND    hwnd;
+} CWPSTRUCT, *PCWPSTRUCT, *LPCWPSTRUCT;
+
+// Message structure used by WH_CALLWNDPROCRET
+typedef struct CWPRETSTRUCT {
+    LRESULT lResult;
+    LPARAM  lParam;
+    WPARAM  wParam;
+    UINT    message;
+    HWND    hwnd;
+} CWPRETSTRUCT, *PCWPRETSTRUCT, *LPCWPRETSTRUCT;
+
+// Structure used by WH_DEBUG
+typedef struct DEBUGHOOKINFO {
+    DWORD   idThread;
+    DWORD   idThreadInstaller;
+    LPARAM  lParam;
+    WPARAM  wParam;
+    int     code;
+} DEBUGHOOKINFO, *PDEBUGHOOKINFO, * LPDEBUGHOOKINFO;
+
+// Structure used by WH_MOUSE
+typedef struct MOUSEHOOKSTRUCT {
+    POINTL  pt;
+    HWND    hwnd;
+    UINT    wHitTestCode;
+    DWORD   dwExtraInfo;
+} MOUSEHOOKSTRUCT, *LPMOUSEHOOKSTRUCT, *PMOUSEHOOKSTRUCT;
+
+// Structure used by WH_HARDWARE
+typedef struct HARDWAREHOOKSTRUCT {
+    HWND    hwnd;
+    UINT    message;
+    WPARAM  wParam;
+    LPARAM  lParam;
+} HARDWAREHOOKSTRUCT, *LPHARDWAREHOOKSTRUCT, *PHARDWAREHOOKSTRUCT;
+
+typedef struct USEROBJECTFLAGS {
+	BOOL fInherit;
+	BOOL fReserved;
+	DWORD dwFlags;
+} USEROBJECTFLAGS, *PUSEROBJECTFLAGS;
+*/
+
+/*
+typedef struct WNDCLASSEX {
+    UINT        cbSize;
+    // Win 3.x /
+    UINT        style;
+    WNDPROC     lpfnWndProc;
+    int         cbClsExtra;
+    int         cbWndExtra;
+    HINSTANCE   hInstance;
+    HICON       hIcon;
+    HCURSOR     hCursor;
+    HBRUSH      hbrBackground;
+    LPCTSTR     lpszMenuName;
+    LPCTSTR     lpszClassName;
+    // Win 4.0 
+    HICON       hIconSm;
+} WNDCLASSEX, *PWNDCLASSEX, *LPWNDCLASSEX;
+
+typedef struct WNDCLASS {
+    UINT        style;
+    WNDPROC     lpfnWndProc;
+    int         cbClsExtra;
+    int         cbWndExtra;
+    HINSTANCE   hInstance;
+    HICON       hIcon;
+    HCURSOR     hCursor;
+    HBRUSH      hbrBackground;
+    LPCSTR      lpszMenuName;
+    LPCSTR      lpszClassName;
+} WNDCLASS, *PWNDCLASS, *LPWNDCLASS;
+
+// Queued message structure
+typedef struct MSG {
+    HWND    hwnd;
+    UINT    message;
+    WPARAM  wParam;
+    LONG	lParam; // LPARAM  
+    DWORD   time;
+    POINTL  pt;
+} MSG;
+typedef MSG * PMSG;
+typedef MSG * LPMSG;
+*/
+
+typedef struct MINMAXINFO {
+    POINTL ptReserved;
+    POINTL ptMaxSize;
+    POINTL ptMaxPosition;
+    POINTL ptMinTrackSize;
+    POINTL ptMaxTrackSize;
+} MINMAXINFO;
+
+typedef struct COPYDATASTRUCT {
+    DWORD dwData;
+    DWORD cbData;
+    long /* PVOID */ lpData;
+} COPYDATASTRUCT, *PCOPYDATASTRUCT;
+
+typedef struct MDINEXTMENU {
+    HMENU   hmenuIn;
+    HMENU   hmenuNext;
+    HWND    hwndNext;
+} MDINEXTMENU, * PMDINEXTMENU, * LPMDINEXTMENU;
+
+typedef struct TRACKMOUSEEVENT {
+	DWORD cbSize;
+	DWORD dwFlags;
+	HWND  hwndTrack;
+	DWORD dwHoverTime;
+} TRACKMOUSEEVENT, *LPTRACKMOUSEEVENT;
+
+// WM_WINDOWPOSCHANGING/CHANGED struct pointed to by lParam
+typedef struct WINDOWPOS {
+    HWND    hwnd;
+    HWND    hwndInsertAfter;
+    int     x;
+    int     y;
+    int     cx;
+    int     cy;
+    UINT    flags;
+} WINDOWPOS, *LPWINDOWPOS, *PWINDOWPOS;
+
+// WM_NCCALCSIZE parameter structure
+typedef struct NCCALCSIZE_PARAMS {
+    RECT       rgrc[3];
+    PWINDOWPOS lppos;
+} NCCALCSIZE_PARAMS, *LPNCCALCSIZE_PARAMS;
+
+/*
+typedef struct ACCEL {
+    BYTE   fVirt;               // Also called the flags field 
+    WORD   key;
+    WORD   cmd;
+} ACCEL, *LPACCEL;
+*/
+
+/*
+typedef struct PAINTSTRUCT {
+    HDC         hdc;
+    BOOL        fErase;
+    RECT        rcPaint;
+    BOOL        fRestore;
+    BOOL        fIncUpdate;
+    BYTE        rgbReserved[32];
+} PAINTSTRUCT, *PPAINTSTRUCT, *LPPAINTSTRUCT;
+*/
+
+typedef struct CREATESTRUCT {
+    LONG /* void * */ lpCreateParams;
+    HINSTANCE hInstance;
+    HMENU     hMenu;
+    HWND      hwndParent;
+    int       cy;
+    int       cx;
+    int       y;
+    int       x;
+    LONG      style;
+    PTR /* LPCSTR */ lpszName;
+    PTR /* LPCSTR */ lpszClass;
+    DWORD     dwExStyle;
+} CREATESTRUCT;
+typedef CREATESTRUCT * LPCREATESTRUCT;
+
+typedef struct WINDOWPLACEMENT {
+    UINT  Length;
+    UINT  Flags;
+    ESW   ShowCmd;
+    POINTL ptMinPosition;
+    POINTL ptMaxPosition;
+    RECT  rcNormalPosition;
+} WINDOWPLACEMENT, * PWINDOWPLACEMENT, * LPWINDOWPLACEMENT;
+
+typedef struct NMHDR {
+	HWND	hwndFrom;
+	UINT	idFrom;
+	UINT	code;
+} NMHDR;
+
+/*
+typedef struct STYLESTRUCT {
+    DWORD   styleOld;
+    DWORD   styleNew;
+} STYLESTRUCT, * LPSTYLESTRUCT;
+*/
+
+// MEASUREITEMSTRUCT for ownerdraw
+typedef struct MEASUREITEMSTRUCT {
+    UINT       CtlType;
+    UINT       CtlID;
+    UINT       itemID;
+    UINT       itemWidth;
+    UINT       itemHeight;
+    DWORD      itemData;
+} MEASUREITEMSTRUCT, *LPMEASUREITEMSTRUCT;
+
+// DRAWITEMSTRUCT for ownerdraw
+typedef struct DRAWITEMSTRUCT {
+    UINT        CtlType;
+    UINT        CtlID;
+    UINT        itemID;
+    UINT        itemAction;
+    UINT        itemState;
+    HWND        hwndItem;
+    HDC         hDC;
+    RECT        rcItem;
+    DWORD       itemData;
+} DRAWITEMSTRUCT, *LPDRAWITEMSTRUCT;
+
+// DELETEITEMSTRUCT for ownerdraw
+typedef struct DELETEITEMSTRUCT {
+    UINT       CtlType;
+    UINT       CtlID;
+    UINT       itemID;
+    HWND       hwndItem;
+    UINT       itemData;
+} DELETEITEMSTRUCT, *LPDELETEITEMSTRUCT;
+
+// COMPAREITEMSTUCT for ownerdraw sorting
+typedef struct COMPAREITEMSTRUCT {
+    UINT        CtlType;
+    UINT        CtlID;
+    HWND        hwndItem;
+    UINT        itemID1;
+    DWORD       itemData1;
+    UINT        itemID2;
+    DWORD       itemData2;
+    DWORD       dwLocaleId;
+} COMPAREITEMSTRUCT, *LPCOMPAREITEMSTRUCT;
+
+typedef struct BROADCASTSYSMSG {
+    UINT    uiMessage;
+    WPARAM  wParam;
+    LPARAM  lParam;
+} BROADCASTSYSMSG;
+typedef BROADCASTSYSMSG  *LPBROADCASTSYSMSG;
+
+typedef struct TPMPARAMS {
+    UINT    cbSize;     // Size of structure 
+    RECT    rcExclude;  // Screen coordinates of rectangle to exclude when positioning 
+}   TPMPARAMS;
+typedef TPMPARAMS *LPTPMPARAMS;
+
+typedef struct MENUITEMINFO {
+    UINT    cbSize;
+    UINT    fMask;
+    UINT    fType;          // used if MIIM_TYPE
+    UINT    fState;         // used if MIIM_STATE
+    UINT    wID;            // used if MIIM_ID
+    HMENU   hSubMenu;       // used if MIIM_SUBMENU
+    HBITMAP hbmpChecked;    // used if MIIM_CHECKMARKS
+    HBITMAP hbmpUnchecked;  // used if MIIM_CHECKMARKS
+    DWORD   dwItemData;     // used if MIIM_DATA
+    PTR /* LPTSTR */ dwTypeData;     // used if MIIM_TYPE
+    UINT    cch;            // used if MIIM_TYPE
+}   MENUITEMINFO, *LPMENUITEMINFOA;
+
+typedef struct DROPSTRUCT {
+    HWND    hwndSource;
+    HWND    hwndSink;
+    DWORD   wFmt;
+    DWORD   dwData;
+    POINTL  ptDrop;
+    DWORD   dwControlData;
+} DROPSTRUCT, *PDROPSTRUCT, *LPDROPSTRUCT;
+
+
+typedef struct DRAWTEXTPARAMS {
+    UINT    cbSize;
+    int     iTabLength;
+    int     iLeftMargin;
+    int     iRightMargin;
+    UINT    uiLengthDrawn;
+} DRAWTEXTPARAMS;
+typedef DRAWTEXTPARAMS * LPDRAWTEXTPARAMS;
+
+/*
+typedef struct HELPINFO {       // Structure pointed to by lParam of WM_HELP 
+    UINT    cbSize;             // Size in bytes of this struct  
+    int     iContextType;       // Either HELPINFO_WINDOW or HELPINFO_MENUITEM 
+    int     iCtrlId;            // Control Id or a Menu item Id. 
+    HANDLE  hItemHandle;        // hWnd of control or hMenu.     
+    DWORD   dwContextId;        // Context Id associated with this item 
+    POINT   MousePos;           // Mouse Position in screen co-ordinates 
+}  HELPINFO, FAR *LPHELPINFO;
+*/
+
+typedef long MSGBOXCALLBACK;
+// typedef void (CALLBACK *MSGBOXCALLBACK)(LPHELPINFO lpHelpInfo);
+
+typedef struct MSGBOXPARAMS {
+    UINT        cbSize;
+    HWND        hwndOwner;
+    HINSTANCE   hInstance;
+    PTR /* LPCTSTR */ lpszText;
+    PTR /* LPCTSTR */ lpszCaption;
+    DWORD       dwStyle;
+    PTR /* LPCTSTR */ lpszIcon;
+    DWORD       dwContextHelpId;
+    MSGBOXCALLBACK      lpfnMsgBoxCallback;
+    DWORD   dwLanguageId;
+} MSGBOXPARAMS, *PMSGBOXPARAMS, *LPMSGBOXPARAMS;
+
+// Menu item resource format
+/*
+// Menu template header
+typedef struct MENUITEMTEMPLATEHEADER {
+    UINT    versionNumber;
+    UINT    offset;
+} MENUITEMTEMPLATEHEADER;
+
+// Menu template item struct
+typedef struct MENUITEMTEMPLATE {
+    UINT    mtOption;
+    UINT    mtID;
+    char    mtString[1];
+} MENUITEMTEMPLATE;
+*/
+
+
+typedef struct ICONINFO {
+    BOOL    fIcon;
+    DWORD   xHotspot;
+    DWORD   yHotspot;
+    HBITMAP hbmMask;
+    HBITMAP hbmColor;
+} ICONINFO;
+
+// Icon/Cursor header 
+typedef struct CURSORSHAPE {
+    int     xHotSpot;
+    int     yHotSpot;
+    int     cx;
+    int     cy;
+    int     cbWidth;
+    BYTE    Planes;
+    BYTE    BitsPixel;
+} CURSORSHAPE, *LPCURSORSHAPE;
+
+/*
+typedef struct SCROLLINFO { 
+    UINT    cbSize;
+    UINT    fMask;
+    int     nMin;
+    int     nMax;
+    UINT    nPage;
+    int     nPos;
+    int     nTrackPos;
+}   SCROLLINFO, *LPSCROLLINFO;
+typedef SCROLLINFO *LPCSCROLLINFO;
+*/
+
+typedef struct MDICREATESTRUCT {
+    PTR /* LPCTSTR */ szClass;
+    PTR /* LPCTSTR */ szTitle;
+    HANDLE hOwner;
+    int x;
+    int y;
+    int cx;
+    int cy;
+    DWORD style;
+    LPARAM lParam;        // app-defined stuff 
+} MDICREATESTRUCT, *LPMDICREATESTRUCT;
+
+typedef struct CLIENTCREATESTRUCT {
+    HANDLE hWindowMenu;
+    UINT idFirstChild;
+} CLIENTCREATESTRUCT, *LPCLIENTCREATESTRUCT;
+
+
+/*
+typedef DWORD HELPPOLY;
+typedef struct MULTIKEYHELP {
+    DWORD  mkSize;
+    TCHAR   mkKeylist;
+    TCHAR   szKeyphrase[1];
+} MULTIKEYHELP, *PMULTIKEYHELP, *LPMULTIKEYHELP;
+
+typedef struct HELPWININFO {
+    int  wStructSize;
+    int  x;
+    int  y;
+    int  dx;
+    int  dy;
+    int  wMax;
+    TCHAR   rgchMember[2];
+} HELPWININFO, *PHELPWININFO, *LPHELPWININFO;
+*/
+
+/*
+typedef struct NONCLIENTMETRICS {
+    UINT    cbSize;
+    int     iBorderWidth;
+    int     iScrollWidth;
+    int     iScrollHeight;
+    int     iCaptionWidth;
+    int     iCaptionHeight;
+    LOGFONT lfCaptionFont;
+    int     iSmCaptionWidth;
+    int     iSmCaptionHeight;
+    LOGFONT lfSmCaptionFont;
+    int     iMenuWidth;
+    int     iMenuHeight;
+    LOGFONT lfMenuFont;
+    LOGFONT lfStatusFont;
+    LOGFONT lfMessageFont;
+}   NONCLIENTMETRICS, *PNONCLIENTMETRICS, * LPNONCLIENTMETRICS;
+
+typedef struct ICONMETRICS {
+    UINT    cbSize;
+    int     iHorzSpacing;
+    int     iVertSpacing;
+    int     iTitleWrap;
+    LOGFONT lfFont;
+}   ICONMETRICS, *PICONMETRICS, *LPICONMETRICS;
+
+typedef struct ANIMATIONINFO {
+    UINT    cbSize;
+    int     iMinAnimate;
+}   ANIMATIONINFO, *LPANIMATIONINFO;
+
+typedef struct SERIALKEYS {
+    UINT    cbSize;
+    DWORD   dwFlags;
+    LPTSTR  lpszActivePort;
+    LPTSTR  lpszPort;
+    UINT    iBaudRate;
+    UINT    iPortState;
+    UINT    iActive;
+}   SERIALKEYS, *LPSERIALKEYS;
+
+typedef struct HIGHCONTRAST
+{
+    UINT    cbSize;
+    DWORD   dwFlags;
+    LPTSTR  lpszDefaultScheme;
+}   HIGHCONTRAST, *LPHIGHCONTRAST;
+*/
+
+/*
+typedef struct FILTERKEYS {
+	UINT  cbSize;
+	DWORD dwFlags;
+	DWORD iWaitMSec;            // Acceptance Delay
+	DWORD iDelayMSec;           // Delay Until Repeat
+	DWORD iRepeatMSec;          // Repeat Rate
+	DWORD iBounceMSec;          // Debounce Time
+} FILTERKEYS, *LPFILTERKEYS;
+
+typedef struct STICKYKEYS {
+	UINT  cbSize;
+	DWORD dwFlags;
+} STICKYKEYS, *LPSTICKYKEYS;
+
+typedef struct MOUSEKEYS {
+	UINT cbSize;
+	DWORD dwFlags;
+	DWORD iMaxSpeed;
+	DWORD iTimeToMaxSpeed;
+	DWORD iCtrlSpeed;
+	DWORD dwReserved1;
+	DWORD dwReserved2;
+} MOUSEKEYS, *LPMOUSEKEYS;
+
+typedef struct ACCESSTIMEOUT {
+	UINT  cbSize;
+	DWORD dwFlags;
+	DWORD iTimeOutMSec;
+} ACCESSTIMEOUT, *LPACCESSTIMEOUT;
+
+typedef struct SOUNDSENTRY {
+	UINT cbSize;
+	DWORD dwFlags;
+	DWORD iFSTextEffect;
+	DWORD iFSTextEffectMSec;
+	DWORD iFSTextEffectColorBits;
+	DWORD iFSGrafEffect;
+	DWORD iFSGrafEffectMSec;
+	DWORD iFSGrafEffectColor;
+	DWORD iWindowsEffect;
+	DWORD iWindowsEffectMSec;
+	LPTSTR   lpszWindowsEffectDLL;
+	DWORD iWindowsEffectOrdinal;
+} SOUNDSENTRY, *LPSOUNDSENTRY;
+
+typedef struct TOGGLEKEYS {
+	UINT cbSize;
+	DWORD dwFlags;
+} TOGGLEKEYS, *LPTOGGLEKEYS;
+*/
+
+
+
+
+
+/*
+#pragma pack(push)
+#pragma pack(2)
+
+typedef struct DLGTEMPLATE {
+    DWORD style;
+    DWORD dwExtendedStyle;
+    WORD cdit;
+    short x;
+    short y;
+    short cx;
+    short cy;
+} DLGTEMPLATE;
+typedef DLGTEMPLATE *LPDLGTEMPLATE;
+typedef DLGTEMPLATE *LPDLGTEMPLATE;
+
+// 32 bit Dialog item template
+typedef struct DLGITEMTEMPLATE {
+    DWORD style;
+    DWORD dwExtendedStyle;
+    short x;
+    short y;
+    short cx;
+    short cy;
+    WORD id;
+} DLGITEMTEMPLATE;
+typedef DLGITEMTEMPLATE *PDLGITEMTEMPLATE;
+#pragma pack(pop)
+*/
+
+/*
+typedef HANDLE HDWP;
+typedef VOID MENUTEMPLATE;
+*/
+
+// typedef LRESULT (CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
+
+// typedef BOOL (CALLBACK* DLGPROC)(HWND, UINT, WPARAM, LPARAM);
+
+typedef long TIMERPROC;
+// void (CALLBACK* TIMERPROC)(HWND hWnd, UINT, UINT, DWORD); 
+
+typedef long GRAYSTRINGPROC;
+// typedef BOOL (CALLBACK* GRAYSTRINGPROC)(HDC, LPARAM, int); 
+
+typedef long WNDENUMPROC;
+// typedef BOOL (CALLBACK* WNDENUMPROC)(HWND hWnd, LPARAM); 
+
+// typedef LRESULT (CALLBACK* HOOKPROC)(int code, WPARAM wParam, LPARAM lParam);
+// typedef VOID (CALLBACK* SENDASYNCPROC)(HWND, UINT, DWORD, LRESULT);
+
+typedef long PROPENUMPROC;
+typedef long PROPENUMPROCEX;
+// typedef BOOL (CALLBACK* PROPENUMPROC)(HWND hWnd, LPCTSTR, HANDLE); 
+// typedef BOOL (CALLBACK* PROPENUMPROCEX)(HWND, LPSTR, HANDLE, DWORD); 
+
+
+// typedef int (CALLBACK* EDITWORDBREAKPROC)(LPSTR lpch, int ichCurrent, int cch, int code);
+
+typedef long DRAWSTATEPROC;
+// typedef BOOL (CALLBACK* DRAWSTATEPROC)(HDC hdc, LPARAM lData, WPARAM wData, int cx, int cy);
+
+// USER function entries and constants
+[
+#ifdef UNICODE
+uuid(64675046-3A82-101B-8181-00AA003743D3),
+#else
+uuid(64674046-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("Windows User Functions"),
+dllname("USER32.DLL")
+]
+module User {
+
+    // Predefined Resource Types
+    [ helpstring("FindResource: Cursor resource type") ]
+    const long RT_CURSOR        = 1;
+    [ helpstring("FindResource: Bitmap resource type") ]
+    const long RT_BITMAP        = 2;
+    [ helpstring("FindResource: Icon resource type") ]
+    const long RT_ICON          = 3;
+    [ helpstring("FindResource: Menu resource type") ]
+    const long RT_MENU          = 4;
+    [ helpstring("FindResource: Dialog resource type") ]
+    const long RT_DIALOG        = 5;
+    [ helpstring("FindResource: String resource type") ]
+    const long RT_STRING        = 6;
+    [ helpstring("FindResource: Font directory resource type") ]
+    const long RT_FONTDIR       = 7;
+    [ helpstring("FindResource: Font resource type") ]
+    const long RT_FONT          = 8;
+    [ helpstring("FindResource: Accelerator resource type") ]
+    const long RT_ACCELERATOR   = 9;
+    [ helpstring("FindResource: Data resource type") ]
+    const long RT_RCDATA        = 10;
+    [ helpstring("FindResource: Message table resource type") ]
+    const long RT_MESSAGETABLE  = 11;
+
+    [ helpstring("FindResource: Group cursor resource type") ]
+    const long RT_GROUP_CURSOR  = 12;
+    [ helpstring("FindResource: Group icon resource type") ]
+    const long RT_GROUP_ICON    = 14;
+
+    [ helpstring("FindResource: Version resource type") ]
+    const long RT_VERSION		= 16;
+    [ helpstring("FindResource: Dialog include resource type") ]
+    const long RT_DLGINCLUDE	= 17;
+    [ helpstring("FindResource: Plug and play resource type") ]
+    const long RT_PLUGPLAY		= 19;
+    [ helpstring("FindResource: VXD resource type") ]
+    const long RT_VXD			= 20;
+    [ helpstring("FindResource: Animated cursor resource type") ]
+    const long RT_ANICURSOR		= 21;
+    [ helpstring("FindResource: Animated icon resource type") ]
+    const long RT_ANIICON		= 22;
+
+/*
+	int WINAPI wvsprintf(LPSTR, LPCSTR, va_list arglist);
+
+	int WINAPIV wsprintfA(LPSTR, LPCSTR, ...);
+
+*/
+
+    // Scroll bar selection constants
+    const long SB_HORZ         = 0;
+    const long SB_VERT         = 1;
+    const long SB_CTL          = 2;
+    const long SB_BOTH         = 3;
+
+    // WM_H/VSCROLL commands
+    const long SB_LINEUP        = 0;
+    const long SB_LINELEFT      = 0;
+    const long SB_LINEDOWN      = 1;
+    const long SB_LINERIGHT     = 1;
+    const long SB_PAGEUP        = 2;
+    const long SB_PAGELEFT      = 2;
+    const long SB_PAGEDOWN      = 3;
+    const long SB_PAGERIGHT     = 3;
+    const long SB_THUMBPOSITION = 4;
+    const long SB_THUMBTRACK    = 5;
+    const long SB_TOP           = 6;
+    const long SB_LEFT          = 6;
+    const long SB_BOTTOM        = 7;
+    const long SB_RIGHT         = 7;
+    const long SB_ENDSCROLL     = 8;
+
+	// ShowWindow() Commands
+	/* See ESW enum in WinBase.IDL
+	const long SW_HIDE             = 0;
+	const long SW_SHOWNORMAL       = 1;
+	const long SW_NORMAL           = 1;
+	const long SW_SHOWMINIMIZED    = 2;
+	const long SW_SHOWMAXIMIZED    = 3;
+	const long SW_MAXIMIZE         = 3;
+	const long SW_SHOWNOACTIVATE   = 4;
+	const long SW_SHOW				= 5;
+	const long SW_MINIMIZE         = 6;
+	const long SW_SHOWMINNOACTIVE  = 7;
+	const long SW_SHOWNA           = 8;
+	const long SW_RESTORE          = 9;
+	const long SW_SHOWDEFAULT      = 10;
+	const long SW_MAX              = 10;
+	*/
+
+	// Old ShowWindow() Commands
+	const long HIDE_WINDOW         = 0;
+	const long SHOW_OPENWINDOW     = 1;
+	const long SHOW_ICONWINDOW     = 2;
+	const long SHOW_FULLSCREEN     = 3;
+	const long SHOW_OPENNOACTIVATE = 4;
+
+    // WM_SHOWWINDOW wParam codes
+    const long SW_PARENTCLOSING =    1;
+    const long SW_OTHERZOOM     =    2; 
+    const long SW_PARENTOPENING =    3;
+    const long SW_OTHERUNZOOM   =    4; 
+
+    // WM_KEYUP/DOWN/CHAR HIWORD(lParam) flags
+    const DWORD KF_EXTENDED     = 0x0100;
+    const DWORD KF_DLGMODE      = 0x0800;
+    const DWORD KF_MENUMODE     = 0x1000;
+    const DWORD KF_ALTDOWN      = 0x2000;
+    const DWORD KF_REPEAT       = 0x4000;
+    const DWORD KF_UP           = 0x8000;
+
+	// Virtual Keys, Standard Set
+
+    [ helpstring("Virtual key: Left mouse button") ]
+    const DWORD VK_LBUTTON    = 0x1;
+    [ helpstring("Virtual key: Right mouse button") ]
+    const DWORD VK_RBUTTON    = 0x2;
+    [ helpstring("Virtual key: Used for control+break processing") ]
+    const DWORD VK_CANCEL     = 0x3;
+    [ helpstring("Virtual key: Middle mouse button") ]
+    const DWORD VK_MBUTTON    = 0x4;
+    [ helpstring("Virtual key: Backspace") ]
+    const DWORD VK_BACK       = 0x8;
+    [ helpstring("Virtual key: Tab") ]
+    const DWORD VK_TAB        = 0x9;
+    [ helpstring("Virtual key: Clear") ]
+    const DWORD VK_CLEAR      = 0xC;
+    [ helpstring("Virtual key: Enter") ]
+    const DWORD VK_RETURN     = 0xD;
+    [ helpstring("Virtual key: Shift") ]
+    const DWORD VK_SHIFT      = 0x10;
+    [ helpstring("Virtual key: Ctrl") ]
+    const DWORD VK_CONTROL    = 0x11;
+    [ helpstring("Virtual key: Alt") ]
+    const DWORD VK_MENU       = 0x12;
+    [ helpstring("Virtual key: Pause") ]
+    const DWORD VK_PAUSE      = 0x13;
+    [ helpstring("Virtual key: Caps Lock") ]
+    const DWORD VK_CAPITAL    = 0x14;
+    [ helpstring("Virtual key: Esc") ]
+    const DWORD VK_ESCAPE     = 0x1B;
+    [ helpstring("Virtual key: Spacebar") ]
+    const DWORD VK_SPACE      = 0x20;
+    [ helpstring("Virtual key: Page Up") ]
+    const DWORD VK_PRIOR      = 0x21;
+    [ helpstring("Virtual key: Page Down") ]
+    const DWORD VK_NEXT       = 0x22;
+    [ helpstring("Virtual key: End") ]
+    const DWORD VK_END        = 0x23;
+    [ helpstring("Virtual key: Home") ]
+    const DWORD VK_HOME       = 0x24;
+    [ helpstring("Virtual key: Left Arrow") ]
+    const DWORD VK_LEFT       = 0x25;
+    [ helpstring("Virtual key: Right Arrow") ]
+    const DWORD VK_UP         = 0x26;
+    [ helpstring("Virtual key: Up Arrow") ]
+    const DWORD VK_RIGHT      = 0x27;
+    [ helpstring("Virtual key: Down Arrow") ]
+    const DWORD VK_DOWN       = 0x28;
+    [ helpstring("Virtual key: Select") ]
+    const DWORD VK_SELECT     = 0x29;
+    [ helpstring("Virtual key: OEM Specific") ]
+    const DWORD VK_PRINT      = 0x2A;
+    [ helpstring("Virtual key: Execute") ]
+    const DWORD VK_EXECUTE    = 0x2B;
+    [ helpstring("Virtual key: PrtScr") ]
+    const DWORD VK_SNAPSHOT   = 0x2C;
+    [ helpstring("Virtual key: Ins") ]
+    const DWORD VK_INSERT     = 0x2D;
+    [ helpstring("Virtual key: Del") ]
+    const DWORD VK_DELETE     = 0x2E;
+    [ helpstring("Virtual key: Help") ]
+    const DWORD VK_HELP       = 0x2F;
+    [ helpstring("Virtual key: 0") ]
+    const DWORD VK_0          = 0x30;
+    [ helpstring("Virtual key: 1") ]
+    const DWORD VK_1          = 0x31;
+    [ helpstring("Virtual key: 2") ]
+    const DWORD VK_2          = 0x32;
+    [ helpstring("Virtual key: 3") ]
+    const DWORD VK_3          = 0x33;
+    [ helpstring("Virtual key: 4") ]
+    const DWORD VK_4          = 0x34;
+    [ helpstring("Virtual key: 5") ]
+    const DWORD VK_5          = 0x35;
+    [ helpstring("Virtual key: 6") ]
+    const DWORD VK_6          = 0x36;
+    [ helpstring("Virtual key: 7") ]
+    const DWORD VK_7          = 0x37;
+    [ helpstring("Virtual key: 8") ]
+    const DWORD VK_8          = 0x38;
+    [ helpstring("Virtual key: 9") ]
+    const DWORD VK_9          = 0x39;
+    [ helpstring("Virtual key: A") ]
+    const DWORD VK_A          = 0x41;
+    [ helpstring("Virtual key: B") ]
+    const DWORD VK_B          = 0x42;
+    [ helpstring("Virtual key: C") ]
+    const DWORD VK_C          = 0x43;
+    [ helpstring("Virtual key: D") ]
+    const DWORD VK_D          = 0x44;
+    [ helpstring("Virtual key: E") ]
+    const DWORD VK_E          = 0x45;
+    [ helpstring("Virtual key: F") ]
+    const DWORD VK_F          = 0x46;
+    [ helpstring("Virtual key: G") ]
+    const DWORD VK_G          = 0x47;
+    [ helpstring("Virtual key: H") ]
+    const DWORD VK_H          = 0x48;
+    [ helpstring("Virtual key: I") ]
+    const DWORD VK_I          = 0x49;
+    [ helpstring("Virtual key: J") ]
+    const DWORD VK_J          = 0x4A;
+    [ helpstring("Virtual key: K") ]
+    const DWORD VK_K          = 0x4B;
+    [ helpstring("Virtual key: L") ]
+    const DWORD VK_L          = 0x4C;
+    [ helpstring("Virtual key: M") ]
+    const DWORD VK_M          = 0x4D;
+    [ helpstring("Virtual key: N") ]
+    const DWORD VK_N          = 0x4E;
+    [ helpstring("Virtual key: O") ]
+    const DWORD VK_O          = 0x4F;
+    [ helpstring("Virtual key: P") ]
+    const DWORD VK_P          = 0x50;
+    [ helpstring("Virtual key: Q") ]
+    const DWORD VK_Q          = 0x51;
+    [ helpstring("Virtual key: R") ]
+    const DWORD VK_R          = 0x52;
+    [ helpstring("Virtual key: S") ]
+    const DWORD VK_S          = 0x53;
+    [ helpstring("Virtual key: T") ]
+    const DWORD VK_T          = 0x54;
+    [ helpstring("Virtual key: U") ]
+    const DWORD VK_U          = 0x55;
+    [ helpstring("Virtual key: V") ]
+    const DWORD VK_V          = 0x56;
+    [ helpstring("Virtual key: W") ]
+    const DWORD VK_W          = 0x57;
+    [ helpstring("Virtual key: X") ]
+    const DWORD VK_X          = 0x58;
+    [ helpstring("Virtual key: Y") ]
+    const DWORD VK_Y          = 0x59;
+    [ helpstring("Virtual key: Z") ]
+    const DWORD VK_Z          = 0x5A;
+    [ helpstring("Virtual key: 0 on number pad") ]
+    const DWORD VK_NUMPAD0    = 0x60;
+    [ helpstring("Virtual key: 1 on number pad") ]
+    const DWORD VK_NUMPAD1    = 0x61;
+    [ helpstring("Virtual key: 2 on number pad") ]
+    const DWORD VK_NUMPAD2    = 0x62;
+    [ helpstring("Virtual key: 3 on number pad") ]
+    const DWORD VK_NUMPAD3    = 0x63;
+    [ helpstring("Virtual key: 4 on number pad") ]
+    const DWORD VK_NUMPAD4    = 0x64;
+    [ helpstring("Virtual key: 5 on number pad") ]
+    const DWORD VK_NUMPAD5    = 0x65;
+    [ helpstring("Virtual key: 6 on number pad") ]
+    const DWORD VK_NUMPAD6    = 0x66;
+    [ helpstring("Virtual key: 7 on number pad") ]
+    const DWORD VK_NUMPAD7    = 0x67;
+    [ helpstring("Virtual key: 8 on number pad") ]
+    const DWORD VK_NUMPAD8    = 0x68;
+    [ helpstring("Virtual key: 9 on number pad") ]
+    const DWORD VK_NUMPAD9    = 0x69;
+    [ helpstring("Virtual key: Multiply") ]
+    const DWORD VK_MULTIPLY   = 0x6A;
+    [ helpstring("Virtual key: Add") ]
+    const DWORD VK_ADD        = 0x6B;
+    [ helpstring("Virtual key: Separator") ]
+    const DWORD VK_SEPARATOR  = 0x6C;
+    [ helpstring("Virtual key: Subtract") ]
+    const DWORD VK_SUBTRACT   = 0x6D;
+    [ helpstring("Virtual key: Decimal") ]
+    const DWORD VK_DECIMAL    = 0x6E;
+    [ helpstring("Virtual key: Divide") ]
+    const DWORD VK_DIVIDE     = 0x6F;
+    [ helpstring("Virtual key: F1") ]
+    const DWORD VK_F1         = 0x70;
+    [ helpstring("Virtual key: F2") ]
+    const DWORD VK_F2         = 0x71;
+    [ helpstring("Virtual key: F3") ]
+    const DWORD VK_F3         = 0x72;
+    [ helpstring("Virtual key: F4") ]
+    const DWORD VK_F4         = 0x73;
+    [ helpstring("Virtual key: F5") ]
+    const DWORD VK_F5         = 0x74;
+    [ helpstring("Virtual key: F6") ]
+    const DWORD VK_F6         = 0x75;
+    [ helpstring("Virtual key: F7") ]
+    const DWORD VK_F7         = 0x76;
+    [ helpstring("Virtual key: F8") ]
+    const DWORD VK_F8         = 0x77;
+    [ helpstring("Virtual key: F9") ]
+    const DWORD VK_F9         = 0x78;
+    [ helpstring("Virtual key: F10") ]
+    const DWORD VK_F10        = 0x79;
+    [ helpstring("Virtual key: F11") ]
+    const DWORD VK_F11        = 0x7A;
+    [ helpstring("Virtual key: F12") ]
+    const DWORD VK_F12        = 0x7B;
+    [ helpstring("Virtual key: F13") ]
+    const DWORD VK_F13        = 0x7C;
+    [ helpstring("Virtual key: F14") ]
+    const DWORD VK_F14        = 0x7D;
+    [ helpstring("Virtual key: F15") ]
+    const DWORD VK_F15        = 0x7E;
+    [ helpstring("Virtual key: F16") ]
+    const DWORD VK_F16        = 0x7F;
+    [ helpstring("Virtual key: F17") ]
+    const DWORD VK_F17        = 0x80;
+    [ helpstring("Virtual key: F18") ]
+    const DWORD VK_F18        = 0x81;
+    [ helpstring("Virtual key: F19") ]
+    const DWORD VK_F19        = 0x82;
+    [ helpstring("Virtual key: F20") ]
+    const DWORD VK_F20        = 0x83;
+    [ helpstring("Virtual key: F21") ]
+    const DWORD VK_F21        = 0x84;
+    [ helpstring("Virtual key: F22") ]
+    const DWORD VK_F22        = 0x85;
+    [ helpstring("Virtual key: F23") ]
+    const DWORD VK_F23        = 0x86;
+    [ helpstring("Virtual key: F24") ]
+    const DWORD VK_F24        = 0x87;
+    [ helpstring("Virtual key: NumLock") ]
+    const DWORD VK_NUMLOCK    = 0x90;
+    [ helpstring("Virtual key: ScrollLock") ]
+    const DWORD VK_SCROLL     = 0x91;
+
+	// VK_L* & VK_R* - left and right Alt, Ctrl and Shift virtual keys.
+	// Used only as parameters to GetAsyncKeyState() and GetKeyState().
+	// No other API or message will distinguish left and right keys in this way.
+	const DWORD VK_LSHIFT         = 0xA0;
+	const DWORD VK_RSHIFT         = 0xA1;
+	const DWORD VK_LCONTROL       = 0xA2;
+	const DWORD VK_RCONTROL       = 0xA3;
+	const DWORD VK_LMENU          = 0xA4;
+	const DWORD VK_RMENU          = 0xA5;
+
+	const DWORD VK_PROCESSKEY     = 0xE5;
+
+	const DWORD VK_ATTN           = 0xF6;
+	const DWORD VK_CRSEL          = 0xF7;
+	const DWORD VK_EXSEL          = 0xF8;
+	const DWORD VK_EREOF          = 0xF9;
+	const DWORD VK_PLAY           = 0xFA;
+	const DWORD VK_ZOOM           = 0xFB;
+	const DWORD VK_NONAME         = 0xFC;
+	const DWORD VK_PA1            = 0xFD;
+	const DWORD VK_OEM_CLEAR      = 0xFE;
+
+
+
+	// SetWindowsHook() codes
+	const long WH_MIN              = -1;
+    const long WH_MSGFILTER      = -1;
+    const long WH_JOURNALRECORD     = 0;
+    const long WH_JOURNALPLAYBACK  = 1;
+    const long WH_KEYBOARD		= 2;
+    const long WH_GETMESSAGE     = 3;
+    const long WH_CALLWNDPROC    = 4;
+    const long WH_CBT          = 5;
+    const long WH_SYSMSGFILTER   = 6;
+    const long WH_MOUSE        = 7;
+    const long WH_HARDWARE     = 8;
+    const long WH_DEBUG        = 9;
+    const long WH_SHELL            = 10;
+	const long WH_FOREGROUNDIDLE  = 11;
+	const long WH_CALLWNDPROCRET  = 12;
+	const long WH_MAX             = 12;
+	const long WH_MINHOOK         = -1;
+	const long WH_MAXHOOK         = 12;
+
+	// Hook Codes
+    const long HC_ACTION       = 0;
+    const long HC_GETNEXT      = 1;
+    const long HC_SKIP     = 2;
+    const long HC_NOREMOVE     = 3;
+    const long HC_NOREM        = 3;
+    const long HC_SYSMODALON        = 4;
+    const long HC_SYSMODALOFF      = 5;
+
+	// CBT Hook Codes
+    const long HCBT_MOVESIZE       = 0;
+    const long HCBT_MINMAX     = 1;
+    const long HCBT_QS     = 2;
+    const long HCBT_CREATEWND      = 3;
+    const long HCBT_DESTROYWND     = 4;
+    const long HCBT_ACTIVATE       = 5;
+    const long HCBT_CLICKSKIPPED    = 6;
+    const long HCBT_KEYSKIPPED  = 7;
+    const long HCBT_SYSCOMMAND     = 8;
+    const long HCBT_SETFOCUS       = 9;
+
+    // WH_MSGFILTER Filter Proc Codes
+    const long MSGF_DIALOGBOX    = 0;
+	const long MSGF_MESSAGEBOX   = 1;
+    const long MSGF_MENU         = 2;
+    const long MSGF_MOVE         = 3;
+    const long MSGF_SIZE         = 4;
+    const long MSGF_SCROLLBAR    = 5;
+    const long MSGF_NEXTWINDOW   = 6;
+    const long MSGF_MAINLOOP     = 8;
+    const long MSGF_MAX			= 8;
+    const long MSGF_USER         = 4096;
+
+
+	// Shell support
+    const long HSHELL_WINDOWCREATED        = 1;
+    const long HSHELL_WINDOWDESTROYED  = 2;
+    const long HSHELL_ACTIVATESHELLWINDOW = 3;
+	const long HSHELL_WINDOWACTIVATED      = 4;
+	const long HSHELL_GETMINRECT           = 5;
+	const long HSHELL_REDRAW               = 6;
+	const long HSHELL_TASKMAN              = 7;
+	const long HSHELL_LANGUAGE             = 8;
+
+	/*
+	// Keyboard Layout API
+	const long HKL_PREV            = 0;
+	const long HKL_NEXT            = 1;
+
+	const DWORD KLF_ACTIVATE        = 0x00000001;
+	const DWORD KLF_SUBSTITUTE_OK   = 0x00000002;
+	const DWORD KLF_UNLOADPREVIOUS  = 0x00000004;
+	const DWORD KLF_REORDER         = 0x00000008;
+	const DWORD KLF_REPLACELANG     = 0x00000010;
+	const DWORD KLF_NOTELLSHELL     = 0x00000080;
+
+	// Size of KeyboardLayoutName (number of characters), including nul terminator
+	const long KL_NAMELENGTH       = 9;
+
+	HKL WINAPI LoadKeyboardLayout(LPCSTR pwszKLID, UINT Flags);
+
+	HKL WINAPI ActivateKeyboardLayout(HKL hkl, UINT Flags);
+
+	int WINAPI ToUnicodeEx(UINT wVirtKey, UINT wScanCode,
+						   BYTE * lpKeyState, LPWSTR pwszBuff,
+						   int cchBuff, UINT wFlags, HKL dwhkl);
+
+	BOOL WINAPI UnloadKeyboardLayout(HKL hkl);
+
+	BOOL WINAPI GetKeyboardLayoutName(LPSTR pwszKLID);
+
+	int WINAPI GetKeyboardLayoutList(int nBuff, HKL *lpList);
+
+	HKL WINAPI GetKeyboardLayout(DWORD dwLayout);
+	*/
+
+	#if 0
+	// Desktop-specific access flags
+	const DWORD DESKTOP_READOBJECTS         = 0x0001L;
+	const DWORD DESKTOP_CREATEWINDOW        = 0x0002L;
+	const DWORD DESKTOP_CREATEMENU          = 0x0004L;
+	const DWORD DESKTOP_HOOKCONTROL         = 0x0008L;
+	const DWORD DESKTOP_JOURNALRECORD       = 0x0010L;
+	const DWORD DESKTOP_JOURNALPLAYBACK     = 0x0020L;
+	const DWORD DESKTOP_ENUMERATE           = 0x0040L;
+	const DWORD DESKTOP_WRITEOBJECTS        = 0x0080L;
+	const DWORD DESKTOP_SWITCHDESKTOP       = 0x0100L;
+
+	// Desktop-specific control flags
+	const DWORD DF_ALLOWOTHERACCOUNTHOOK    = 0x0001L;
+
+	HDESK WINAPI CreateDesktopAW(
+		LPSTR lpszDesktop,
+		LPSTR lpszDevice,
+		LPDEVMODE pDevmode,
+		DWORD dwFlags,
+		DWORD dwDesiredAccess,
+		[in, defaultvalue(0)] LPVOID /* SECURITY_ATTRIBUTES */ lpsa);
+
+
+	HDESK WINAPI OpenDesktopAW(
+		LPSTR lpszDesktop,
+		DWORD dwFlags,
+		BOOL fInherit,
+		DWORD dwDesiredAccess);
+
+	HDESK WINAPI OpenInputDesktop(
+		DWORD dwFlags,
+		BOOL fInherit,
+		DWORD dwDesiredAccess);
+
+	BOOL WINAPI EnumDesktopsAW(
+		HWINSTA hwinsta,
+		DESKTOPENUMPROC lpEnumFunc,
+		LPARAM lParam);
+
+	BOOL
+	WINAPI
+	EnumDesktopWindows(
+		HDESK hDesktop,
+		WNDENUMPROC lpfn,
+		LPARAM lParam);
+
+	BOOL WINAPI SwitchDesktop(HDESK hDesktop);
+
+	BOOL WINAPI SetThreadDesktop(HDESK hDesktop);
+
+	BOOL WINAPI CloseDesktop(HDESK hDesktop);
+
+	HDESK WINAPI GetThreadDesktop(DWORD dwThreadId);
+
+	//Windowstation-specific access flags
+	const DWORD WINSTA_ENUMDESKTOPS         = 0x0001L;
+	const DWORD WINSTA_READATTRIBUTES       = 0x0002L;
+	const DWORD WINSTA_ACCESSCLIPBOARD      = 0x0004L;
+	const DWORD WINSTA_CREATEDESKTOP        = 0x0008L;
+	const DWORD WINSTA_WRITEATTRIBUTES      = 0x0010L;
+	const DWORD WINSTA_ACCESSGLOBALATOMS    = 0x0020L;
+	const DWORD WINSTA_EXITWINDOWS          = 0x0040L;
+	const DWORD WINSTA_ENUMERATE            = 0x0100L;
+	const DWORD WINSTA_READSCREEN           = 0x0200L;
+
+	// Windowstation-specific attribute flags
+	const DWORD WSF_VISIBLE                 = 0x0001L;
+
+	HWINSTA WINAPI CreateWindowStationAW(
+		LPSTR lpwinsta,
+		DWORD dwReserved,
+		DWORD dwDesiredAccess,
+		[in, defaultvalue(0)] LPVOID /* SECURITY_ATTRIBUTES */ lpsa);
+
+	HWINSTA WINAPI OpenWindowStationAW(
+		LPSTR lpszWinSta,
+		BOOL fInherit,
+		DWORD dwDesiredAccess);
+
+	BOOL WINAPI EnumWindowStationsAW(
+		WINSTAENUMPROC lpEnumFunc,
+		LPARAM lParam);
+	
+	BOOL WINAPI CloseWindowStation(HWINSTA hWinSta);
+
+	BOOL WINAPI SetProcessWindowStation(HWINSTA hWinSta);
+
+	HWINSTA WINAPI GetProcessWindowStation(VOID);
+
+	BOOL WINAPI SetUserObjectSecurity(
+		HANDLE hObj,
+		PSECURITY_INFORMATION pSIRequested,
+		PSECURITY_DESCRIPTOR pSID);
+
+	BOOL WINAPI GetUserObjectSecurity(
+		HANDLE hObj,
+		PSECURITY_INFORMATION pSIRequested,
+		PSECURITY_DESCRIPTOR pSID,
+		DWORD nLength,
+		LPDWORD lpnLengthNeeded);
+
+	const long UOI_FLAGS       = 1;
+	const long UOI_NAME        = 2;
+	const long UOI_TYPE        = 3;
+	const long UOI_USER_SID    = 4;
+
+	BOOL WINAPI GetUserObjectInformationAW(
+		HANDLE hObj,
+		int nIndex,
+		PVOID pvInfo,
+		DWORD nLength,
+		LPDWORD lpnLengthNeeded);
+
+	BOOL WINAPI SetUserObjectInformationAW(
+		HANDLE hObj,
+		int nIndex,
+		PVOID pvInfo,
+		DWORD nLength);
+	#endif
+
+    // Window field offsets for GetWindowLong() and GetWindowWord()
+    [ helpstring("Window long: Window proc") ]
+    const long GWL_WNDPROC       = -4;
+    [ helpstring("Window long: Instance handle") ]
+    const long GWL_HINSTANCE     = -6;
+    [ helpstring("Window long: Window parent") ]
+    const long GWL_HWNDPARENT    = -8;
+    [ helpstring("Window long: ID") ]
+    const long GWL_ID            = -12;
+    [ helpstring("Window long: Style") ]
+    const long GWL_STYLE         = -16;
+    [ helpstring("Window long: Extended style") ]
+    const long GWL_EXSTYLE       = -20;
+    [ helpstring("Window long: User data") ]
+    const long GWL_USERDATA      = -21;
+    [ helpstring("Window data: Instance handle") ]
+    const long GWD_HINSTANCE     = -6;
+    [ helpstring("Window data: Window parent") ]
+    const long GWD_HWNDPARENT    = -8;
+    [ helpstring("Window data: ID") ]
+    const long GWD_ID            = -12;
+
+    // Class field offsets for GetClassLong() and GetClassWord()
+    [ helpstring("Class long: Menu name") ]
+    const long GCL_MENUNAME      = -8;
+    [ helpstring("Class long: Background brush handle") ]
+    const long GCL_HBRBACKGROUND = -10;
+    [ helpstring("Class long: Cursor handle") ]
+    const long GCL_HCURSOR       = -12;
+    [ helpstring("Class long: Module handle") ]
+    const long GCL_HICON         = -14;
+    [ helpstring("Class long: Module handle") ]
+    const long GCL_HMODULE       = -16;
+    [ helpstring("Class long: Window extra byte count") ]
+    const long GCL_CBWNDEXTRA    = -18;
+    [ helpstring("Class long: Class extra byte count") ]
+    const long GCL_CBCLSEXTRA    = -20;
+    [ helpstring("Class long: Window proc") ]
+    const long GCL_WNDPROC       = -24;
+    [ helpstring("Class data: Style") ]
+    const long GCL_STYLE         = -26;
+    [ helpstring("Class word: Atom") ]
+    const long GCW_ATOM          = -32;
+    [ helpstring("Class data: Background brush handle") ]
+    const long GCD_HBRBACKGROUND = -10;
+    [ helpstring("Class data: Cursor handle") ]
+    const long GCD_HCURSOR       = -12;
+    [ helpstring("Class data: Icon handle") ]
+    const long GCD_HICON         = -14;
+    [ helpstring("Class data: Module handle") ]
+    const long GCD_HMODULE       = -16;
+    [ helpstring("Class data: Window extra byte count") ]
+    const long GCD_CBWNDEXTRA    = -18;
+    [ helpstring("Class data: Class extra byte count") ]
+    const long GCD_CBCLSEXTRA    = -20;
+    [ helpstring("Class data: Style") ]
+    const long GCD_STYLE         = -26;
+
+	// **** Window Messages ****
+
+    const DWORD WM_NULL          = 0x0000;
+    const DWORD WM_CREATE        = 0x0001;
+    const DWORD WM_DESTROY       = 0x0002;
+    const DWORD WM_MOVE          = 0x0003;
+    const DWORD WM_SIZE          = 0x0005;
+
+    const DWORD WM_ACTIVATE      = 0x0006;
+    const DWORD WM_SETFOCUS      = 0x0007;
+    const DWORD WM_KILLFOCUS     = 0x0008;
+    const DWORD WM_ENABLE        = 0x000A;
+    const DWORD WM_SETREDRAW     = 0x000B;
+    const DWORD WM_SETTEXT       = 0x000C;
+    const DWORD WM_GETTEXT       = 0x000D;
+    const DWORD WM_GETTEXTLENGTH = 0x000E;
+    const DWORD WM_PAINT          = 0x000F;
+    const DWORD WM_CLOSE			= 0x0010;
+
+    const DWORD WM_QUERYENDSESSION  = 0x0011;
+    const DWORD WM_QUIT             = 0x0012;
+    const DWORD WM_QUERYOPEN     = 0x0013;
+    const DWORD WM_ERASEBKGND    = 0x0014;
+    const DWORD WM_SYSCOLORCHANGE = 0x0015;
+    const DWORD WM_ENDSESSION       = 0x0016;
+    const DWORD WM_SHOWWINDOW    = 0x0018;
+    const DWORD WM_WININICHANGE  = 0x001A;
+    const DWORD WM_SETTINGCHANGE	= 0x001A;
+
+    const DWORD WM_DEVMODECHANGE	= 0x001B;
+	const DWORD WM_ACTIVATEAPP	= 0x001C;
+    const DWORD WM_FONTCHANGE		= 0x001D;
+	const DWORD WM_TIMECHANGE		= 0x001E;
+    const DWORD WM_CANCELMODE		= 0x001F;
+    const DWORD WM_SETCURSOR     = 0x0020;
+    const DWORD WM_MOUSEACTIVATE = 0x0021;
+    const DWORD WM_CHILDACTIVATE = 0x0022;
+	const DWORD WM_QUEUESYNC     = 0x0023;
+
+    const DWORD WM_GETMINMAXINFO = 0x0024;
+
+
+	const DWORD WM_PAINTICON     = 0x0026;
+    const DWORD WM_ICONERASEBKGND = 0x0027;
+    const DWORD WM_NEXTDLGCTL    = 0x0028;
+    const DWORD WM_SPOOLERSTATUS = 0x002A;
+    const DWORD WM_DRAWITEM      = 0x002B;
+    const DWORD WM_MEASUREITEM   = 0x002C;
+    const DWORD WM_DELETEITEM    = 0x002D;
+    const DWORD WM_VKEYTOITEM    = 0x002E;
+    const DWORD WM_CHARTOITEM    = 0x002F;
+    const DWORD WM_SETFONT       = 0x0030;
+    const DWORD WM_GETFONT       = 0x0031;
+	const DWORD WM_SETHOTKEY     = 0x0032;
+	const DWORD WM_GETHOTKEY     = 0x0033;
+    const DWORD WM_QUERYDRAGICON = 0x0037;
+    const DWORD WM_COMPAREITEM   = 0x0039;
+
+	const DWORD WM_COMPACTING    = 0x0041;
+    const DWORD WM_COMMNOTIFY    = 0x0044; // no longer suported +
+    const DWORD WM_WINDOWPOSCHANGING = 0x0046;
+    const DWORD WM_WINDOWPOSCHANGED  = 0x0047;
+
+    const DWORD WM_POWER     = 0x0048;
+
+        // wParam for WM_POWER window message and DRV_POWER driver notification
+    const long PWR_OK             =   1;
+    const long PWR_FAIL           =  -1;
+    const long PWR_SUSPENDREQUEST =   1;
+    const long PWR_SUSPENDRESUME  =   2;
+    const long PWR_CRITICALRESUME =   3;
+
+	const DWORD WM_COPYDATA                     = 0x004A;
+	const DWORD WM_CANCELJOURNAL                = 0x004B;
+
+    const DWORD WM_NOTIFY               = 0x004E;
+	const DWORD WM_INPUTLANGCHANGEREQUEST       = 0x0050;
+	const DWORD WM_INPUTLANGCHANGE              = 0x0051;
+	const DWORD WM_TCARD                        = 0x0052;
+	const DWORD WM_HELP                         = 0x0053;
+	const DWORD WM_USERCHANGED                  = 0x0054;
+	const DWORD WM_NOTIFYFORMAT                 = 0x0055;
+
+	const long NFR_ANSI                             = 1;
+	const long NFR_UNICODE                          = 2;
+	const long NF_QUERY                             = 3;
+	const long NF_REQUERY                           = 4;
+
+    const DWORD WM_CONTEXTMENU          = 0x007B;
+	const DWORD WM_STYLECHANGING                = 0x007C;
+	const DWORD WM_STYLECHANGED                 = 0x007D;
+	const DWORD WM_DISPLAYCHANGE                = 0x007E;
+	const DWORD WM_GETICON                      = 0x007F;
+	const DWORD WM_SETICON                      = 0x0080;
+
+    const DWORD WM_NCCREATE      = 0x0081;
+    const DWORD WM_NCDESTROY     = 0x0082;
+    const DWORD WM_NCCALCSIZE    = 0x0083;
+    const DWORD WM_NCHITTEST     = 0x0084;
+    const DWORD WM_NCPAINT       = 0x0085;
+    const DWORD WM_NCACTIVATE    = 0x0086;
+    const DWORD WM_GETDLGCODE    = 0x0087;
+
+    const DWORD WM_NCMOUSEMOVE      = 0x00A0;
+    const DWORD WM_NCLBUTTONDOWN    = 0x00A1;
+    const DWORD WM_NCLBUTTONUP      = 0x00A2;
+    const DWORD WM_NCLBUTTONDBLCLK  = 0x00A3;
+    const DWORD WM_NCRBUTTONDOWN    = 0x00A4;
+    const DWORD WM_NCRBUTTONUP      = 0x00A5;
+    const DWORD WM_NCRBUTTONDBLCLK  = 0x00A6;
+    const DWORD WM_NCMBUTTONDOWN    = 0x00A7;
+    const DWORD WM_NCMBUTTONUP      = 0x00A8;
+    const DWORD WM_NCMBUTTONDBLCLK  = 0x00A9;
+
+    const DWORD WM_KEYFIRST      = 0x0100;
+    const DWORD WM_KEYDOWN       = 0x0100;
+    const DWORD WM_KEYUP         = 0x0101;
+    const DWORD WM_CHAR          = 0x0102;
+    const DWORD WM_DEADCHAR      = 0x0103;
+    const DWORD WM_SYSKEYDOWN    = 0x0104;
+    const DWORD WM_SYSKEYUP      = 0x0105;
+    const DWORD WM_SYSCHAR       = 0x0106;
+    const DWORD WM_SYSDEADCHAR   = 0x0107;
+    const DWORD WM_KEYLAST       = 0x0108;
+
+	const DWORD WM_IME_STARTCOMPOSITION         = 0x010D;
+	const DWORD WM_IME_ENDCOMPOSITION           = 0x010E;
+	const DWORD WM_IME_COMPOSITION              = 0x010F;
+	const DWORD WM_IME_KEYLAST                  = 0x010F;
+
+    const DWORD WM_INITDIALOG    = 0x0110;
+
+    const DWORD WM_COMMAND       = 0x0111;
+    const DWORD WM_SYSCOMMAND = 0x0112;
+    const DWORD WM_TIMER     = 0x0113;
+    const DWORD WM_HSCROLL       = 0x0114;
+    const DWORD WM_VSCROLL       = 0x0115;
+    const DWORD WM_INITMENU      = 0x0116;
+    const DWORD WM_INITMENUPOPUP = 0x0117;
+    const DWORD WM_MENUSELECT    = 0x011F;
+    const DWORD WM_MENUCHAR      = 0x0120;
+    const DWORD WM_ENTERIDLE     = 0x0121;
+
+	const DWORD WM_CTLCOLORMSGBOX               = 0x0132;
+	const DWORD WM_CTLCOLOREDIT                 = 0x0133;
+	const DWORD WM_CTLCOLORLISTBOX              = 0x0134;
+	const DWORD WM_CTLCOLORBTN                  = 0x0135;
+	const DWORD WM_CTLCOLORDLG                  = 0x0136;
+	const DWORD WM_CTLCOLORSCROLLBAR            = 0x0137;
+	const DWORD WM_CTLCOLORSTATIC               = 0x0138;
+
+    const DWORD WM_MOUSEFIRST    = 0x0200;
+    const DWORD WM_MOUSEMOVE     = 0x0200;
+    const DWORD WM_LBUTTONDOWN   = 0x0201;
+    const DWORD WM_LBUTTONUP     = 0x0202;
+    const DWORD WM_LBUTTONDBLCLK = 0x0203;
+    const DWORD WM_RBUTTONDOWN   = 0x0204;
+    const DWORD WM_RBUTTONUP     = 0x0205;
+    const DWORD WM_RBUTTONDBLCLK = 0x0206;
+    const DWORD WM_MBUTTONDOWN   = 0x0207;
+    const DWORD WM_MBUTTONUP     = 0x0208;
+    const DWORD WM_MBUTTONDBLCLK = 0x0209;
+	const DWORD WM_MOUSEWHEEL    = 0x020A;
+    const DWORD WM_MOUSELAST     = 0x020A;
+
+	const long WHEEL_DELTA      = 120;        // Value for rolling one detent 
+	const DWORD WHEEL_PAGESCROLL = 0xffffffff; // (UINT_MAX) Scroll one page 
+
+    const DWORD WM_PARENTNOTIFY  = 0x0210;
+	const long MENULOOP_WINDOW                 = 0;
+	const long MENULOOP_POPUP                  = 1;
+	const DWORD WM_ENTERMENULOOP                = 0x0211;
+	const DWORD WM_EXITMENULOOP                 = 0x0212;
+
+	const DWORD WM_NEXTMENU                     = 0x0213;
+
+    const DWORD WM_SIZING                       = 0x0214;
+	const DWORD WM_CAPTURECHANGED               = 0x0215;
+	const DWORD WM_MOVING                       = 0x0216;
+	const DWORD WM_POWERBROADCAST               = 0x0218;
+	const DWORD WM_DEVICECHANGE                 = 0x0219;
+
+	const DWORD WM_IME_SETCONTEXT               = 0x0281;
+	const DWORD WM_IME_NOTIFY                   = 0x0282;
+	const DWORD WM_IME_CONTROL                  = 0x0283;
+	const DWORD WM_IME_COMPOSITIONFULL          = 0x0284;
+	const DWORD WM_IME_SELECT                   = 0x0285;
+	const DWORD WM_IME_CHAR                     = 0x0286;
+	const DWORD WM_IME_KEYDOWN                  = 0x0290;
+	const DWORD WM_IME_KEYUP                    = 0x0291;
+
+    // MDI messages
+    const DWORD WM_MDICREATE      = 0x0220;
+    const DWORD WM_MDIDESTROY     = 0x0221;
+    const DWORD WM_MDIACTIVATE    = 0x0222;
+    const DWORD WM_MDIRESTORE     = 0x0223;
+    const DWORD WM_MDINEXT        = 0x0224;
+    const DWORD WM_MDIMAXIMIZE    = 0x0225;
+    const DWORD WM_MDITILE        = 0x0226;
+    const DWORD WM_MDICASCADE     = 0x0227;
+    const DWORD WM_MDIICONARRANGE = 0x0228;
+    const DWORD WM_MDIGETACTIVE   = 0x0229;
+    
+	const DWORD WM_MDISETMENU     = 0x0230;
+	const DWORD WM_ENTERSIZEMOVE                = 0x0231;
+	const DWORD WM_EXITSIZEMOVE                 = 0x0232;
+    const DWORD WM_DROPFILES     = 0x0233;
+	const DWORD WM_MDIREFRESHMENU               = 0x0234;
+
+	const DWORD WM_MOUSEHOVER                   = 0x02A1;
+	const DWORD WM_MOUSELEAVE                   = 0x02A3;
+
+    // Clipboard viewer messages
+    const DWORD WM_CUT           = 0x0300;
+    const DWORD WM_COPY          = 0x0301;
+    const DWORD WM_PASTE         = 0x0302;
+    const DWORD WM_CLEAR         = 0x0303;
+    const DWORD WM_UNDO          = 0x0304;
+    const DWORD WM_RENDERFORMAT     = 0x0305;
+    const DWORD WM_RENDERALLFORMATS = 0x0306;
+    const DWORD WM_DESTROYCLIPBOARD = 0x0307;
+    const DWORD WM_DRAWCLIPBOARD    = 0x0308;
+    const DWORD WM_PAINTCLIPBOARD   = 0x0309;
+    const DWORD WM_VSCROLLCLIPBOARD = 0x030A;
+    const DWORD WM_SIZECLIPBOARD    = 0x030B;
+    const DWORD WM_ASKCBFORMATNAME  = 0x030C;
+    const DWORD WM_CHANGECBCHAIN    = 0x030D;
+    const DWORD WM_HSCROLLCLIPBOARD = 0x030E;
+    const DWORD WM_QUERYNEWPALETTE = 0x030F;
+    const DWORD WM_PALETTEISCHANGING = 0x0310;
+    const DWORD WM_PALETTECHANGED    = 0x0311;
+	const DWORD WM_HOTKEY                       = 0x0312;
+
+	const DWORD WM_PRINT                        = 0x0317;
+    const DWORD WM_PRINTCLIENT          = 0x0318;
+
+	const DWORD WM_HANDHELDFIRST                = 0x0358;
+	const DWORD WM_HANDHELDLAST                 = 0x035F;
+
+	const DWORD WM_AFXFIRST                     = 0x0360;
+	const DWORD WM_AFXLAST                      = 0x037F;
+
+    const DWORD WM_PENWINFIRST   = 0x0380;
+    const DWORD WM_PENWINLAST    = 0x038F;
+
+	const DWORD WM_APP                          = 0x8000;
+
+
+	// wParam for WM_SIZING message  
+	const long WMSZ_LEFT           = 1;
+	const long WMSZ_RIGHT          = 2;
+	const long WMSZ_TOP            = 3;
+	const long WMSZ_TOPLEFT        = 4;
+	const long WMSZ_TOPRIGHT       = 5;
+	const long WMSZ_BOTTOM         = 6;
+	const long WMSZ_BOTTOMLEFT     = 7;
+	const long WMSZ_BOTTOMRIGHT    = 8;
+
+	// WM_SYNCTASK Commands
+	const long ST_BEGINSWP         = 0;
+	const long ST_ENDSWP           = 1;
+
+	// WM_NCHITTEST and MOUSEHOOKSTRUCT Mouse Position Codes
+    const long HTERROR       = -2;
+    const long HTTRANSPARENT = -1;
+    const long HTNOWHERE     = 0;
+    const long HTCLIENT      = 1;
+    const long HTCAPTION     = 2;
+    const long HTSYSMENU     = 3;
+    const long HTGROWBOX     = 4; // HTSIZE;
+    const long HTSIZE        = 4;
+    const long HTMENU        = 5;
+    const long HTHSCROLL     = 6;
+    const long HTVSCROLL     = 7;
+    const long HTMINBUTTON   = 8;
+    const long HTMAXBUTTON   = 9;
+    const long HTLEFT        = 10;
+    const long HTRIGHT       = 11;
+    const long HTTOP         = 12;
+    const long HTTOPLEFT     = 13;
+    const long HTTOPRIGHT    = 14;
+    const long HTBOTTOM      = 15;
+    const long HTBOTTOMLEFT  = 16;
+    const long HTBOTTOMRIGHT = 17;
+    const long HTBORDER      = 18;
+    const long HTREDUCE      = 8; // HTMINBUTTON;
+    const long HTZOOM        = 9; // HTMAXBUTTON;
+	const long HTSIZEFIRST         = 10; // HTLEFT
+	const long HTSIZELAST          = 17; // HTBOTTOMRIGHT
+	const long HTOBJECT            = 19;
+	const long HTCLOSE             = 20;
+	const long HTHELP              = 21;
+
+	// WM_ACTIVATE state values
+    const long WA_INACTIVE      = 0;
+    const long WA_ACTIVE       = 1;
+    const long WA_CLICKACTIVE   =       2;
+
+	/*
+	// SendMessageTimeout values
+	const DWORD SMTO_NORMAL         = 0x0000;
+	const DWORD SMTO_BLOCK          = 0x0001;
+	const DWORD SMTO_ABORTIFHUNG    = 0x0002;
+	*/
+
+    // WM_MOUSEACTIVATE return codes
+    const long MA_ACTIVATE      = 1;
+    const long MA_ACTIVATEANDEAT =   2;
+    const long MA_NOACTIVATE    = 3;
+    const long MA_NOACTIVATEANDEAT = 4;
+
+	// WM_SETICON / WM_GETICON Type Codes
+	const long ICON_SMALL          = 0;
+	const long ICON_BIG            = 1;
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("RegisterWindowMessageW"),
+	#else
+    entry("RegisterWindowMessageA"),
+	#endif
+    helpstring("Defines window message guaranteed to be unique"),
+    ]
+    UINT WINAPI RegisterWindowMessage(LPTSTR lpsz);
+
+    // WM_SIZE message wParam values
+    const long SIZE_RESTORED    = 0;
+    const long SIZE_MINIMIZED   = 1;
+    const long SIZE_MAXIMIZED   = 2;
+    const long SIZE_MAXSHOW     = 3;
+    const long SIZE_MAXHIDE     = 4;
+
+	// Obsolete constant names
+    const long SIZENORMAL    = 0;
+    const long SIZEICONIC   = 1;
+    const long SIZEFULLSCREEN   = 2;
+    const long SIZEZOOMSHOW     = 3;
+    const long SIZEZOOMHIDE     = 4;
+
+    // WM_NCCALCSIZE return flags
+    const DWORD WVR_ALIGNTOP     = 0x0010;
+    const DWORD WVR_ALIGNLEFT    = 0x0020;
+    const DWORD WVR_ALIGNBOTTOM  = 0x0040;
+    const DWORD WVR_ALIGNRIGHT   = 0x0080;
+    const DWORD WVR_HREDRAW      = 0x0100;
+    const DWORD WVR_VREDRAW      = 0x0200;
+    const DWORD WVR_REDRAW       = 0x0300; // (WVR_HREDRAW | WVR_VREDRAW);
+    const DWORD WVR_VALIDRECTS   = 0x0400;
+
+    // Mouse message wParam key states
+    const DWORD MK_LBUTTON       = 0x0001;
+    const DWORD MK_RBUTTON       = 0x0002;
+    const DWORD MK_SHIFT         = 0x0004;
+    const DWORD MK_CONTROL       = 0x0008;
+    const DWORD MK_MBUTTON       = 0x0010;
+
+	/*
+	const DWORD TME_HOVER       = 0x00000001;
+	const DWORD TME_LEAVE       = 0x00000002;
+	const DWORD TME_QUERY       = 0x40000000;
+	const DWORD TME_CANCEL      = 0x80000000;
+
+
+	const DWORD HOVER_DEFAULT   = 0xFFFFFFFF;
+
+	BOOL WINAPI TrackMouseEvent(LPTRACKMOUSEEVENT lpEventTrack);
+	*/
+
+    // Window Styles
+
+    [ helpstring("Window style: overlapped") ]
+    const DWORD WS_OVERLAPPED    = 0x00000000;
+    [ helpstring("Window style: popup") ]
+    const DWORD WS_POPUP         = 0x80000000;
+    [ helpstring("Window style: child") ]
+    const DWORD WS_CHILD         = 0x40000000;
+    [ helpstring("Window style: minimized") ]
+    const DWORD WS_MINIMIZE      = 0x20000000;
+    [ helpstring("Window style: visible") ]
+    const DWORD WS_VISIBLE       = 0x10000000;
+    [ helpstring("Window style: disabled") ]
+    const DWORD WS_DISABLED      = 0x08000000;
+    [ helpstring("Window style: clip sibblings") ]
+    const DWORD WS_CLIPSIBLINGS  = 0x04000000;
+    [ helpstring("Window style: clip children") ]
+    const DWORD WS_CLIPCHILDREN  = 0x02000000;
+    [ helpstring("Window style: maximized") ]
+    const DWORD WS_MAXIMIZE      = 0x01000000;
+    [ helpstring("Window style: has caption") ]
+    const DWORD WS_CAPTION       = 0x00C00000;   // WS_BORDER | WS_DLGFRAME
+    [ helpstring("Window style: has border") ]
+    const DWORD WS_BORDER        = 0x00800000;
+    [ helpstring("Window style: has dialog frame") ]
+    const DWORD WS_DLGFRAME      = 0x00400000;
+    [ helpstring("Window style: has vertical scroll bar") ]
+    const DWORD WS_VSCROLL       = 0x00200000;
+    [ helpstring("Window style: has horizontal scroll bar") ]
+    const DWORD WS_HSCROLL       = 0x00100000;
+    [ helpstring("Window style: has system menu") ]
+    const DWORD WS_SYSMENU       = 0x00080000;
+    [ helpstring("Window style: has thick frame") ]
+    const DWORD WS_THICKFRAME    = 0x00040000;
+    [ helpstring("Window style: part of group") ]
+    const DWORD WS_GROUP         = 0x00020000;
+    [ helpstring("Window style: has tabstop") ]
+    const DWORD WS_TABSTOP       = 0x00010000;
+
+    [ helpstring("Window style: has minimize box") ]
+    const DWORD WS_MINIMIZEBOX   = 0x00020000;
+    [ helpstring("Window style: has maximize box") ]
+    const DWORD WS_MAXIMIZEBOX   = 0x00010000;
+
+
+    // Obsolete style names
+    [ helpstring("Window style: overlapped") ]
+    const DWORD WS_TILED         = 0x00000000;
+    [ helpstring("Window style: minimized") ]
+    const DWORD WS_ICONIC        = 0x20000000;
+    [ helpstring("Window style: has thick frame") ]
+    const DWORD WS_SIZEBOX       = 0x00040000;
+    [ helpstring("Window style: overlapped window (WS_OVERLAPPED, WS_CAPTION, WS_SYSMENU, WS_THICKFRAME, WS_MINIMIZEBOX, and WS_MAXIMIZEBOX)") ]
+    const DWORD WS_TILEDWINDOW   = 0x00CF0000;
+    
+    // Common Window Styles
+    [ helpstring("Window style: overlapped window (WS_OVERLAPPED, WS_CAPTION, WS_SYSMENU, WS_THICKFRAME, WS_MINIMIZEBOX, and WS_MAXIMIZEBOX)") ]
+    const DWORD WS_OVERLAPPEDWINDOW = 0x00CF0000;
+    [ helpstring("Window style: popup window (WS_POPUP, WS_BORDER, and WS_SYSMENU)") ]
+    const DWORD WS_POPUPWINDOW   = 0x80880000;
+    [ helpstring("Window style: child window (WS_CHILD)") ]
+    const DWORD WS_CHILDWINDOW   = 0x40000000;
+
+    // Extended Window Styles
+    [ helpstring("Extended window style: dialog modal frame") ]
+    const DWORD WS_EX_DLGMODALFRAME  = 0x00000001;
+    [ helpstring("Extended window style: don't notify parent") ]
+    const DWORD WS_EX_NOPARENTNOTIFY = 0x00000004;
+    [ helpstring("Extended window style: keep topmost") ]
+    const DWORD WS_EX_TOPMOST        = 0x00000008;
+    [ helpstring("Extended window style: accept dragged files") ]
+    const DWORD WS_EX_ACCEPTFILES    = 0x00000010;
+    [ helpstring("Extended window style: transparent") ]
+    const DWORD WS_EX_TRANSPARENT    = 0x00000020;
+
+    [ helpstring("Extended window style: MDI child") ]
+    const long WS_EX_MDICHILD       = 0x00000040L;
+    [ helpstring("Extended window style: floating toolbar") ]
+    const long WS_EX_TOOLWINDOW     = 0x00000080L;
+    [ helpstring("Extended window style: raised edge") ]
+    const long WS_EX_WINDOWEDGE     = 0x00000100L;
+    [ helpstring("Extended window style: 3D border") ]
+    const long WS_EX_CLIENTEDGE     = 0x00000200L;
+    [ helpstring("Extended window style: question mark icon in title bar") ]
+    const long WS_EX_CONTEXTHELP    = 0x00000400L;
+
+    [ helpstring("Extended window style: generic right-aligned properties") ]
+    const long WS_EX_RIGHT          = 0x00001000L;
+    [ helpstring("Extended window style: generic left-aligned properties") ]
+    const long WS_EX_LEFT           = 0x00000000L;
+    [ helpstring("Extended window style: right-to-left reading order properties") ]
+    const long WS_EX_RTLREADING     = 0x00002000L;
+    [ helpstring("Extended window style: left-to-right reading order properties") ]
+    const long WS_EX_LTRREADING     = 0x00000000L;
+    [ helpstring("Extended window style: left vertical scroll bar") ]
+    const long WS_EX_LEFTSCROLLBAR  = 0x00004000L;
+    [ helpstring("Extended window style: right vertical scroll bar") ]
+    const long WS_EX_RIGHTSCROLLBAR = 0x00000000L;
+
+    [ helpstring("Extended window style: uses tab to navigate") ]
+    const long WS_EX_CONTROLPARENT  = 0x00010000L;
+    [ helpstring("Extended window style: no user input 3D border") ]
+    const long WS_EX_STATICEDGE     = 0x00020000L;
+    [ helpstring("Extended window style: forces window on toolbar") ]
+    const long WS_EX_APPWINDOW      = 0x00040000L;
+
+
+    [ helpstring("Extended window style: 3D raised edge") ]
+    const long WS_EX_OVERLAPPEDWINDOW = 0x00000300L; // (WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE)
+    [ helpstring("Extended window style: ") ]
+    const long WS_EX_PALETTEWINDOW  = 0x00000188L; // (WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST)
+
+
+    // Class styles
+    [ helpstring("Class style: Redraw for vertical change") ]
+    const DWORD CS_VREDRAW      = 0x0001;
+    [ helpstring("Class style: Redraw for horizontal change") ]
+    const DWORD CS_HREDRAW      = 0x0002;
+    const DWORD CS_KEYCVTWINDOW    = 0x0004;
+    [ helpstring("Class style: Send double click message to window") ]
+    const DWORD CS_DBLCLKS      = 0x0008;
+    [ helpstring("Class style: DC for each window instance") ]
+    const DWORD CS_OWNDC        = 0x0020;
+    [ helpstring("Class style: DC shared by class") ]
+    const DWORD CS_CLASSDC      = 0x0040;
+    [ helpstring("Class style: Use DC of parent") ]
+    const DWORD CS_PARENTDC     = 0x0080;
+    const DWORD CS_NOKEYCVT      = 0x0100;
+    [ helpstring("Class style: Inhibit close on system menu") ]
+    const DWORD CS_NOCLOSE      = 0x0200;
+    [ helpstring("Class style: Save screen image behind window") ]
+    const DWORD CS_SAVEBITS     = 0x0800;
+    [ helpstring("Class style: Align client area on x byte boundary") ]
+    const DWORD CS_BYTEALIGNCLIENT  = 0x1000;
+    [ helpstring("Class style: Align window on x byte boundary") ]
+    const DWORD CS_BYTEALIGNWINDOW  = 0x2000;
+    [ helpstring("Class style: Application global") ]
+    const DWORD CS_GLOBALCLASS      = 0x4000;
+	const DWORD CS_IME              = 0x00010000;
+
+    // WM_PRINT flags
+    const ULONG PRF_CHECKVISIBLE    = 0x00000001;
+    const ULONG PRF_NONCLIENT       = 0x00000002;
+    const ULONG PRF_CLIENT          = 0x00000004;
+    const ULONG PRF_ERASEBKGND      = 0x00000008;
+    const ULONG PRF_CHILDREN        = 0x00000010;
+    const ULONG PRF_OWNED           = 0x00000020;
+
+    // 3D border styles
+    const DWORD BDR_RAISEDOUTER  = 0x0001;
+    const DWORD BDR_SUNKENOUTER  = 0x0002;
+    const DWORD BDR_RAISEDINNER  = 0x0004;
+    const DWORD BDR_SUNKENINNER  = 0x0008;
+
+    const DWORD BDR_OUTER        = 0x0003;
+    const DWORD BDR_INNER        = 0x000c;
+    const DWORD BDR_RAISED       = 0x0005;
+    const DWORD BDR_SUNKEN       = 0x000a;
+
+    const DWORD EDGE_RAISED      = 0x0005; // BDR_RAISEDOUTER | BDR_RAISEDINNER
+    const DWORD EDGE_SUNKEN      = 0x000a; // BDR_SUNKENOUTER | BDR_SUNKENINNER
+    const DWORD EDGE_ETCHED      = 0x0006; // BDR_SUNKENOUTER | BDR_RAISEDINNER
+    const DWORD EDGE_BUMP        = 0x0009; // BDR_RAISEDOUTER | BDR_SUNKENINNER
+
+    // Border flags
+    const DWORD BF_LEFT          = 0x0001;
+    const DWORD BF_TOP           = 0x0002;
+    const DWORD BF_RIGHT         = 0x0004;
+    const DWORD BF_BOTTOM        = 0x0008;
+
+    const DWORD BF_TOPLEFT       = 0x0003; // BF_TOP | BF_LEFT
+    const DWORD BF_TOPRIGHT      = 0x0006; // BF_TOP | BF_RIGHT
+    const DWORD BF_BOTTOMLEFT    = 0x0009; // BF_BOTTOM | BF_LEFT
+    const DWORD BF_BOTTOMRIGHT   = 0x000c; // BF_BOTTOM | BF_RIGHT
+    const DWORD BF_RECT          = 0x000f; // BF_LEFT | BF_TOP | BF_RIGHT | BF_BOTTOM
+
+    const DWORD BF_DIAGONAL      = 0x0010;
+
+    // For diagonal lines, the BF_RECT flags specify the end point of the
+    // vector bounded by the rectangle parameter.
+    const DWORD BF_DIAGONAL_ENDTOPRIGHT      = 0x0016; // BF_DIAGONAL | BF_TOP | BF_RIGHT
+    const DWORD BF_DIAGONAL_ENDTOPLEFT       = 0x0013; // BF_DIAGONAL | BF_TOP | BF_LEFT
+    const DWORD BF_DIAGONAL_ENDBOTTOMLEFT    = 0x0019; // BF_DIAGONAL | BF_BOTTOM | BF_LEFT
+    const DWORD BF_DIAGONAL_ENDBOTTOMRIGHT   = 0x001c; // BF_DIAGONAL | BF_BOTTOM | BF_RIGHT
+
+    const DWORD BF_MIDDLE    = 0x0800;   // Fill in the middle
+    const DWORD BF_SOFT      = 0x1000;   // For softer buttons
+    const DWORD BF_ADJUST    = 0x2000;   // Calculate the space left over
+    const DWORD BF_FLAT      = 0x4000;   // For flat rather than 3D borders
+    const DWORD BF_MONO      = 0x8000;   // For monochrome borders
+
+    [
+    usesgetlasterror,
+    entry("DrawEdge"),
+    helpstring("Draws a 3-D edge on a rectangle according to the given edge and border flags"),
+    ]
+    BOOL WINAPI DrawEdge(HDC hdc, RECT * lprc,
+                         UINT edge, UINT grfFlags);
+
+    // Flags for DrawFrameControl
+
+    const DWORD DFC_CAPTION          = 1;
+    const DWORD DFC_MENU             = 2;
+    const DWORD DFC_SCROLL           = 3;
+    const DWORD DFC_BUTTON           = 4;
+
+    const DWORD DFCS_CAPTIONCLOSE    = 0x0000;
+    const DWORD DFCS_CAPTIONMIN      = 0x0001;
+    const DWORD DFCS_CAPTIONMAX      = 0x0002;
+    const DWORD DFCS_CAPTIONRESTORE  = 0x0003;
+    const DWORD DFCS_CAPTIONHELP     = 0x0004;
+
+    const DWORD DFCS_MENUARROW       = 0x0000;
+    const DWORD DFCS_MENUCHECK       = 0x0001;
+    const DWORD DFCS_MENUBULLET      = 0x0002;
+    const DWORD DFCS_MENUARROWRIGHT  = 0x0004;
+
+    const DWORD DFCS_SCROLLUP        = 0x0000;
+    const DWORD DFCS_SCROLLDOWN      = 0x0001;
+    const DWORD DFCS_SCROLLLEFT      = 0x0002;
+    const DWORD DFCS_SCROLLRIGHT     = 0x0003;
+    const DWORD DFCS_SCROLLCOMBOBOX  = 0x0005;
+    const DWORD DFCS_SCROLLSIZEGRIP  = 0x0008;
+    const DWORD DFCS_SCROLLSIZEGRIPRIGHT = 0x0010;
+
+    const DWORD DFCS_BUTTONCHECK     = 0x0000;
+    const DWORD DFCS_BUTTONRADIOIMAGE =  0x0001;
+    const DWORD DFCS_BUTTONRADIOMASK = 0x0002;
+    const DWORD DFCS_BUTTONRADIO     = 0x0004;
+    const DWORD DFCS_BUTTON3STATE    = 0x0008;
+    const DWORD DFCS_BUTTONPUSH      = 0x0010;
+
+    const DWORD DFCS_INACTIVE        = 0x0100;
+    const DWORD DFCS_PUSHED          = 0x0200;
+    const DWORD DFCS_CHECKED         = 0x0400;
+    const DWORD DFCS_ADJUSTRECT      = 0x2000;
+    const DWORD DFCS_FLAT            = 0x4000;
+    const DWORD DFCS_MONO            = 0x8000;
+
+    [
+    usesgetlasterror,
+    entry("DrawFrameControl"),
+    helpstring("Draws a control frame of a specified type and style"),
+    ]
+    BOOL WINAPI DrawFrameControl(HDC hdc, RECT * lprc,
+                                 UINT uType, UINT uState);
+
+    // Flags for DrawCaption
+    const DWORD DC_ACTIVE        = 0x0001;
+    const DWORD DC_SMALLCAP      = 0x0002;
+    const DWORD DC_ICON          = 0x0004;
+    const DWORD DC_TEXT          = 0x0008;
+    const DWORD DC_INBUTTON      = 0x0010;
+    const DWORD DC_CAPTION       = 0x001C;   // (DC_ICON | DC_TEXT | DC_BUTTONS)
+    const DWORD DC_NC            = 0x001C;   // (DC_CAPTION | DC_FRAME)
+
+    [
+    usesgetlasterror,
+    entry("DrawCaption"),
+    helpstring("Draws a window caption"),
+    ]
+    BOOL WINAPI DrawCaption(HWND hwnd, HDC hdc, RECT * lprc, UINT);
+
+    const DWORD IDANI_OPEN       = 1;
+    const DWORD IDANI_CLOSE      = 2;
+    const DWORD IDANI_CAPTION    = 3;
+
+    [
+    usesgetlasterror,
+    entry("DrawAnimatedRects"),
+    helpstring("Draws a wire-frame rectangle and animates it to indicate opening an icon or minimizing or maximizing a window"),
+    ]
+    BOOL WINAPI DrawAnimatedRects(HWND hwnd, int idAni,
+                                  RECT * lprcFrom,
+                                  RECT * lprcTo);
+
+
+    // Predefined Clipboard Formats
+    const long CF_TEXT          = 1;
+    const long CF_BITMAP        = 2;
+    const long CF_METAFILEPICT  = 3;
+    const long CF_SYLK          = 4;
+    const long CF_DIF           = 5;
+    const long CF_TIFF          = 6;
+    const long CF_OEMTEXT       = 7;
+    const long CF_DIB           = 8;
+    const long CF_PALETTE       = 9;
+    const long CF_PENDATA       = 10;
+    const long CF_RIFF          = 11;
+    const long CF_WAVE          = 12;
+	const long CF_UNICODETEXT      = 13;
+	const long CF_ENHMETAFILE      = 14;
+	const long CF_HDROP            = 15;
+	const long CF_LOCALE           = 16;
+	const long CF_MAX              = 17;
+
+    const DWORD CF_OWNERDISPLAY  = 0x0080;
+    const DWORD CF_DSPTEXT      = 0x0081;
+    const DWORD CF_DSPBITMAP        = 0x0082;
+    const DWORD CF_DSPMETAFILEPICT  = 0x0083;
+
+    // Private formats don't get GlobalFree()'d
+    const DWORD CF_PRIVATEFIRST  = 0x0200;
+    const DWORD CF_PRIVATELAST      = 0x02FF;
+
+    // GDIOBJ formats do get DeleteObject()'d
+    const DWORD CF_GDIOBJFIRST      = 0x0300;
+    const DWORD CF_GDIOBJLAST       = 0x03FF;
+
+	/*
+	// Defines for the fVirt field of the Accelerator table structure.
+	const long FVIRTKEY  = 1; // Assumed to be TRUE ;
+	const DWORD FNOINVERT = 0x02;
+	const DWORD FSHIFT    = 0x04;
+	const DWORD FCONTROL  = 0x08;
+	const DWORD FALT      = 0x10;
+	*/
+
+    const DWORD WPF_SETMINPOSITION      = 0x0001;
+    const DWORD WPF_RESTORETOMAXIMIZED  = 0x0002;
+
+    // ****** Owner draw control support ********
+    // Owner draw control types
+    const long ODT_MENU    = 1;
+    const long ODT_LISTBOX = 2;
+    const long ODT_COMBOBOX    = 3;
+    const long ODT_BUTTON  = 4;
+    const long ODT_STATIC  = 5;
+
+    // Owner draw actions
+    const DWORD ODA_DRAWENTIRE  = 0x0001;
+    const DWORD ODA_SELECT  = 0x0002;
+    const DWORD ODA_FOCUS   = 0x0004;
+
+    // Owner draw state
+    const DWORD ODS_SELECTED    = 0x0001;
+    const DWORD ODS_GRAYED  = 0x0002;
+    const DWORD ODS_DISABLED    = 0x0004;
+    const DWORD ODS_CHECKED = 0x0008;
+    const DWORD ODS_FOCUS   = 0x0010;
+    const DWORD ODS_DEFAULT   = 0x0020;
+    const DWORD ODS_COMBOBOXEDIT   = 0x1000;
+
+	/*
+	// Message Function Templates
+    BOOL    WINAPI GetMessage(MSG *, HWND hwnd, UINT, UINT);
+
+    BOOL    WINAPI TranslateMessage(const MSG *);
+    LONG    WINAPI DispatchMessage(const MSG *);
+
+    BOOL    WINAPI SetMessageQueue(int);
+
+    BOOL    WINAPI PeekMessage(MSG *, HWND hwnd, UINT, UINT, UINT);
+
+	// PeekMessage() Options
+	const DWORD PM_NOREMOVE         = 0x0000;
+	const DWORD PM_REMOVE           = 0x0001;
+	const DWORD PM_NOYIELD          = 0x0002;
+	*/
+
+	/*
+	BOOL WINAPI RegisterHotKey(
+		HWND hWnd,
+		int id,
+		UINT fsModifiers,
+		UINT vk);
+
+	BOOL WINAPI UnregisterHotKey(
+		HWND hWnd,
+		int id);
+
+	const DWORD MOD_ALT         = 0x0001;
+	const DWORD MOD_CONTROL     = 0x0002;
+	const DWORD MOD_SHIFT       = 0x0004;
+	const DWORD MOD_WIN         = 0x0008;
+
+
+	const long IDHOT_SNAPWINDOW        = -1;    // SHIFT-PRINTSCRN  
+	const long IDHOT_SNAPDESKTOP       = -2;    // PRINTSCRN        
+	*/
+
+    // ****** Exit Windows support *******
+
+    [ helpstring("ExitWindows: Restart flag") ]
+    const DWORD EW_RESTARTWINDOWS = 0x42;
+    [ helpstring("ExitWindows: Reboot flag") ]
+    const DWORD EW_REBOOTSYSTEM   = 0x43;
+    const DWORD EW_EXITANDEXECAPP = 0x0044;
+
+    [ helpstring("ExitWindowsEx: Log off flag") ]
+    const DWORD EWX_LOGOFF   = 0x0;
+    [ helpstring("ExitWindowsEx: Shut down flag") ]
+    const DWORD EWX_SHUTDOWN = 0x1;
+    [ helpstring("ExitWindowsEx: Shut down and reboot flag") ]
+    const DWORD EWX_REBOOT   = 0x2;
+    [ helpstring("ExitWindowsEx: Force termination of applications without prompting flag") ]
+    const DWORD EWX_FORCE    = 0x4;
+    [ helpstring("ExitWindowsEx: Shut down and power off flag") ]
+    const DWORD EWX_POWEROFF = 0x8;
+
+	//define ExitWindows(dwReserved, Code) ExitWindowsEx(EWX_LOGOFF, 0xFFFFFFFF)
+
+    [
+    usesgetlasterror,
+    entry("ExitWindowsEx"),
+    helpstring("Exit from Windows, restarting or rebooting"),
+    ]
+    BOOL    WINAPI ExitWindowsEx(UINT uFlags, DWORD dwReserved);
+
+    [
+    usesgetlasterror,
+    entry("SwapMouseButton"),
+    helpstring("Reverses or restores the meaning of the left and right mouse buttons"),
+    ]
+    BOOL    WINAPI SwapMouseButton(BOOL);
+
+	/*
+    DWORD   WINAPI GetMessagePos(void);
+    LONG    WINAPI GetMessageTime(void);
+    LONG / LPARAM / WINAPI GetMessageExtraInfo(void);
+	LPARAM WINAPI SetMessageExtraInfo(LPARAM lParam);
+	*/
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("SendMessageW"),
+	#else
+    entry("SendMessageA"),
+	#endif
+    helpstring("Sends a Windows message by reference as anything")
+    ]
+    LRESULT WINAPI SendMessage(HWND hwnd, UINT uMsg,
+                               LPVOID wParam, LPVOID lParam);
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("SendMessageW"),
+	#else
+    entry("SendMessageA"),
+	#endif
+    helpstring("Sends a Windows message by value as anything")
+    ]
+    LRESULT WINAPI SendMessageVal(HWND hwnd, UINT uMsg,
+                                  VOID wParam, VOID lParam);
+   
+	//@B SendMessages
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("SendMessageW"),
+	#else
+    entry("SendMessageA"),
+	#endif
+    helpstring("Sends a Windows message (LPARAM as String)")
+    ]
+    LRESULT WINAPI SendMessageStr(HWND hwnd, UINT uMsg,
+                                  WPARAM wParam, LPTSTR lParam);
+
+	/*
+	LRESULT WINAPI SendMessageTimeout(HWND hWnd, UINT Msg,
+									  WPARAM wParam, LPARAM lParam, 
+									  UINT fuFlags, UINT uTimeout, 
+									  LPDWORD lpdwResult);
+
+	BOOL WINAPI SendNotifyMessage(
+		HWND hWnd,
+		UINT Msg,
+		WPARAM wParam,
+		LPARAM lParam);
+
+	BOOL WINAPI SendMessageCallback(
+		HWND hWnd,
+		UINT Msg,
+		WPARAM wParam,
+		LPARAM lParam,
+		SENDASYNCPROC lpResultCallBack,
+		DWORD dwData);
+
+	long  WINAPI  BroadcastSystemMessage(DWORD, LPDWORD, UINT, WPARAM, LPARAM);
+
+	// Broadcast Special Message Recipient list
+	const DWORD BSM_ALLCOMPONENTS       = 0x00000000;
+	const DWORD BSM_VXDS                = 0x00000001;
+	const DWORD BSM_NETDRIVER           = 0x00000002;
+	const DWORD BSM_INSTALLABLEDRIVERS  = 0x00000004;
+	const DWORD BSM_APPLICATIONS        = 0x00000008;
+	const DWORD BSM_ALLDESKTOPS         = 0x00000010;
+
+	// Broadcast Special Message Flags
+	const DWORD BSF_QUERY               = 0x00000001;
+	const DWORD BSF_IGNORECURRENTTASK   = 0x00000002;
+	const DWORD BSF_FLUSHDISK           = 0x00000004;
+	const DWORD BSF_NOHANG              = 0x00000008;
+	const DWORD BSF_POSTMESSAGE         = 0x00000010;
+	const DWORD BSF_FORCEIFHUNG         = 0x00000020;
+	const DWORD BSF_NOTIMEOUTIFNOTHUNG  = 0x00000040;
+
+	const DWORD BROADCAST_QUERY_DENY    = 0x424D5144;  // Return this value to deny a query.
+	*/
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("PostMessageW"),
+	#else
+    entry("PostMessageA"),
+	#endif
+    helpstring("Posts message to window queue by reference as anything")
+    ]
+    BOOL    WINAPI PostMessage(HWND hwnd, UINT uMsg,
+                               LPVOID wParam, LPVOID lParam);
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("PostMessageW"),
+	#else
+    entry("PostMessageA"),
+	#endif
+    helpstring("Posts message to window queue by value as anything")
+    ]
+    BOOL    WINAPI PostMessageVal(HWND hwnd, UINT uMsg,
+                                  VOID wParam, VOID lParam);
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("PostMessageW"),
+	#else
+    entry("PostMessageA"),
+	#endif
+    helpstring("Posts message to window queue (LPARAM as String)")
+    ]
+    BOOL    WINAPI PostMessageStr(HWND hwnd, UINT uMsg,
+                                  WPARAM wParam, LPTSTR lParam);
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("PostThreadMessageW"),
+	#else
+    entry("PostThreadMessageA"),
+	#endif
+    helpstring("Posts message to thread queue by reference as anything")
+    ]
+    BOOL WINAPI PostThreadMessage(DWORD idThread, UINT Msg,
+                                  LPVOID wParam, LPVOID lParam);
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("PostThreadMessageW"),
+	#else
+    entry("PostThreadMessageA"),
+	#endif
+    helpstring("Posts message to thread queue by value as anything")
+    ]
+    BOOL    WINAPI PostThreadMessageVal(DWORD idThread, UINT uMsg,
+                                        VOID wParam, VOID lParam);
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("PostThreadMessageW"),
+	#else
+    entry("PostThreadMessageA"),
+	#endif
+    helpstring("Posts message to thread queue (LPARAM as String)")
+    ]
+    BOOL    WINAPI PostThreadMessageStr(DWORD idThread, UINT uMsg,
+                                        WPARAM wParam, LPTSTR lParam);
+
+	//define PostAppMessage(idThread, wMsg, wParam, lParam)
+    //       PostThreadMessage((DWORD)idThread, wMsg, wParam, lParam)
+
+	// Special HWND value for use with PostMessage() and SendMessage()
+    const DWORD HWND_BROADCAST  = 0xffff;
+
+	[
+	usesgetlasterror,
+	entry("AttachThreadInput"),
+	helpstring("Attaches the input processing mechanism of one thread to that of another thread")
+    ]
+	BOOL WINAPI AttachThreadInput(DWORD idAttach,	
+								  DWORD idAttachTo, BOOL fAttach);
+
+	/*
+    void WINAPI ReplyMessage(LRESULT);
+    void WINAPI WaitMessage(void);
+	DWORD WINAPI WaitForInputIdle(HANDLE hProcess, DWORD dwMilliseconds);
+    LRESULT WINAPI DefWindowProc(HWND hwnd, UINT, WPARAM, LPARAM);
+	*/
+
+    [
+    usesgetlasterror,
+    entry("PostQuitMessage"),
+    helpstring("Indicates that a thread has made a request to terminate")
+    ]
+    VOID WINAPI PostQuitMessage(int nExitCode);
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("CallWindowProcW"),
+    #else
+    entry("CallWindowProcA"),
+    #endif
+    helpstring("Passes message information to a specified window procedure"),
+    ]
+    LRESULT WINAPI CallWindowProc(WNDPROC lpPrevWndFunc,
+                                  HWND hwnd, UINT Msg,
+                                  WPARAM wParam, LPARAM lParam);
+	/*
+    BOOL    WINAPI InSendMessage(void);
+	*/
+
+    [
+    usesgetlasterror,
+    entry("GetDoubleClickTime"),
+    helpstring("Get current double-click time for the mouse"),
+    ]
+    UINT    WINAPI GetDoubleClickTime(void);
+
+    [
+    usesgetlasterror,
+    entry("SetDoubleClickTime"),
+    helpstring("Sets double-click time for the mouse"),
+    ]
+    void    WINAPI SetDoubleClickTime(UINT uInterval);
+	
+	/*
+    ATOM    WINAPI RegisterClass(const WNDCLASS *);
+    BOOL    WINAPI UnregisterClass(LPCTSTR, HINSTANCE hInst);
+    BOOL    WINAPI GetClassInfo(HINSTANCE hInst, LPCTSTR, WNDCLASS *);
+	ATOM    WINAPI RegisterClassExA(WNDCLASSEX *);
+	BOOL	WINAPI GetClassInfoExA(HINSTANCE, LPCSTR, LPWNDCLASSEX);
+
+	*/
+
+    const DWORD CW_USEDEFAULT           = 0x80000000;
+
+    // Special value for CreateWindow, et al.
+    const long HWND_DESKTOP             = 0;
+
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("CreateWindowExW"),
+    #else
+    entry("CreateWindowExA"),
+    #endif
+    helpstring("Creates an overlapped, pop-up, or child window with an extended style"),
+    ]
+    HWND WINAPI CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, 
+							   LPCTSTR lpWindowName, DWORD dwStyle, 
+							   int x, int y, int nWidth, int nHeight, 
+							   HWND hWndParent, HMENU hMenu, 
+							   HINSTANCE hInstance, LPVOID lpParam);
+
+	/*
+	define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, 
+	  				     nWidth, nHeight, hWndParent, hMenu, 
+						 hInstance, lpParam)
+		   CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y,
+						   nWidth, nHeight, hWndParent, hMenu, 
+						   hInstance, lpParam)
+	*/
+
+    [
+    usesgetlasterror,
+    entry("IsWindow"),
+    helpstring("Tells whether a window handle is valid")
+    ]
+    BOOL    WINAPI IsWindow(HWND hwnd);
+
+    [
+    usesgetlasterror,
+    entry("IsMenu"),
+    helpstring("Tells whether a handle is a menu handle")
+    ]
+    BOOL    WINAPI IsMenu(HMENU hmenu);
+
+    [
+    usesgetlasterror,
+    entry("IsChild"),
+    helpstring("Tells whether the given child window is the child of the given parent window")
+    ]
+    BOOL    WINAPI IsChild(HWND hwndParent, HWND hwndChild);
+
+    [
+    usesgetlasterror,
+    entry("DestroyWindow"),
+    helpstring("Destroys the specified window")
+    ]
+    BOOL    WINAPI DestroyWindow(HWND hwnd);
+
+    [
+    usesgetlasterror,
+    entry("ShowWindow"),
+    helpstring("Sets a window's visibility state (see SW_ constants)")
+    ]
+    BOOL    WINAPI ShowWindow(HWND hwnd, ESW nCmdShow);
+
+    [
+    usesgetlasterror,
+    entry("ShowWindowAsync"),
+    helpstring("Sets the show state of a window created by a different thread (see SW_ constants)")
+    ]
+	BOOL	WINAPI ShowWindowAsync(HWND hWnd, ESW nCmdShow);
+
+    [
+    usesgetlasterror,
+    entry("FlashWindow"),
+    helpstring("Flashes or unflashes a given window depending on fInvert")
+    ]
+    BOOL    WINAPI FlashWindow(HWND hwnd, BOOL fInvert);
+
+    [
+    usesgetlasterror,
+    entry("ShowOwnedPopups"),
+    helpstring("Shows or hides all pop-up windows owned by the specified window")
+    ]
+    void    WINAPI ShowOwnedPopups(HWND hwnd, BOOL fShow);
+
+	/*	
+    BOOL    WINAPI OpenIcon(HWND hwnd);
+    void    WINAPI CloseWindow(HWND hwnd);
+	*/
+
+    [
+    usesgetlasterror,
+    entry("MoveWindow"),
+    helpstring("Changes the position and dimensions of the specified window"),
+    ]
+    BOOL    WINAPI MoveWindow(HWND hWnd, 
+							  int x, int y, 
+							  int nWidth, int nHeight, 
+							  BOOL bRepaint);
+    [
+    usesgetlasterror,
+    entry("SetWindowPos"),
+    helpstring("Changes the window size, position, and z-order of a window")
+    ]
+    BOOL    WINAPI SetWindowPos(HWND hwnd, HWND hwndInsertAfter,
+                                int x, int y,
+                                int cx, int cy,
+                                UINT fuFlags);
+
+    [
+    usesgetlasterror,
+    entry("GetWindowPlacement"),
+    helpstring("Gets the show state and the restored, minimized, and maximized positions of the specified window")
+    ]
+    BOOL    WINAPI GetWindowPlacement(HWND hwnd, WINDOWPLACEMENT * lpwndpl);
+
+    [
+    usesgetlasterror,
+    entry("SetWindowPlacement"),
+    helpstring("Sets the show state and the restored, minimized, and maximized positions of the specified window")
+    ]
+    BOOL WINAPI SetWindowPlacement(HWND hwnd, WINDOWPLACEMENT * lpwndpl);
+
+    [
+    usesgetlasterror,
+    entry("BeginDeferWindowPos"),
+    helpstring("Allocates memory for a multiple-window-position structure and returns the handle to the structure"),
+    ]
+    HDWP    WINAPI BeginDeferWindowPos(int nNumWindows);
+
+    [
+    usesgetlasterror,
+    entry("DeferWindowPos"),
+    helpstring("Updates the specified multiple-window-position structure for the specified window"),
+    ]
+    HDWP    WINAPI DeferWindowPos(HDWP hWinPosInfo, 
+								  HWND hWnd, 
+								  HWND hWndInsertAfter, 
+								  int x, int y, 
+								  int cx, int cy, 
+								  UINT uFlags);
+
+    [
+    usesgetlasterror,
+    entry("EndDeferWindowPos"),
+    helpstring("Updates the position and size of one or more windows in a single screen-refreshing cycle"),
+    ]
+    BOOL    WINAPI EndDeferWindowPos(HDWP hWinPosInfo);
+
+    [
+    usesgetlasterror,
+    entry("IsWindowVisible"),
+    helpstring("Tells whether a window is visible")
+    ]
+    BOOL    WINAPI IsWindowVisible(HWND hwnd);
+    
+    [
+    usesgetlasterror,
+    entry("IsIconic"),
+    helpstring("Tells whether a window is minimized")
+    ]
+    BOOL    WINAPI IsIconic(HWND hwnd);
+
+    // Obsolete functions
+	/*
+	BOOL    WINAPI AnyPopup(void);
+	*/
+	
+	[
+    usesgetlasterror,
+    entry("BringWindowToTop"),
+    helpstring("Brings the specified window to the top of the Z order"),
+    ]
+    BOOL    WINAPI BringWindowToTop(HWND hWnd);
+
+    [
+    usesgetlasterror,
+    entry("IsZoomed"),
+    helpstring("Tells whether a window is maximized"),
+	helpcontext(357)
+    ]
+    BOOL    WINAPI IsZoomed(HWND hwnd);
+
+
+    // SetWindowPos() and WINDOWPOS flags
+    [ helpstring("SetWindowPos: Retain size (ignore cx and cy)") ]
+    const DWORD SWP_NOSIZE      = 0x0001;
+    [ helpstring("SetWindowPos: Retain size (ignore x and y)") ]
+    const DWORD SWP_NOMOVE      = 0x0002;
+    [ helpstring("SetWindowPos: Retain z-order (ignore hwndInsertAfter)") ]
+    const DWORD SWP_NOZORDER        = 0x0004;
+    [ helpstring("SetWindowPos: Don't redraw window") ]
+    const DWORD SWP_NOREDRAW        = 0x0008;
+    [ helpstring("SetWindowPos: Don't activate window") ]
+    const DWORD SWP_NOACTIVATE      = 0x0010;
+    [ helpstring("SetWindowPos: Send WM_NCCALCSIZE") ]
+    const DWORD SWP_FRAMECHANGED    = 0x0020; // The frame changed: send WM_NCCALCSIZE
+    [ helpstring("SetWindowPos: Display window") ]
+    const DWORD SWP_SHOWWINDOW      = 0x0040;
+    [ helpstring("SetWindowPos: Hide window") ]
+    const DWORD SWP_HIDEWINDOW      = 0x0080;
+    [ helpstring("SetWindowPos: Don't copy bits of client area") ]
+    const DWORD SWP_NOCOPYBITS      = 0x0100;
+    [ helpstring("SetWindowPos: Don't do owner z-ordering") ]
+    const DWORD SWP_NOOWNERZORDER   = 0x0200; // Don't do owner Z ordering
+    const DWORD SWP_NOSENDCHANGING  = 0x0400;
+
+    [ helpstring("SetWindowPos: Draw frame around window") ]
+    const DWORD SWP_DRAWFRAME       = 0x0020;
+    [ helpstring("SetWindowPos: Don't do owner z-ordering") ]
+    const DWORD SWP_NOREPOSITION    = 0x0200;
+
+    const DWORD SWP_DEFERERASE      = 0x2000;
+    const DWORD SWP_ASYNCWINDOWPOS  = 0x4000;
+
+    // SetWindowPos() hwndInsertAfter field values
+    [ helpstring("SetWindowPos: Put at top of z-order") ]
+    const long HWND_TOP            = 0;
+    [ helpstring("SetWindowPos: Put at bottom of z-order") ]
+    const long HWND_BOTTOM         = 1;
+    [ helpstring("SetWindowPos: Put above all non-topmost windows in z-order") ]
+    const long HWND_TOPMOST        = -1;
+    [ helpstring("SetWindowPos: Put at top non-topmost windows in z-order") ]
+    const long HWND_NOTOPMOST      = -2;
+
+	/*
+    HWND    WINAPI CreateDialogParam(HINSTANCE hInst, LPCTSTR, HWND hwnd, DLGPROC, LPARAM lParam);
+    HWND    WINAPI CreateDialogIndirectParam(HINSTANCE hInst, const void *, HWND hwnd, DLGPROC, LPARAM lParam);
+    int     WINAPI DialogBoxParam(HINSTANCE hInst, LPCTSTR, HWND hwnd, DLGPROC, LPARAM lParam);
+    int     WINAPI DialogBoxIndirectParam(HINSTANCE hInst, HGLOBAL, HWND hwnd, DLGPROC, LPARAM lParam);
+    BOOL    WINAPI EndDialog(HWND hwnd, int);
+	*/
+
+    [
+    usesgetlasterror,
+    entry("GetDlgItem"),
+    helpstring("Gets a Dialog item"),
+    ]
+    HWND    WINAPI GetDlgItem(HWND hWnd, int nIDDlgItem);
+    
+	/*
+    BOOL	WINAPI SetDlgItemInt(HWND hwnd, int, UINT, BOOL);
+    UINT    WINAPI GetDlgItemInt(HWND hwnd, int, BOOL * , BOOL);
+	*/
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("SetDlgItemTextW"),
+    #else
+    entry("SetDlgItemTextA"),
+    #endif
+    helpstring("Sets the caption of a dialog item"),
+    ]
+    BOOL    WINAPI SetDlgItemText(HWND hwnd, int nIDDlgItem, LPCTSTR lpString);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetDlgItemTextW"),
+    #else
+    entry("GetDlgItemTextA"),
+    #endif
+    helpstring("Gets the caption of a dialog item"),
+    ]
+    UINT    WINAPI GetDlgItemText(HWND hwnd, int nIDDlgItem, LPTSTR lpString, int nMaxCount);
+
+    [
+    usesgetlasterror,
+    entry("CheckDlgButton"),
+    helpstring("Sets a button (option)"),
+    ]
+    BOOL    WINAPI CheckDlgButton(HWND hwnd, int nIDButton, UINT wCheck);
+    
+    [
+    usesgetlasterror,
+    entry("CheckRadioButton"),
+    helpstring("Adds a check mark to (checks) a specified radio button in a group and removes a check mark from (clears) all other radio buttons in the group"),
+    ]
+	BOOL    WINAPI CheckRadioButton(HWND hwnd, int nIDFirstButton, int nIDLastButton, int nIDCheckButton);
+
+    [
+    usesgetlasterror,
+    entry("IsDlgButtonChecked"),
+    helpstring("is the option button checked?"),
+    ]
+    UINT    WINAPI IsDlgButtonChecked(HWND hwnd, int nIDButton);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("SendDlgItemMessageW"),
+    #else
+    entry("SendDlgItemMessageA"),
+    #endif
+    helpstring("Send message to dialog item"),
+    ]
+    LRESULT WINAPI SendDlgItemMessage(HWND hwnd, int nIDDlgItem, UINT wMsg, WPARAM wParam, int lParam);
+
+	/*
+    HWND    WINAPI GetNextDlgGroupItem(HWND hWnd, HWND hWnd, BOOL);
+    HWND    WINAPI GetNextDlgTabItem(HWND hWnd, HWND hWnd, BOOL);
+    int     WINAPI GetDlgCtrlID(HWND);
+    DWORD   WINAPI GetDialogBaseUnits(void);
+    LRESULT WINAPI DefDlgProc(HWND hwnd, UINT, WPARAM, LPARAM lParam);
+	// Window extra byted needed for private dialog classes.
+    const long DLGWINDOWEXTRA  = 30;
+
+	BOOL WINAPI CallMsgFilter(LPMSG lpMsg, int nCode);
+
+
+	*/
+
+	// Clipboard Manager Functions
+    /*
+    BOOL    WINAPI OpenClipboard(HWND hwnd);
+    BOOL    WINAPI CloseClipboard(void);
+    HWND    WINAPI GetClipboardOwner(void);
+    HWND    WINAPI SetClipboardViewer(HWND);
+    HWND    WINAPI GetClipboardViewer(void);
+    BOOL    WINAPI ChangeClipboardChain(HWND hwnd, HWND hwnd);
+    HANDLE  WINAPI SetClipboardData(UINT, HANDLE);
+    HANDLE  WINAPI GetClipboardData(UINT);
+	*/
+    
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("RegisterClipboardFormatW"),
+    #else
+    entry("RegisterClipboardFormatA"),
+    #endif
+    helpstring("Registers a new clipboard format"),
+    ]
+	UINT    WINAPI RegisterClipboardFormat(LPCTSTR lpszFormat);
+
+	/*
+    int     WINAPI CountClipboardFormats(void);
+    UINT    WINAPI EnumClipboardFormats(UINT);
+    int     WINAPI GetClipboardFormatName(UINT, LPTSTR, int);
+    BOOL    WINAPI EmptyClipboard(void);
+    BOOL    WINAPI IsClipboardFormatAvailable(UINT);
+    int     WINAPI GetPriorityClipboardFormat(UINT *, int);
+    HWND    WINAPI GetOpenClipboardWindow(void);
+    */
+
+	// Character Translation Routines
+
+	/*
+	BOOL WINAPI CharToOemAW(LPCSTR lpszSrc, LPSTR lpszDst);
+	BOOL WINAPI OemToCharAW(LPCSTR lpszSrc, LPSTR lpszDst);
+
+	BOOL WINAPI CharToOemBuffAW(LPCSTR lpszSrc, LPSTR lpszDst,
+							    DWORD cchDstLength);
+
+	BOOL WINAPI OemToCharBuffAW(LPCSTR lpszSrc, LPSTR lpszDst,
+								DWORD cchDstLength);
+	LPSTR WINAPI CharUpperAW(LPSTR lpsz);
+	LPSTR WINAPI CharLowerAW(LPSTR lpsz);
+	*/
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("CharUpperBuffW"),
+    #else
+    entry("CharUpperBuffA"),
+    #endif
+    helpstring("Converts lowercase characters in a buffer to uppercase characters in place"),
+    ]
+	DWORD WINAPI CharUpperBuff(LPTSTR lpsz, DWORD cchLength);
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("CharUpperBuffW"),
+    #else
+    entry("CharUpperBuffA"),
+    #endif
+    helpstring("Converts lowercase characters in a buffer to uppercase characters in place"),
+    ]
+	DWORD WINAPI CharUpperBuffPtr(PTR lpsz, DWORD cchLength);
+
+	[
+    usesgetlasterror,
+    entry("CharUpperBuffA"),
+    helpstring("Converts lowercase characters in a byte buffer to uppercase characters in place"),
+    ]
+	DWORD WINAPI CharUpperBuffB(BYTE * lpsz, DWORD cchLength);
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("CharLowerBuffW"),
+    #else
+    entry("CharLowerBuffA"),
+    #endif
+    helpstring("Converts uppercase characters in a buffer to lowercase characters in place"),
+    ]
+	DWORD WINAPI CharLowerBuff(LPTSTR lpsz, DWORD cchLength);
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("CharLowerBuffW"),
+    #else
+    entry("CharLowerBuffA"),
+    #endif
+    helpstring("Converts uppercase characters in a buffer to lowercase characters in place"),
+    ]
+	DWORD WINAPI CharLowerBuffPtr(PTR lpsz, DWORD cchLength);
+
+	[
+    usesgetlasterror,
+    entry("CharLowerBuffA"),
+    helpstring("Converts uppercase characters in a byte buffer to lowercase characters in place"),
+    ]
+	DWORD WINAPI CharLowerBuffB(BYTE * lpsz, DWORD cchLength);
+	
+	/*
+	LPSTR WINAPI CharNextAW(LPCSTR lpsz);
+	LPSTR WINAPI CharPrevAW(LPCSTR lpszStart, LPCSTR lpszCurrent);
+	LPSTR WINAPI CharNextExAW(WORD CodePage, LPCSTR lpCurrentChar,
+							  DWORD dwFlags);
+	LPSTR WINAPI CharPrevExAW(WORD CodePage, LPCSTR lpStart,
+							  LPCSTR lpCurrentChar, DWORD dwFlags);
+	*/
+
+	// Compatibility defines for character translation routines
+	//define AnsiToOem CharToOemA
+	//define OemToAnsi OemToCharA
+	//define AnsiToOemBuff CharToOemBuffA
+	//define OemToAnsiBuff OemToCharBuffA
+	//define AnsiUpper CharUpperA
+	//define AnsiUpperBuff CharUpperBuffA
+	//define AnsiLower CharLowerA
+	//define AnsiLowerBuff CharLowerBuffA
+	//define AnsiNext CharNextA
+	//define AnsiPrev CharPrevA
+
+	// Language dependent Routines
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("IsCharAlphaW"),
+    #else
+    entry("IsCharAlphaA"),
+    #endif
+    helpstring("Determines whether a character is an alphabetic character"),
+    ]
+	BOOL WINAPI IsCharAlpha(TCHAR ch);
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("IsCharAlphaNumericW"),
+    #else
+    entry("IsCharAlphaNumericA"),
+    #endif
+    helpstring("Determines whether a character is either an alphabetic or a numeric character"),
+    ]
+	BOOL WINAPI IsCharAlphaNumeric(TCHAR ch);
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("IsCharUpperW"),
+    #else
+    entry("IsCharUpperA"),
+    #endif
+    helpstring("Determines whether a character is uppercase"),
+    ]
+	BOOL WINAPI IsCharUpper(TCHAR ch);
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("IsCharLowerW"),
+    #else
+    entry("IsCharLowerA"),
+    #endif
+    helpstring("Determines whether a character is lowercase"),
+    ]
+	BOOL WINAPI IsCharLower(TCHAR ch);
+
+    [
+    usesgetlasterror,
+    entry("SetFocus"),
+    helpstring("Sets keyboard input focus to given window, returning previous focus window if successful"),
+    ]
+    HWND    WINAPI SetFocus(HWND hwnd);
+
+    [
+    usesgetlasterror,
+    entry("GetActiveWindow"),
+    helpstring("Gets the handle of the active window"),
+    ]
+    HWND    WINAPI GetActiveWindow(void);
+
+    [
+    usesgetlasterror,
+    entry("GetFocus"),
+    helpstring("Returns handle of window with keyboard input focus"),
+    ]
+    HWND    WINAPI GetFocus(void);
+
+	// UINT WINAPI GetKBCodePage(VOID);
+
+    [
+    usesgetlasterror,
+    entry("GetKeyState"),
+    helpstring("Gets state of a Windows virtual keys"),
+    ]
+    short WINAPI GetKeyState(int nKeyState);
+
+    [
+    usesgetlasterror,
+    entry("GetAsyncKeyState"),
+    helpstring("Gets asynchronouse state of a Windows virtual keys"),
+    ]
+    short WINAPI GetAsyncKeyState(int nKeyState);
+
+    [
+    usesgetlasterror,
+    entry("GetKeyboardState"),
+    helpstring("Gets an array of 256 bytes representing the state of Windows virtual keys"),
+    ]
+    void    WINAPI GetKeyboardState(BYTE * lpbKeyState);
+
+    [
+    usesgetlasterror,
+    entry("SetKeyboardState"),
+    helpstring("Sets an array of 256 bytes representing the state of Windows virtual keys"),
+    ]
+    void    WINAPI SetKeyboardState(BYTE * lpbKeyState);
+
+	/*
+	int WINAPI GetKeyNameText(LONG lParam, LPTSTR lpString, int nSize);
+	int WINAPI GetKeyboardType(int nTypeFlag);
+	*/
+
+	/*
+	int WINAPI ToAscii(UINT uVirtKey, UINT uScanCode, 
+					   PBYTE lpKeyState, LPWORD lpChar, 
+					   UINT uFlags);
+
+	int WINAPI ToAsciiEx(UINT uVirtKey, UINT uScanCode,
+						 PBYTE lpKeyState, LPWORD lpChar, 
+						 UINT uFlags, HKL dwhkl);
+
+	int WINAPI ToUnicode(UINT wVirtKey, UINT wScanCode, 
+						 PBYTE lpKeyState, LPWSTR pwszBuff, 
+						 int cchBuff, UINT wFlags);
+
+	DWORD WINAPI OemKeyScan(WORD wOemChar);
+
+	SHORT WINAPI VkKeyScan(TCHAR ch);
+	SHORT WINAPI VkKeyScanEx(TCHAR  ch, HKL   dwhkl);
+
+	const DWORD KEYEVENTF_EXTENDEDKEY = 0x0001;
+	const DWORD KEYEVENTF_KEYUP       = 0x0002;
+
+	VOID WINAPI keybd_event(BYTE bVk, BYTE bScan, DWORD dwFlags, DWORD dwExtraInfo);
+
+	const DWORD MOUSEEVENTF_MOVE        = 0x0001; // mouse move 
+	const DWORD MOUSEEVENTF_LEFTDOWN    = 0x0002; // left button down 
+	const DWORD MOUSEEVENTF_LEFTUP      = 0x0004; // left button up 
+	const DWORD MOUSEEVENTF_RIGHTDOWN   = 0x0008; // right button down 
+	const DWORD MOUSEEVENTF_RIGHTUP     = 0x0010; // right button up 
+	const DWORD MOUSEEVENTF_MIDDLEDOWN  = 0x0020; // middle button down 
+	const DWORD MOUSEEVENTF_MIDDLEUP    = 0x0040; // middle button up 
+	const DWORD MOUSEEVENTF_WHEEL       = 0x0800; // wheel button rolled 
+	const DWORD MOUSEEVENTF_ABSOLUTE    = 0x8000; // absolute move 
+
+	VOID WINAPI mouse_event(DWORD dwFlags, DWORD dx, DWORD dy, DWORD dwData, DWORD dwExtraInfo);
+
+	UINT WINAPI MapVirtualKey(UINT uCode, UINT uMapType);
+	UINT WINAPI MapVirtualKeyEx(UINT uCode, UINT uMapType, HKL dwhkl);
+
+    BOOL    WINAPI GetInputState(void);
+    DWORD   WINAPI GetQueueStatus(UINT flags);
+
+	*/
+
+    [
+    usesgetlasterror,
+    entry("GetCapture"),
+    helpstring("Gets the window handle (if any) that owns mouse capture"),
+    ]
+    HWND    WINAPI GetCapture(void);
+
+    [
+    usesgetlasterror,
+    entry("SetCapture"),
+    helpstring("Sets capture of all mouse events regardless of cursor position to the given window"),
+    ]
+    HWND    WINAPI SetCapture(HWND hwnd);
+
+    [
+    usesgetlasterror,
+    entry("ReleaseCapture"),
+    helpstring("Releases mouse capture and restores normal mouse input processing"),
+    ]
+    BOOL WINAPI ReleaseCapture(void);
+	
+	/*
+	DWORD WINAPI MsgWaitForMultipleObjects(
+		DWORD nCount,
+		LPHANDLE pHandles,
+		BOOL fWaitAll,
+		DWORD dwMilliseconds,
+		DWORD dwWakeMask);
+
+	DWORD WINAPI MsgWaitForMultipleObjectsEx(
+		DWORD nCount,
+		LPHANDLE pHandles,
+		DWORD dwMilliseconds,
+		DWORD dwWakeMask,
+		DWORD dwFlags);
+
+	const DWORD MWMO_WAITALL      = 0x0001;
+	const DWORD MWMO_ALERTABLE    = 0x0002;
+
+	// Queue status flags for GetQueueStatus() and MsgWaitForMultipleObjects()
+
+    // GetQueueStatus flags
+    const DWORD QS_KEY          = 0x0001;
+    const DWORD QS_MOUSEMOVE    = 0x0002;
+    const DWORD QS_MOUSEBUTTON  = 0x0004;
+    const DWORD QS_POSTMESSAGE  = 0x0008;
+    const DWORD QS_TIMER        = 0x0010;
+    const DWORD QS_PAINT        = 0x0020;
+    const DWORD QS_SENDMESSAGE  = 0x0040;
+    const DWORD QS_HOTKEY       = 0x0080;
+    const DWORD QS_ALLPOSTMESSAGE  = 0x0100;
+
+    const DWORD QS_MOUSE        = 0x0006; // (QS_MOUSEMOVE | QS_MOUSEBUTTON)
+    const DWORD QS_INPUT		= 0x0007;   // (QS_MOUSE | QS_KEY)
+    const DWORD QS_ALLEVENTS  = 0x000Bf;  // (QS_INPUT | QS_POSTMESSAGE | QS_TIMER | QS_PAINT | QS_HOTKEY)
+    const DWORD QS_ALLINPUT	= 0x000ff;  // (QS_INPUT | QS_POSTMESSAGE | QS_TIMER | QS_PAINT | QS_HOTKEY | QS_SENDMESSAGE)
+
+	*/
+
+    // ****** Timer support ********
+
+    [
+    usesgetlasterror,
+    entry("SetTimer"),
+    helpstring("Creates a timer with the specified time-out value"),
+    ]
+    UINT    WINAPI SetTimer(HWND hWnd, UINT nIDEvent, 
+							UINT uElapse, TIMERPROC lpTimerFunc);
+
+    [
+    usesgetlasterror,
+    entry("KillTimer"),
+    helpstring("Destroys the specified timer"),
+    ]
+    BOOL    WINAPI KillTimer(HWND hWnd, UINT uIDEvent);
+
+	/*
+	BOOL WINAPI IsWindowUnicode(HWND hWnd);
+	*/
+
+    // Enabled state
+
+    [
+    usesgetlasterror,
+    entry("EnableWindow"),
+    helpstring("Enables or disables a window")
+    ]
+    BOOL    WINAPI EnableWindow(HWND hwnd, BOOL fEnable);
+
+    [
+    usesgetlasterror,
+    entry("IsWindowEnabled"),
+    helpstring("Tells whether a window is enabled or disabled")
+    ]
+    BOOL    WINAPI IsWindowEnabled(HWND hwnd);
+
+    // ****** Accelerator support ******
+
+    /*
+
+	HACCEL WINAPI LoadAccelerators(HINSTANCE hInst, LPCTSTR);
+	HACCEL WINAPI CreateAcceleratorTable(LPACCEL, int);
+	BOOL WINAPI DestroyAcceleratorTable(HACCEL hAccel);
+	int WINAPI CopyAcceleratorTable(HACCEL hAccelSrc, LPACCEL lpAccelDst,
+									int cAccelEntries);
+    int     WINAPI TranslateAccelerator(HWND hWnd, HACCEL hAccTable,
+										LPMSG lpMsg);
+    */
+
+    // ****** System Metrics ********
+
+    // GetSystemMetrics() codes
+    const long SM_CXSCREEN     = 0;
+    const long SM_CYSCREEN     = 1;
+    const long SM_CXVSCROLL        = 2;
+    const long SM_CYHSCROLL        = 3;
+    const long SM_CYCAPTION        = 4;
+    const long SM_CXBORDER     = 5;
+    const long SM_CYBORDER     = 6;
+    const long SM_CXDLGFRAME   = 7;
+    const long SM_CYDLGFRAME   = 8;
+    const long SM_CYVTHUMB     = 9;
+    const long SM_CXHTHUMB     = 10;
+    const long SM_CXICON       = 11;
+    const long SM_CYICON       = 12;
+    const long SM_CXCURSOR     = 13;
+    const long SM_CYCURSOR     = 14;
+    const long SM_CYMENU           = 15;
+    const long SM_CXFULLSCREEN = 16;
+    const long SM_CYFULLSCREEN = 17;
+    const long SM_CYKANJIWINDOW    = 18;
+    const long SM_MOUSEPRESENT = 19;
+    const long SM_CYVSCROLL        = 20;
+    const long SM_CXHSCROLL        = 21;
+    const long SM_DEBUG            = 22;
+    const long SM_SWAPBUTTON   = 23;
+    const long SM_RESERVED1        = 24;
+    const long SM_RESERVED2        = 25;
+    const long SM_RESERVED3        = 26;
+    const long SM_RESERVED4        = 27;
+    const long SM_CXMIN            = 28;
+    const long SM_CYMIN            = 29;
+    const long SM_CXSIZE           = 30;
+    const long SM_CYSIZE           = 31;
+    const long SM_CXFRAME      = 32;
+    const long SM_CYFRAME      = 33;
+    const long SM_CXMINTRACK   = 34;
+    const long SM_CYMINTRACK   = 35;
+
+    const long SM_CXDOUBLECLK  = 36;
+    const long SM_CYDOUBLECLK  = 37;
+    const long SM_CXICONSPACING    = 38;
+    const long SM_CYICONSPACING    = 39;
+    const long SM_MENUDROPALIGNMENT = 40;
+    const long SM_PENWINDOWS       = 41;
+    const long SM_DBCSENABLED  = 42;
+
+    const long SM_CMOUSEBUTTONS = 43;
+
+	// win40 name changes 
+    const long SM_CXFIXEDFRAME   = 7;
+    const long SM_CYFIXEDFRAME   = 8;
+    const long SM_CXSIZEFRAME      = 32;
+    const long SM_CYSIZEFRAME      = 33;
+
+	const long SM_SECURE               = 44;
+	const long SM_CXEDGE               = 45;
+	const long SM_CYEDGE               = 46;
+	const long SM_CXMINSPACING         = 47;
+	const long SM_CYMINSPACING         = 48;
+	const long SM_CXSMICON             = 49;
+	const long SM_CYSMICON             = 50;
+	const long SM_CYSMCAPTION          = 51;
+	const long SM_CXSMSIZE             = 52;
+	const long SM_CYSMSIZE             = 53;
+	const long SM_CXMENUSIZE           = 54;
+	const long SM_CYMENUSIZE           = 55;
+	const long SM_ARRANGE              = 56;
+	const long SM_CXMINIMIZED          = 57;
+	const long SM_CYMINIMIZED          = 58;
+	const long SM_CXMAXTRACK           = 59;
+	const long SM_CYMAXTRACK           = 60;
+	const long SM_CXMAXIMIZED          = 61;
+	const long SM_CYMAXIMIZED          = 62;
+	const long SM_NETWORK              = 63;
+	const long SM_CLEANBOOT            = 67;
+	const long SM_CXDRAG               = 68;
+	const long SM_CYDRAG               = 69;
+	const long SM_SHOWSOUNDS           = 70;
+	const long SM_CXMENUCHECK          = 71;   // Use instead of GetMenuCheckMarkDimensions()! 
+	const long SM_CYMENUCHECK          = 72;
+	const long SM_SLOWMACHINE          = 73;
+	const long SM_MIDEASTENABLED       = 74;
+	const long SM_MOUSEWHEELPRESENT    = 75;
+	const long SM_CMETRICS             = 76;
+
+    [
+    usesgetlasterror,
+    entry("GetSystemMetrics"),
+    helpstring("Get Various system metrics and system configuration settings"),
+    ]
+    int WINAPI GetSystemMetrics(int nIndex);
+
+    // ****** Menu support *********
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadMenuW"),
+    #else
+    entry("LoadMenuA"),
+    #endif
+    helpstring("Loads menu resource lpszMenuName into an instance"),
+    ]
+    HMENU   WINAPI LoadMenu(HINSTANCE hInst,
+                            LPCTSTR lpszMenuName);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadMenuW"),
+    #else
+    entry("LoadMenuA"),
+    #endif
+    helpstring("Loads menu resource idMenuName into an instance"),
+    ]
+    HMENU   WINAPI LoadMenuAsId(HINSTANCE hInst,
+                                LONG idMenuName);
+
+    /* Omitted
+    HMENU   WINAPI LoadMenuIndirect(const void *);
+    */
+
+    [
+    usesgetlasterror,
+    entry("GetMenu"),
+    helpstring("Gets the handle of the menu of the given window"),
+    ]
+    HMENU   WINAPI GetMenu(HWND hwnd);
+
+    [
+    usesgetlasterror,
+    entry("SetMenu"),
+    helpstring("Sets the given window's menu to the given menu handle"),
+    ]
+    BOOL    WINAPI SetMenu(HWND hwnd, HMENU hMenu);
+
+    /* Omit (obsolete)
+    BOOL    WINAPI ChangeMenu(HMENU hMenu, UINT, LPCTSTR, UINT, UINT);
+    */
+
+    [
+    usesgetlasterror,
+    entry("HiliteMenuItem"),
+    helpstring("Changes menu hilite of idHiliteItem in top level menu hMenu in hWnd window according to fuHilite flags (MF_ constant)"),
+    ]
+    BOOL    WINAPI HiliteMenuItem(HWND hwnd, HMENU hMenu,
+                                  UINT idHiliteItem,
+                                  UINT fuHilite);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetMenuStringW"),
+    #else
+    entry("GetMenuStringA"),
+    #endif
+    helpstring("Copies the text of item idItem (according to fuFlags) in menu hMenu into the buffer lpsz"),
+    ]
+    int     WINAPI GetMenuString(HMENU hMenu, UINT idItem,
+                                 LPTSTR lpsz, int cbMax,
+                                 UINT fuFlags);
+
+    [
+    usesgetlasterror,
+    entry("GetMenuState"),
+    helpstring("Returns bitflag state of item idItem in menu hMenu according to fuFlags"),
+    ]
+    UINT    WINAPI GetMenuState(HMENU hMenu, UINT idItem,
+                                UINT fuFlags);
+
+    [
+    usesgetlasterror,
+    entry("DrawMenuBar"),
+    helpstring("Redraws the menu bar of the given window"),
+    ]
+    BOOL WINAPI DrawMenuBar(HWND hwnd);
+
+    [
+    usesgetlasterror,
+    entry("GetSystemMenu"),
+    helpstring("Gets handle of a copy of system menu, or restores the system menu if fRevert is true"),
+    ]
+    HMENU   WINAPI GetSystemMenu(HWND hwnd, BOOL fRevert);
+
+    [
+    usesgetlasterror,
+    entry("CreateMenu"),
+    helpstring("Creates an empty menu and returns its handle")
+    ]
+    HMENU   WINAPI CreateMenu(void);
+
+    [
+    usesgetlasterror,
+    entry("CreatePopupMenu"),
+    helpstring("Creates an empty pop-up menu and returns its handle")
+    ]
+    HMENU   WINAPI CreatePopupMenu(void);
+
+
+    [
+    usesgetlasterror,
+    entry("DestroyMenu"),
+    helpstring("Destroys the given menu and frees its resources"),
+    ]
+    BOOL    WINAPI DestroyMenu(HMENU hMenu);
+
+    [
+    usesgetlasterror,
+    entry("CheckMenuItem"),
+    helpstring("Checks or unchecks item idCheckItem in hMenu according to uCheck flags"),
+    ]
+    BOOL    WINAPI CheckMenuItem(HMENU hMenu, UINT idCheckItem,
+                                 UINT uCheck);
+
+
+    [
+    usesgetlasterror,
+    entry("EnableMenuItem"),
+    helpstring("Enables or disables item idEnableItem in hMenu according to uEnable flags"),
+    ]
+    BOOL    WINAPI EnableMenuItem(HMENU hMenu,
+                                  UINT idEnableItem,
+                                  UINT uEnable);
+
+    [
+    usesgetlasterror,
+    entry("GetSubMenu"),
+    helpstring("Returns handle of handle of the submenu at position nPos in menu hMenu"),
+    ]
+    HMENU   WINAPI GetSubMenu(HMENU hMenu, int nPos);
+
+    [
+    usesgetlasterror,
+    entry("GetMenuItemID"),
+    helpstring("Returns the ID of item as given position in a menu"),
+    ]
+    UINT    WINAPI GetMenuItemID(HMENU hMenu, int pos);
+
+    [
+    usesgetlasterror,
+    entry("GetMenuItemCount"),
+    helpstring("Returns the number of items in a menu"),
+    ]
+    int     WINAPI GetMenuItemCount(HMENU hMenu);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("InsertMenuW"),
+    #else
+    entry("InsertMenuA"),
+    #endif
+    helpstring("Inserts new item with ID idNewItem and content lpNewItem into menu hMenu before item idItem according to fuFlags"),
+    ]
+    BOOL    WINAPI InsertMenu(HMENU hMenu, UINT idItem,
+                              UINT fuFlags, UINT idNewItem,
+                              LPCTSTR lpNewItem);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("AppendMenuW"),
+    #else
+    entry("AppendMenuA"),
+    #endif
+    helpstring("Appends new item with ID idNewItem and content lpNewItem to the end of menu hMenu according to fuFlags"),
+    ]
+    BOOL    WINAPI AppendMenu(HMENU hMenu, UINT fuFlags,
+                              UINT idNewItem, LPCTSTR lpNewItem);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("ModifyMenuW"),
+    #else
+    entry("ModifyMenuA"),
+    #endif
+    helpstring("Modifies item with ID idItem of menu hMenu to ID idNewItem and content lpNewItem according to fuFlags"),
+    ]
+    BOOL    WINAPI ModifyMenu(HMENU hMenu, UINT idItem,
+                              UINT fuFlags, UINT idNewItem,
+                              LPCTSTR lpNewItem);
+
+    [
+    usesgetlasterror,
+    entry("RemoveMenu"),
+    helpstring("Deletes item with ID idItem (according to fuFlags) from menu hMenu"),
+    ]
+    BOOL    WINAPI RemoveMenu(HMENU hMenu, UINT idItem,
+                              UINT fuFlags);
+
+    [
+    usesgetlasterror,
+    entry("DeleteMenu"),
+    helpstring("Removes a popup menu item with ID idItem (according to fuFlags) from menu hMenu (should come from GetSubMenu) without deleting menu handle"),
+    ]
+    BOOL    WINAPI DeleteMenu(HMENU hMenu, UINT idItem,
+                              UINT fuFlags);
+
+    [
+    usesgetlasterror,
+    entry("SetMenuItemBitmaps"),
+    helpstring("Sets item idItem (according to fuFlags) of menu hMenu to the given bitmaps"),
+    ]
+    BOOL    WINAPI SetMenuItemBitmaps(HMENU hMenu, UINT idItem,
+                                      UINT fuFlags,
+                                      HBITMAP hbmUnchecked,
+                                      HBITMAP hbmChecked);
+
+    [
+    usesgetlasterror,
+    entry("GetMenuCheckMarkDimensions"),
+    helpstring("Returns dimensions of default checkmark bitmap with width in pixels in low word and height in high word"),
+    ]
+    DWORD   WINAPI GetMenuCheckMarkDimensions(void);
+
+    [
+    usesgetlasterror,
+    entry("TrackPopupMenu"),
+    helpstring("Displays a popup menu at the specified locations and tracks the selection of items on the menu"),
+    ]
+    BOOL WINAPI TrackPopupMenu(HMENU hMenu, UINT fuFlags,
+                               int x, int y,
+                               int nReserved, HWND hwnd,
+                               LPVOID lprc);
+
+	const long MNC_IGNORE  = 0;
+	const long MNC_CLOSE   = 1;
+	const long MNC_EXECUTE = 2;
+	const long MNC_SELECT  = 3;
+
+    [
+    usesgetlasterror,
+    entry("TrackPopupMenuEx"),
+    helpstring("Displays a shortcut menu at the specified location and tracks the selection of items on the shortcut menu"),
+    ]
+	BOOL WINAPI TrackPopupMenuEx(HMENU hMenu, UINT fuFlags, int x, int y, 
+								 HWND hWnd, LPTPMPARAMS lptpm);
+
+
+	const DWORD MIIM_STATE       = 0x00000001;
+	const DWORD MIIM_ID          = 0x00000002;
+	const DWORD MIIM_SUBMENU     = 0x00000004;
+	const DWORD MIIM_CHECKMARKS  = 0x00000008;
+	const DWORD MIIM_TYPE        = 0x00000010;
+	const DWORD MIIM_DATA        = 0x00000020;
+
+	/*
+	BOOL WINAPI InsertMenuItem(HMENU, UINT, BOOL, LPCMENUITEMINFO);
+	BOOL WINAPI GetMenuItemInfo(HMENU, UINT, BOOL, LPMENUITEMINFO);
+	BOOL WINAPI SetMenuItemInfo(HMENU, UINT, BOOL, LPCMENUITEMINFO);
+
+
+	const DWORD GMDI_USEDISABLED    = 0x0001L;
+	const DWORD GMDI_GOINTOPOPUPS   = 0x0002L;
+
+	WINUSERAPI UINT    WINAPI GetMenuDefaultItem(HMENU hMenu, UINT fByPos, UINT gmdiFlags);
+	WINUSERAPI BOOL    WINAPI SetMenuDefaultItem(HMENU hMenu, UINT uItem, UINT fByPos);
+
+	WINUSERAPI BOOL    WINAPI GetMenuItemRect(HWND hWnd, HMENU hMenu, UINT uItem, LPRECT lprcItem);
+	WINUSERAPI int     WINAPI MenuItemFromPoint(HWND hWnd, HMENU hMenu, POINT ptScreen);
+	*/
+
+    // Flags for TrackPopupMenu
+    const DWORD TPM_LEFTBUTTON   = 0x0000;
+    const DWORD TPM_RIGHTBUTTON  = 0x0002;
+    const DWORD TPM_LEFTALIGN    = 0x0000;
+    const DWORD TPM_CENTERALIGN  = 0x0004;
+    const DWORD TPM_RIGHTALIGN   = 0x0008;
+
+    const DWORD TPM_TOPALIGN     = 0x0000;
+    const DWORD TPM_VCENTERALIGN = 0x0010;
+    const DWORD TPM_BOTTOMALIGN  = 0x0020;
+
+    const DWORD TPM_HORIZONTAL   = 0x0000;     // Horz alignment matters more
+    const DWORD TPM_VERTICAL     = 0x0040;     // Vert alignment matters more
+    const DWORD TPM_NONOTIFY     = 0x0080;     // Don't send any notification msgs
+    const DWORD TPM_RETURNCMD    = 0x0100;
+
+
+	// Drag-and-drop support
+
+	const DWORD DOF_EXECUTABLE      = 0x8001;
+	const DWORD DOF_DOCUMENT        = 0x8002;
+	const DWORD DOF_DIRECTORY       = 0x8003;
+	const DWORD DOF_MULTIPLE        = 0x8004;
+	const DWORD DOF_PROGMAN         = 0x0001;
+	const DWORD DOF_SHELLDATA       = 0x0002;
+
+	const DWORD DO_DROPFILE         = 0x454C4946L;
+	const DWORD DO_PRINTFILE        = 0x544E5250L;
+
+	/*
+    [
+    usesgetlasterror,
+    entry("DragObject"),
+    helpstring(""),
+    ]
+	DWORD WINAPI DragObject(HWND, HWND, UINT, DWORD, HCURSOR);
+	*/
+
+    [
+    usesgetlasterror,
+    entry("DragDetect"),
+    helpstring("Captures mouse and tracks its movement until user releases the left button, presses ESC, or moves the mouse outside the drag rectangle"),
+    ]
+	BOOL WINAPI DragDetect(HWND hWnd, LONG x, LONG y);
+
+
+    [
+    usesgetlasterror,
+    entry("DrawIcon"),
+    helpstring("Draws an icon into the given device context at the given coordinates"),
+    ]
+    BOOL    WINAPI DrawIcon(HDC hdc, int x, int y,
+                            HICON hicon);
+
+    // ****** Text drawing support ***
+
+    // DrawText() Format Flags
+    const DWORD DT_TOP       = 0x0000;
+    const DWORD DT_LEFT      = 0x0000;
+    const DWORD DT_CENTER        = 0x0001;
+    const DWORD DT_RIGHT     = 0x0002;
+    const DWORD DT_VCENTER   = 0x0004;
+    const DWORD DT_BOTTOM        = 0x0008;
+    const DWORD DT_WORDBREAK = 0x0010;
+    const DWORD DT_SINGLELINE    = 0x0020;
+    const DWORD DT_EXPANDTABS    = 0x0040;
+    const DWORD DT_TABSTOP   = 0x0080;
+    const DWORD DT_NOCLIP        = 0x0100;
+    const DWORD DT_EXTERNALLEADING  = 0x0200;
+    const DWORD DT_CALCRECT  = 0x0400;
+    const DWORD DT_NOPREFIX  = 0x0800;
+    const DWORD DT_INTERNAL  = 0x1000;
+	
+	const DWORD DT_EDITCONTROL      = 0x00002000;
+	const DWORD DT_PATH_ELLIPSIS    = 0x00004000;
+	const DWORD DT_END_ELLIPSIS     = 0x00008000;
+	const DWORD DT_MODIFYSTRING     = 0x00010000;
+	const DWORD DT_RTLREADING       = 0x00020000;
+	const DWORD DT_WORD_ELLIPSIS    = 0x00040000;
+
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("DrawTextW"),
+    #else
+    entry("DrawTextA"),
+    #endif
+    helpstring("Draws formatted text in the specified rectangle, formatting the text according to the specified method"), 
+	]
+	int WINAPI DrawText(HDC hDC, LPCSTR lpString, int nCount,
+						LPRECT lpRect, UINT uFormat);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("DrawTextExW"),
+    #else
+    entry("DrawTextExA"),
+    #endif
+    helpstring("Copies the text of item idItem (according to fuFlags) in menu hMenu into the buffer lpsz"),
+    ]
+	int WINAPI DrawTextEx(HDC hDC, LPSTR lpchText, int cchText, 
+						  LPRECT lprc, UINT dwDTFormat, 
+						  LPDRAWTEXTPARAMS lpDTParams);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GrayStringW"),
+    #else
+    entry("GrayStringA"),
+    #endif
+    helpstring("Copies the text of item idItem (according to fuFlags) in menu hMenu into the buffer lpsz"),
+    ]
+	BOOL WINAPI GrayString(HDC hDC, HBRUSH hBrush, GRAYSTRINGPROC lpOutputFunc,
+						   LPARAM lpData, int nCount, int X, int Y,
+						   int nWidth, int nHeight);
+
+	// Monolithic state-drawing routine 
+	
+	// Image type 
+	const DWORD DST_COMPLEX     = 0x0000;
+	const DWORD DST_TEXT        = 0x0001;
+	const DWORD DST_PREFIXTEXT  = 0x0002;
+	const DWORD DST_ICON        = 0x0003;
+	const DWORD DST_BITMAP      = 0x0004;
+
+	// State type 
+	const DWORD DSS_NORMAL      = 0x0000;
+	const DWORD DSS_UNION       = 0x0010;  // Gray string appearance 
+	const DWORD DSS_DISABLED    = 0x0020;
+	const DWORD DSS_MONO        = 0x0080;
+	const DWORD DSS_RIGHT       = 0x8000;
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("DrawStateW"),
+    #else
+    entry("DrawStateA"),
+    #endif
+    helpstring("Displays an image and applies a visual effect to indicate a state, such as a disabled or default state"),
+    ]
+	BOOL WINAPI DrawState(HDC hDC, HBRUSH hbr, 
+						  DRAWSTATEPROC lpOutputFunc, 
+						  LPARAM lData, WPARAM wData, 
+						  int x, int y, int cx, int cy, UINT fuFlags);
+
+
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("TabbedTextOutW"),
+    #else
+    entry("TabbedTextOutA"),
+    #endif
+    helpstring("Writes a character string at a specified location, expanding tabs to the values specified in an array of tab-stop positions"),
+    ]
+	LONG WINAPI TabbedTextOut(HDC hDC, int X, int Y, LPCTSTR lpString, 
+							  int nCount, int nTabPositions, 
+							  LPINT lpnTabStopPositions, int nTabOrigin);
+
+	[
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetTabbedTextExtentW"),
+    #else
+    entry("GetTabbedTextExtentA"),
+    #endif
+    helpstring("Computes the width and height of a character string, including expanded tab characters in the computation"),
+    ]
+	DWORD WINAPI GetTabbedTextExtent(HDC hDC, LPCTSTR lpString, 
+								     int nCount, int nTabPositions, 
+									 LPINT lpnTabStopPositions);
+
+    [
+    usesgetlasterror,
+    entry("UpdateWindow"),
+    helpstring("Updates the client area of the specified window"),
+    ]
+    BOOL    WINAPI UpdateWindow(HWND hWnd);
+
+    [
+    usesgetlasterror,
+    entry("SetActiveWindow"),
+    helpstring("Makes the specified top level window the active window"),
+    ]
+    HWND    WINAPI SetActiveWindow(HWND hwnd);
+
+    [
+    usesgetlasterror,
+    entry("GetForegroundWindow"),
+    helpstring("Gets the handle of the foreground window"),
+    ]
+    HWND    WINAPI GetForegroundWindow(void);
+
+	[
+    usesgetlasterror,
+    entry("PaintDesktop"),
+    helpstring("Fills the clipping region in the specified device context with the desktop pattern or wallpaper"),
+    ]
+	BOOL WINAPI PaintDesktop(HDC hdc);
+
+    [
+    usesgetlasterror,
+    entry("SetForegroundWindow"),
+    helpstring("Activates the thread and the window of the specified window handle"),
+    ]
+    BOOL    WINAPI SetForegroundWindow(HWND hWnd);
+
+
+    // ****** Window drawing support ********
+    [
+    usesgetlasterror,
+    entry("GetDC"),
+    helpstring("Gets client area DC of given window"),
+    ]
+    HDC     WINAPI GetDC(HWND hwnd);
+
+    [
+    usesgetlasterror,
+    entry("GetDCEx"),
+    helpstring("retrieves the handle of a display device (DC) context for the specified window"),
+	]
+    HDC     WINAPI GetDCEx(HWND hwnd, HRGN hrgnClip, DWORD flags);
+
+
+	// GetDCEx() flags 
+	const DWORD DCX_WINDOW           = 0x00000001L;
+	const DWORD DCX_CACHE            = 0x00000002L;
+	const DWORD DCX_NORESETATTRS     = 0x00000004L;
+	const DWORD DCX_CLIPCHILDREN     = 0x00000008L;
+	const DWORD DCX_CLIPSIBLINGS     = 0x00000010L;
+	const DWORD DCX_PARENTCLIP       = 0x00000020L;
+
+	const DWORD DCX_EXCLUDERGN       = 0x00000040L;
+	const DWORD DCX_INTERSECTRGN     = 0x00000080L;
+
+	const DWORD DCX_EXCLUDEUPDATE    = 0x00000100L;
+	const DWORD DCX_INTERSECTUPDATE  = 0x00000200L;
+
+	const DWORD DCX_LOCKWINDOWUPDATE = 0x00000400L;
+
+	const DWORD DCX_VALIDATE         = 0x00200000L;
+
+    [
+    usesgetlasterror,
+    entry("GetWindowDC"),
+    helpstring("Gets entire DC of given window"),
+    ]
+    HDC     WINAPI GetWindowDC(HWND hwnd);
+
+    [
+    usesgetlasterror,
+    entry("ReleaseDC"),
+    helpstring("Releases a DC obtained with GetDC or GetWindowDC"),
+    ]
+    int     WINAPI ReleaseDC(HWND hwnd, HDC hdc);
+
+	/*
+    HDC     WINAPI BeginPaint(HWND hwnd, PAINTSTRUCT *);
+    BOOL    WINAPI EndPaint(HWND hwnd, const PAINTSTRUCT *);
+	
+    BOOL    WINAPI GetUpdateRect(HWND hwnd, RECT *, BOOL);
+    int     WINAPI GetUpdateRgn(HWND hwnd, HRGN, BOOL);
+
+	int WINAPI SetWindowRgn(HWND hWnd, HRGN hRgn, BOOL bRedraw);
+	int WINAPI GetWindowRgn(HWND hWnd, HRGN hRgn);
+
+    int     WINAPI ExcludeUpdateRgn(HDC hdc, HWND hwnd);
+
+    void    WINAPI InvalidateRect(HWND hwnd, const RECT *, BOOL);
+    void    WINAPI ValidateRect(HWND hwnd, const RECT *);
+
+    void    WINAPI InvalidateRgn(HWND hwnd, HRGN, BOOL);
+    void    WINAPI ValidateRgn(HWND hwnd, HRGN);
+
+    BOOL    WINAPI RedrawWindow(HWND hwnd, const RECT * lprcUpdate, HRGN hrgnUpdate, UINT flags);
+
+	// RedrawWindow() flags 
+    const DWORD RDW_INVALIDATE      = 0x0001;
+    const DWORD RDW_INTERNALPAINT   = 0x0002;
+    const DWORD RDW_ERASE           = 0x0004;
+
+    const DWORD RDW_VALIDATE        = 0x0008;
+    const DWORD RDW_NOINTERNALPAINT = 0x0010;
+    const DWORD RDW_NOERASE         = 0x0020;
+
+    const DWORD RDW_NOCHILDREN      = 0x0040;
+    const DWORD RDW_ALLCHILDREN     = 0x0080;
+
+    const DWORD RDW_UPDATENOW       = 0x0100;
+    const DWORD RDW_ERASENOW        = 0x0200;
+
+    const DWORD RDW_FRAME           = 0x0400;
+    const DWORD RDW_NOFRAME         = 0x0800;
+
+	*/
+
+    [
+    usesgetlasterror,
+    entry("LockWindowUpdate"),
+    helpstring("Disables drawing in the given window, or enables drawing in the locked window if NULL is passed"),
+    ]
+    BOOL    WINAPI LockWindowUpdate(HWND hwndLock);
+
+    // ****** Window scrolling *****
+
+
+    [
+    usesgetlasterror,
+    entry("ScrollWindow"),
+    helpstring("Scrolls the content of the specified window’s client area"),
+    ]
+    BOOL    WINAPI ScrollWindow(HWND hwnd, int XAmount, int YAmount, 
+								RECT * lpRect, RECT * lpClipRect);
+    
+    [
+    usesgetlasterror,
+    entry("ScrollDC"),
+    helpstring("Scrolls a rectangle of bits horizontally and vertically"),
+    ]
+	BOOL    WINAPI ScrollDC(HDC hdc, int dx, int dy, RECT * lprcScroll, 
+							RECT * lprcClip, HRGN hrgnUpdate, 
+							RECT * lprcUpdate);
+
+    [
+    usesgetlasterror,
+    entry("ScrollWindowEx"),
+    helpstring("Scrolls the content of the specified window’s client area"),
+    ]
+    int     WINAPI ScrollWindowEx(HWND hwnd, int dx, int dy,
+								  RECT * prcScroll, RECT * prcClip,
+								  HRGN hrgnUpdate, RECT * prcUpdate, 
+								  UINT flags);
+
+    const DWORD SW_SCROLLCHILDREN   = 0x0001;
+    const DWORD SW_INVALIDATE       = 0x0002;
+    const DWORD SW_ERASE            = 0x0004;
+
+    // ****** Scroll bar support ***
+
+    [
+    usesgetlasterror,
+    entry("SetScrollPos"),
+    helpstring("Sets the scroll box position and optionally redraws the scroll bar (see SB_ constants)"),
+    ]
+    int     WINAPI SetScrollPos(HWND hwnd, int fnBar,
+                                int nPos, BOOL fRepaint);
+
+    [
+    usesgetlasterror,
+    entry("GetScrollPos"),
+    helpstring("Gets the scroll box position (see SB_ constants)"),
+    ]
+    int     WINAPI GetScrollPos(HWND hwnd, int fnBar);
+
+    [
+    usesgetlasterror,
+    entry("SetScrollRange"),
+    helpstring("Sets the minimum and maximum positions of a scroll bar and optionally redraws it (see SB_ constants)"),
+    ]
+    void    WINAPI SetScrollRange(HWND hwnd, int fnBar,
+                                  int nMin, int nMax,
+                                  BOOL fRedraw);
+
+//@B GetScrollRange
+    [
+    usesgetlasterror,
+    entry("GetScrollRange"),
+    helpstring("Gets the minimum and maximum positions of a scroll bar"),
+    ]
+    void    WINAPI GetScrollRange(HWND hwnd, int fnBar,
+                                  int * lpnMinPos,
+                                  int * lpnMaxPos);
+//@E GetScrollRange
+
+    [
+    usesgetlasterror,
+    entry("ShowScrollBar"),
+    helpstring("Shows or hides a scroll bar (see SB_ constants)"),
+    ]
+    void    WINAPI ShowScrollBar(HWND hwnd, int fnBar,
+                                 BOOL fShow);
+
+    [
+    usesgetlasterror,
+    entry("EnableScrollBar"),
+    helpstring("Enables or disables scroll bar arrows (see SB_ and ESB_ constants)"),
+    ]
+    BOOL    WINAPI EnableScrollBar(HWND hwnd, int fnSBFlags,
+                                   UINT fuArrowFlags);
+
+    // EnableScrollBar() flags
+    const DWORD ESB_ENABLE_BOTH      = 0x0000;
+    const DWORD ESB_DISABLE_BOTH     = 0x0003;
+
+    const DWORD ESB_DISABLE_LEFT     = 0x0001;
+    const DWORD ESB_DISABLE_RIGHT    = 0x0002;
+
+    const DWORD ESB_DISABLE_UP       = 0x0001;
+    const DWORD ESB_DISABLE_DOWN     = 0x0002;
+
+    const DWORD ESB_DISABLE_LTUP     = 0x0001;
+    const DWORD ESB_DISABLE_RTDN     = 0x0002;
+
+    // ****** Window property support *******
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("SetPropW"),
+    #else
+    entry("SetPropA"),
+    #endif
+    helpstring("Adds a new entry or changes an existing entry in the property list of the specified window"),
+    ]
+    BOOL    WINAPI SetProp(HWND hWnd, LPCTSTR lpString, HANDLE hData);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetPropW"),
+    #else
+    entry("GetPropA"),
+    #endif
+    helpstring("Retrieves a data handle from the property list of the given window"),
+    ]
+    HANDLE  WINAPI GetProp(HWND hWnd, LPCTSTR lpString);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("RemovePropW"),
+    #else
+    entry("RemovePropA"),
+    #endif
+    helpstring("Removes an entry from the property list of the specified window"),
+    ]
+    HANDLE  WINAPI RemoveProp(HWND hWnd, LPCTSTR lpString);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("EnumPropsExW"),
+    #else
+    entry("EnumPropsExA"),
+    #endif
+    helpstring("Enumerates all entries in the property list of a window by passing them, one by one, to the specified callback function"),
+    ]
+    int     WINAPI EnumPropsEx(HWND hWnd, PROPENUMPROCEX lpEnumFunc, LPARAM lParam);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("EnumPropsW"),
+    #else
+    entry("EnumPropsA"),
+    #endif
+    helpstring("Enumerates all entries in the property list of a window by passing them, one by one, to the specified callback function"),
+    ]
+    int     WINAPI EnumProps(HWND hWnd, PROPENUMPROC lpEnumProc);
+
+
+    // Window text
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE 
+    entry("SetWindowTextW"),
+    #else
+    entry("SetWindowTextA"),
+    #endif
+    helpstring("Sets the title of a window"),
+    ]
+    void    WINAPI SetWindowText(HWND hwnd, LPCTSTR lpsz);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE 
+    entry("GetWindowTextW"),
+    #else
+    entry("GetWindowTextA"),
+    #endif
+    helpstring("Copies no more than cbMax characters of a window title to a string")
+    ]
+    int     WINAPI GetWindowText(HWND hwnd, LPTSTR lpsz,
+                                 int cbMax);
+
+    [
+    usesgetlasterror,
+    entry("GetWindowTextW"),
+    helpstring("Copies no more than cbMax characters of a window title to a string")
+    ]
+    int     WINAPI GetWindowTextW(HWND hwnd, LPTSTR lpsz,
+                                  int cbMax);
+
+    [
+    usesgetlasterror,
+    entry("GetWindowTextA"),
+    helpstring("Copies no more than cbMax characters of a window title to a string")
+    ]
+    int     WINAPI GetWindowTextA(HWND hwnd, LPTSTR lpsz,
+                                  int cbMax);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE 
+    entry("GetWindowTextLengthW"),
+    #else
+    entry("GetWindowTextLengthA"),
+    #endif
+    helpstring("Gets the character length of a window title)")
+    ]
+    int     WINAPI GetWindowTextLength(HWND hwnd);
+
+
+    [
+    usesgetlasterror,
+    entry("GetClientRect"),
+    helpstring("Retrieves coordinates of a window's client area")
+    ]
+    void    WINAPI GetClientRect(HWND hwnd, RECT * lpRect);
+
+    [
+    usesgetlasterror,
+    entry("GetWindowRect"),
+    helpstring("Retrieves coordinates of a window's bounding rectangle")
+    ]
+    void    WINAPI GetWindowRect(HWND hwnd, RECT * lpRect);
+    
+    /*
+    void    WINAPI AdjustWindowRect(RECT *, DWORD, BOOL);
+    void    WINAPI AdjustWindowRectEx(RECT *, DWORD, BOOL, DWORD);
+    */
+
+	/*
+	const DWORD HELPINFO_WINDOW    = 0x0001;
+	const DWORD HELPINFO_MENUITEM  = 0x0002;
+
+	BOOL  WINAPI  SetWindowContextHelpId(HWND, DWORD);
+	DWORD WINAPI  GetWindowContextHelpId(HWND);
+	BOOL  WINAPI  SetMenuContextHelpId(HMENU, DWORD);
+	DWORD WINAPI  GetMenuContextHelpId(HMENU);
+	*/
+
+    // ****** Message Box support ******
+
+	// MessageBox() Flags
+    const DWORD MB_OK                 = 0x0000;
+    const DWORD MB_OKCANCEL           = 0x0001;
+    const DWORD MB_ABORTRETRYIGNORE   = 0x0002;
+    const DWORD MB_YESNOCANCEL        = 0x0003;
+    const DWORD MB_YESNO              = 0x0004;
+    const DWORD MB_RETRYCANCEL        = 0x0005;
+
+    const DWORD MB_ICONHAND           = 0x0010;
+    const DWORD MB_ICONQUESTION       = 0x0020;
+    const DWORD MB_ICONEXCLAMATION    = 0x0030;
+    const DWORD MB_ICONASTERISK       = 0x0040;
+
+	const DWORD MB_USERICON                 = 0x00000080L;
+	const DWORD MB_ICONWARNING              = 0x0030; // MB_ICONEXCLAMATION
+	const DWORD MB_ICONERROR                = 0x0010; // MB_ICONHAND
+
+    const DWORD MB_ICONINFORMATION    = 0x0040;
+    const DWORD MB_ICONSTOP           = 0x0010;
+
+    const DWORD MB_DEFBUTTON1         = 0x0000;
+    const DWORD MB_DEFBUTTON2         = 0x0100;
+    const DWORD MB_DEFBUTTON3         = 0x0200;
+    const DWORD MB_DEFBUTTON4         = 0x0300;
+
+    const DWORD MB_APPLMODAL          = 0x0000;
+    const DWORD MB_SYSTEMMODAL        = 0x1000;
+    const DWORD MB_TASKMODAL          = 0x2000;
+    const DWORD MB_HELP               = 0x4000;	// Help Button
+
+    const DWORD MB_NOFOCUS            = 0x8000;
+	const DWORD MB_SETFOREGROUND            = 0x00010000L;
+	const DWORD MB_DEFAULT_DESKTOP_ONLY     = 0x00020000L;
+
+	const DWORD MB_TOPMOST                  = 0x00040000L;
+	const DWORD MB_RIGHT                    = 0x00080000L;
+	const DWORD MB_RTLREADING               = 0x00100000L;
+
+	const DWORD MB_SERVICE_NOTIFICATION          = 0x00200000L;
+
+    const DWORD MB_TYPEMASK           = 0x000F;
+    const DWORD MB_ICONMASK           = 0x00F0;
+    const DWORD MB_DEFMASK            = 0x0F00;
+	const DWORD MB_MODEMASK                 = 0x00003000L;
+	const DWORD MB_MISCMASK                 = 0x0000C000L;
+
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("MessageBoxW"),
+    #else
+    entry("MessageBoxA"),
+    #endif
+    helpstring("Creates, displays, and operates a message box"),
+    ]
+    int     WINAPI MessageBox(HWND hwnd, LPCTSTR lpText,
+                              LPCTSTR lpCaption, UINT uType);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("MessageBoxExW"),
+    #else
+    entry("MessageBoxExA"),
+    #endif
+    helpstring("Creates, displays, and operates a message box"),
+    ]
+    int     WINAPI MessageBoxEx(HWND hwnd, LPCTSTR lpText,
+                                LPCTSTR lpCaption, UINT uType, 
+								WORD wLanduageId);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("MessageBoxIndirectW"),
+    #else
+    entry("MessageBoxIndirectA"),
+    #endif
+    helpstring("Creates, displays, and operates a message box"),
+	]
+	int     WINAPI MessageBoxIndirect(LPMSGBOXPARAMS);
+
+    [
+    usesgetlasterror,
+    entry("MessageBeep"),
+    helpstring("Plays a specified waveform sound"),
+    ]
+    BOOL WINAPI MessageBeep(UINT uType);
+
+    // ****** Cursor support **********
+
+    [
+    usesgetlasterror,
+    entry("ShowCursor"),
+    helpstring("Show or hide the mouse cursor"),
+    ]
+    int     WINAPI ShowCursor(BOOL bShow);
+
+    [
+    usesgetlasterror,
+    entry("SetCursorPos"),
+    helpstring("Sets the mouse cursor position"),
+    ]
+    void    WINAPI SetCursorPos(int x, int y);
+
+    [
+    usesgetlasterror,
+    entry("SetCursor"),
+    helpstring("Changes the current cursor to the given cursor or removes the cursor if NULL is passed (returns previous)"),
+    ]
+    HCURSOR WINAPI SetCursor(HCURSOR hcur);
+
+    [
+    usesgetlasterror,
+    entry("GetCursorPos"),
+    helpstring("Gets the mouse cursor position"),
+    ]
+	BOOL	WINAPI GetCursorPos(POINTL * lpPoint);
+
+    [
+    usesgetlasterror,
+    entry("ClipCursor"),
+    helpstring("Confines the mouse cursor to a given rectangle"),
+    ]
+    BOOL WINAPI ClipCursor(LPVOID lpRect);
+
+    [
+    usesgetlasterror,
+    entry("GetClipCursor"),
+    helpstring("Gets the rectangle where the mouse cursor is confined"),
+    ]
+    BOOL WINAPI GetClipCursor(RECT * lpRect);
+
+    [
+    usesgetlasterror,
+    entry("GetCursor"),
+    helpstring("Gets the handle of the current cursor"),
+    ]
+    HCURSOR WINAPI GetCursor(void);
+
+    // ****** Caret support *********
+
+    /*
+    BOOL    WINAPI CreateCaret(HWND hwnd, HBITMAP hbm, int, int);
+    UINT    WINAPI GetCaretBlinkTime(void);
+    BOOL    WINAPI SetCaretBlinkTime(UINT);
+    BOOL    WINAPI DestroyCaret(void);
+    BOOL    WINAPI HideCaret(HWND hwnd);
+    BOOL    WINAPI ShowCaret(HWND hwnd);
+    BOOL    WINAPI SetCaretPos(int, int);
+    BOOL    WINAPI GetCaretPos(POINTL *);
+    */
+
+    // ****** Window coordinate mapping and hit-testing **************************
+
+    [
+    usesgetlasterror,
+    entry("ClientToScreen"),
+    helpstring("Converts client coordinates of specified point to screen coordinates"),
+    ]
+    BOOL WINAPI ClientToScreen(HWND hwnd, POINTL * lpPoint);
+
+    [
+    usesgetlasterror,
+    entry("ScreenToClient"),
+    helpstring("Converts screen coordinates of specified point to client coordinates"),
+    ]
+    BOOL WINAPI ScreenToClient(HWND hwnd, POINTL * lpPoint);
+
+    [
+    usesgetlasterror,
+    entry("ScreenToClient"),
+    helpstring("Maps a set of points from a coordinate space relative to one window to a coordinate space relative to another window"),
+    ]
+    int    WINAPI MapWindowPoints(HWND hwndFrom, HWND hwndTo, POINTL * lpPoints, UINT cPoints);
+
+    [
+    usesgetlasterror,
+    entry("WindowFromPoint"),
+    helpstring("Retrieves handle of window containing a specified point"),
+    ]
+    HWND    WINAPI WindowFromPoint(long x, long y);
+
+    [
+    usesgetlasterror,
+    entry("ChildWindowFromPoint"),
+    helpstring("Determines which if any child window of given window contains a specified point"),
+    ]
+    HWND    WINAPI ChildWindowFromPoint(HWND hwnd, long x, long y);
+
+
+	const DWORD CWP_ALL             = 0x0000;
+	const DWORD CWP_SKIPINVISIBLE   = 0x0001;
+	const DWORD CWP_SKIPDISABLED    = 0x0002;
+	const DWORD CWP_SKIPTRANSPARENT = 0x0004;
+
+    [
+    usesgetlasterror,
+    entry("ChildWindowFromPointEx"),
+    helpstring("Determines which if any child window of given window contains a specified point"),
+    ]
+	HWND    WINAPI ChildWindowFromPointEx(HWND hWnd, long x, long y, UINT uFlags);
+
+    // ****** Color support *******
+
+    // Color types 
+    const long CTLCOLOR_MSGBOX  =    0;
+    const long CTLCOLOR_EDIT    = 1;
+    const long CTLCOLOR_LISTBOX =    2;
+    const long CTLCOLOR_BTN     = 3;
+    const long CTLCOLOR_DLG     = 4;
+    const long CTLCOLOR_SCROLLBAR  = 5;
+    const long CTLCOLOR_STATIC     = 6;
+    const long CTLCOLOR_MAX        = 7;
+
+    // GetSysColor/SetSysColors
+    const long COLOR_SCROLLBAR             = 0;
+    const long COLOR_BACKGROUND            = 1;
+    const long COLOR_ACTIVECAPTION         = 2;
+    const long COLOR_INACTIVECAPTION       = 3;
+    const long COLOR_MENU                  = 4;
+    const long COLOR_WINDOW                = 5;
+    const long COLOR_WINDOWFRAME           = 6;
+    const long COLOR_MENUTEXT              = 7;
+    const long COLOR_WINDOWTEXT            = 8;
+    const long COLOR_CAPTIONTEXT           = 9;
+    const long COLOR_ACTIVEBORDER          = 10;
+    const long COLOR_INACTIVEBORDER        = 11;
+    const long COLOR_APPWORKSPACE          = 12;
+    const long COLOR_HIGHLIGHT             = 13;
+    const long COLOR_HIGHLIGHTTEXT         = 14;
+    const long COLOR_BTNFACE               = 15;
+    const long COLOR_BTNSHADOW             = 16;
+    const long COLOR_GRAYTEXT              = 17;
+    const long COLOR_BTNTEXT               = 18;
+    const long COLOR_INACTIVECAPTIONTEXT   = 19;
+    const long COLOR_BTNHIGHLIGHT          = 20;
+
+    const long COLOR_3DDKSHADOW            = 21;
+    const long COLOR_3DLIGHT               = 22;
+    const long COLOR_INFOTEXT              = 23;
+    const long COLOR_INFOBK                = 24;
+
+    const long COLOR_DESKTOP               = 1;  // COLOR_BACKGROUND
+    const long COLOR_3DFACE                = 15; // COLOR_BTNFACE
+    const long COLOR_3DSHADOW              = 16; // COLOR_BTNSHADOW
+    const long COLOR_3DHIGHLIGHT           = 20; // COLOR_BTNHIGHLIGHT
+    const long COLOR_3DHILIGHT             = 20; // COLOR_BTNHIGHLIGHT
+    const long COLOR_BTNHILIGHT            = 20; // COLOR_BTNHIGHLIGHT
+
+
+    [
+    usesgetlasterror,
+    entry("GetSysColor"),
+    helpstring("Returns color of the specified display element"),
+    ]
+    COLORREF WINAPI GetSysColor(int nIndex);
+
+    [
+    usesgetlasterror,
+    entry("GetSysColorBrush"),
+    helpstring("Retrieves a handle identifying a logical brush that corresponds to the specified color index"),
+    ]
+	HBRUSH WINAPI GetSysColorBrush(int nIndex);
+
+//@B SetSysColor
+    [
+    usesgetlasterror,
+    entry("SetSysColors"),
+    helpstring("Sets colors of the display element in the lpaElements array to the colors in the lpaRgbValues array"),
+    ]
+    void    WINAPI SetSysColors(int cElements,
+                                int * lpaElements,
+                                COLORREF * lpaRgbValues);
+//@E SetSysColor
+
+    // ****** Rectangle support *****
+
+    [
+    usesgetlasterror,
+    entry("DrawFocusRect"),
+    helpstring("Draws a rectangle in the style used to indicate that the rectangle has the focus"),
+    ]
+	BOOL WINAPI DrawFocusRect(HDC hDC, RECT * lprc);
+
+    [
+    usesgetlasterror,
+    entry("FillRect"),
+    helpstring("Fills a rectangle by using the specified brush (rectangle includes the left and top borders, but excludes the right and bottom borders)"),
+    ]
+	int WINAPI FillRect(HDC hDC, RECT *lprc, HBRUSH hbr);
+
+    [
+    usesgetlasterror,
+    entry("FrameRect"),
+    helpstring("Draws a border around the specified rectangle by using the specified brush (width and height of the border are always one logical unit)"),
+    ]
+	int WINAPI FrameRect(HDC hDC, RECT *lprc, HBRUSH hbr);
+
+    [
+    usesgetlasterror,
+    entry("InvertRect"),
+    helpstring("Inverts a rectangle in a window by performing a logical NOT operation on the color values for each pixel in the rectangle’s interior"),
+    ]
+	BOOL WINAPI InvertRect(HDC hDC, RECT *lprc);
+
+    [
+    usesgetlasterror,
+    entry("SetRect"),
+    helpstring("Sets the coordinates of the specified rectangle (equivalent to assigning the left, top, right, and bottom arguments to the appropriate members of the RECT structure)"),
+    ]
+	BOOL WINAPI SetRect(LPRECT lprc, int xLeft, int yTop,
+						int xRight, int yBottom);
+
+    [
+    usesgetlasterror,
+    entry("SetRectEmpty"),
+    helpstring("Creates an empty rectangle in which all coordinates are set to zero"),
+    ]
+	BOOL WINAPI SetRectEmpty(LPRECT lprc);
+
+    [
+    usesgetlasterror,
+    entry("CopyRect"),
+    helpstring("Copies the coordinates of one rectangle to another"),
+    ]
+	BOOL WINAPI CopyRect(LPRECT lprcDst, RECT *lprcSrc); 
+
+    [
+    usesgetlasterror,
+    entry("InflateRect"),
+    helpstring("Increases or decreases the width and height of the specified rectangle, adding dx units to the left and right ends and dy units to the top and bottom (signed dx and dy increase the width and height when positive, and decrease when negative)"),
+    ]
+	BOOL WINAPI InflateRect(LPRECT lprc, int dx, int dy);
+
+    [
+    usesgetlasterror,
+    entry("IntersectRect"),
+    helpstring("Calculates the intersection of two source rectangles and places the coordinates of the intersection rectangle into the destination rectangle"),
+    ]
+	BOOL WINAPI IntersectRect(LPRECT lprcDst, RECT *lprcSrc1,
+							  RECT *lprcSrc2);
+
+    [
+    usesgetlasterror,
+    entry("UnionRect"),
+    helpstring("Creates the union of two rectangles--the smallest rectangle that contains both source rectangles"),
+    ]
+	BOOL WINAPI UnionRect(LPRECT lprcDst, RECT *lprcSrc1,
+						  RECT *lprcSrc2);
+
+    [
+    usesgetlasterror,
+    entry("SubtractRect"),
+    helpstring("Obtains the coordinates of a rectangle determined by subtracting one rectangle from another"),
+    ]
+	BOOL WINAPI SubtractRect(LPRECT lprcDst, RECT *lprcSrc1, 
+							 RECT *lprcSrc2);
+
+    [
+    usesgetlasterror,
+    entry("OffsetRect"),
+    helpstring("Moves the specified rectangle by the specified offsets"),
+    ]
+	BOOL WINAPI OffsetRect(LPRECT lprc, int dx, int dy);
+
+    [
+    usesgetlasterror,
+    entry("IsRectEmpty"),
+    helpstring("Determines whether the specified rectangle is empty (has no area)"),
+    ]
+	BOOL WINAPI IsRectEmpty(RECT *lprc);
+
+    [
+    usesgetlasterror,
+    entry("EqualRect"),
+    helpstring("Determines whether the two specified rectangles are equal by comparing the coordinates of their upper-left and lower-right corners"),
+    ]
+	BOOL WINAPI EqualRect(RECT *lprc1, RECT *lprc2);
+
+    [
+    usesgetlasterror,
+    entry("PtInRect"),
+    helpstring("Determines whether the point specified by x and y lies within the specified rectangle"),
+    ]
+    BOOL    WINAPI PtInRect(RECT * lprc, long x, long y);
+
+    // Window words
+
+    [
+    usesgetlasterror,
+    entry("GetWindowWord"),
+    helpstring("Gets the indexed WORD data of a window handle (see GWW_ constants)")
+    ]
+    WORD    WINAPI GetWindowWord(HWND hwnd, int nIndex);
+
+    [
+    usesgetlasterror,
+    entry("SetWindowWord"),
+    helpstring("Sets the indexed WORD data of a window handle and returns previous data (see GWW_ constants)")
+    ]
+    WORD    WINAPI SetWindowWord(HWND hwnd, int nIndex,
+                                 WORD nValue);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetWindowLongW"),
+    #else
+    entry("GetWindowLongA"),
+    #endif
+    helpstring("Gets the indexed LONG data of a window handle (see GWL_ constants)")
+    ]
+    LONG    WINAPI GetWindowLong(HWND hwnd, int nIndex);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("SetWindowLongW"),
+    #else
+    entry("SetWindowLongA"),
+    #endif
+    helpstring("Sets the indexed LONG data of a window handle and returns previous data (see GWL_ constants)")
+    ]
+    LONG    WINAPI SetWindowLong(HWND hwnd, int nIndex,
+                                 LONG nValue);
+
+
+    // Class words
+
+    [
+    usesgetlasterror,
+    entry("GetClassWord"),
+    helpstring("Gets the indexed class WORD data of a window handle (see GWW_ constants)")
+    ]
+    WORD    WINAPI GetClassWord(HWND hwnd, int nIndex);
+
+    [
+    usesgetlasterror,
+    entry("SetClassWord"),
+    helpstring("Sets the indexed class WORD data of a window handle and returns previous data (see GWW_ constants)")
+    ]
+    WORD    WINAPI SetClassWord(HWND hwnd, int nIndex,
+                                WORD nValue);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetClassLongW"),
+    #else
+    entry("GetClassLongA"),
+    #endif
+    helpstring("Gets the indexed class LONG data of a window handle (see GWL_ constants)")
+    ]
+    LONG    WINAPI GetClassLong(HWND hwnd, int nIndex);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("SetClassLongW"),
+    #else
+    entry("SetClassLongA"),
+    #endif
+    helpstring("Sets the indexed class LONG data of a window handle and returns previous data (see GWL_ constants)")
+    ]
+    LONG    WINAPI SetClassLong(HWND hwnd, int nIndex,
+                                LONG nValue);
+
+
+	// ****** Window query and enumeration ******
+
+    [
+    usesgetlasterror,
+    entry("GetDesktopWindow"),
+    helpstring("Returns handle of desktop window"),
+    ]
+    HWND    WINAPI GetDesktopWindow();
+
+//@B GetParent
+    [
+    usesgetlasterror,
+    entry("GetParent"),
+    helpstring("Gets the parent window handle of the given window")
+    ]
+    HWND    WINAPI GetParent(HWND hWnd);
+//@E GetParent
+
+    [
+    usesgetlasterror,
+    entry("SetParent"),
+    helpstring("Changes the parent of the given window to the specified new parent")
+    ]
+    HWND    WINAPI SetParent(HWND hwndChild, HWND hwndNewParent);
+
+    [
+    usesgetlasterror,
+    entry("EnumChildWindows"),
+    helpstring("Enumerates the child windows that belong to the specified parent window by passing the handle of each child window, in turn, to an application-defined callback function"),
+    ]
+    BOOL    WINAPI EnumChildWindows(HWND hWndParent, 
+									WNDENUMPROC lpEnumFunction, 
+									LPARAM lParam);
+	
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("FindWindowW"),
+    #else
+    entry("FindWindowA"),
+    #endif
+    helpstring("Finds a window by its class name and title"),
+    ]
+    HWND    WINAPI FindWindow(LPCTSTR lpszClassName,
+                              LPCTSTR lpszWindow);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("FindWindowExW"),
+    #else
+    entry("FindWindowExA"),
+    #endif
+    helpstring("Finds a window by its class name and title starting with the one after the given child window"),
+    ]
+	HWND    WINAPI FindWindowEx(HWND hwndParent, HWND hwndChildAfter, 
+							    LPCTSTR lpszClass, LPCTSTR lpszWindow);
+
+    [
+    usesgetlasterror,
+    entry("EnumWindows"),
+    helpstring("Enumerates all top-level windows on the screen by passing the handle of each window, in turn, to an application-defined callback function"),
+    ]
+    BOOL    WINAPI EnumWindows(WNDENUMPROC lpEnumFunction, 
+							   LPARAM lParam);
+
+    
+	/*
+	BOOL WINAPI EnumThreadWindows(DWORD dwThreadId, WNDENUMPROC lpfn,
+								  LPARAM lParam);
+
+	//define EnumTaskWindows(hTask, lpfn, lParam) 
+	//       EnumThreadWindows((DWORD)hTask, lpfn, lParam)
+	*/
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("GetClassNameW"),
+	#else
+    entry("GetClassNameA"),
+	#endif
+    helpstring("Copies the class name of a window handle to a string buffer"),
+    ]
+    int     WINAPI GetClassName(HWND hwnd, LPTSTR lpszClassName,
+                                int cchClassName);
+
+	[
+    usesgetlasterror,
+    entry("GetTopWindow"),
+    helpstring("Gets handle of window at the top of the Z-order of a specified child window"),
+    ]
+    HWND    WINAPI GetTopWindow(HWND hwnd);
+
+	//define GetNextWindow(hWnd, wCmd) GetWindow(hWnd, wCmd)
+	//define GetSysModalWindow() (NULL)
+	//define SetSysModalWindow(hWnd) (NULL)
+
+    [
+    usesgetlasterror,
+    entry("GetWindowThreadProcessId"),
+    helpstring("Returns the ids of both the process and the thread that created a window")
+    ]
+    DWORD WINAPI GetWindowThreadProcessId(HWND hwnd,
+                                          DWORD * lpdwProcessId);
+
+    [
+    usesgetlasterror,
+    entry("GetLastActivePopup"),
+    helpstring("Determines which pop-up window owned by the specified window was most recently active"),
+    ]
+    HWND    WINAPI GetLastActivePopup(HWND hwnd);
+
+    // GetWindow() constants
+    [ helpstring("GetWindow: Get first sibling") ]
+    const long GW_HWNDFIRST  = 0;
+    [ helpstring("GetWindow: Get last sibling") ]
+    const long GW_HWNDLAST   = 1;
+    [ helpstring("GetWindow: Get next sibling") ]
+    const long GW_HWNDNEXT   = 2;
+    [ helpstring("GetWindow: Get previous sibling") ]
+    const long GW_HWNDPREV   = 3;
+    [ helpstring("GetWindow: Get owner") ]
+    const long GW_OWNER      = 4;
+    [ helpstring("GetWindow: Get first child window") ]
+    const long GW_CHILD      = 5;
+    const long GW_MAX		= 5;
+
+    [
+    usesgetlasterror,
+    entry("GetWindow"),
+    helpstring("Gets handle of window with specified relationship (GW_HWNDFIRST, GW_HWNDLAST, GW_HWNDNEXT, GW_HWNDPREV, GW_OWNER, GW_CHILD)"),
+    ]
+    HWND    WINAPI GetWindow(HWND hwnd, UINT uCmd);
+
+    [
+    usesgetlasterror,
+    entry("GetNextWindow"),
+    helpstring("Gets handle of next (GW_HWNDNEXT) or previous (GW_HWNDPREV) window in the Z-order"),
+    ]
+    HWND    WINAPI GetNextWindow(HWND hwnd, UINT fuDirection);
+
+
+	/*
+    HHOOK   WINAPI SetWindowsHook(int nFilterType, HOOKPROC pfnFilterProc);
+    BOOL    WINAPI UnhookWindowsHook(int nCode, HOOKPROC pfnFilterProc);
+
+    HHOOK   WINAPI SetWindowsHookEx(int idHook, HOOKPROC lpfn, HINSTANCE hInst hInstance, HTASK hTask);
+    BOOL    WINAPI UnhookWindowsHookEx(HHOOK hHook);
+
+    LRESULT WINAPI CallNextHookEx(HHOOK hHook, int code, WPARAM wParam, LPARAM lParam);
+
+	//define DefHookProc(nCode, wParam, lParam, phhk)\
+	//  	 CallNextHookEx(*phhk, nCode, wParam, lParam)
+
+    */
+
+	// Menu flags for Add/Check/EnableMenuItem()
+    const DWORD MF_INSERT      = 0x0000;
+    const DWORD MF_CHANGE      = 0x0080;
+    const DWORD MF_APPEND      = 0x0100;
+    const DWORD MF_DELETE      = 0x0200;
+    const DWORD MF_REMOVE      = 0x1000;
+
+    // Menu flags for Add/Check/EnableMenuItem()
+    const DWORD MF_BYCOMMAND   = 0x0000;
+    const DWORD MF_BYPOSITION   = 0x0400;
+
+    const DWORD MF_SEPARATOR   = 0x0800;
+
+    const DWORD MF_ENABLED     = 0x0000;
+    const DWORD MF_GRAYED      = 0x0001;
+    const DWORD MF_DISABLED    = 0x0002;
+
+    const DWORD MF_UNCHECKED   = 0x0000;
+    const DWORD MF_CHECKED     = 0x0008;
+    const DWORD MF_USECHECKBITMAPS  = 0x0200;
+
+    const DWORD MF_STRING      = 0x0000;
+    const DWORD MF_BITMAP      = 0x0004;
+    const DWORD MF_OWNERDRAW   = 0x0100;
+
+    const DWORD MF_POPUP       = 0x0010;
+    const DWORD MF_MENUBARBREAK = 0x0020;
+    const DWORD MF_MENUBREAK   = 0x0040;
+
+    const DWORD MF_UNHILITE    = 0x0000;
+    const DWORD MF_HILITE      = 0x0080;
+
+    const DWORD MF_DEFAULT     = 0x1000;
+
+    const DWORD MF_SYSMENU     = 0x2000;
+    const DWORD MF_HELP        = 0x4000;
+    const DWORD MF_RIGHTJUSTIFY = 0x4000;
+    const DWORD MF_MOUSESELECT = 0x8000;
+
+    const DWORD MF_END         = 0x0080; // Obsolete -- only used by old RES files
+
+
+	// A lot of MF_* flags have been renamed as MFT_* and MFS_* flags 
+    const DWORD MFT_STRING      = 0x0000;
+    const DWORD MFT_BITMAP      = 0x0004;
+    const DWORD MFT_MENUBARBREAK = 0x0020;
+    const DWORD MFT_MENUBREAK   = 0x0040;
+    const DWORD MFT_OWNERDRAW   = 0x0100;
+    const DWORD MFT_RADIOCHECK   = 0x0200;
+    const DWORD MFT_SEPARATOR   = 0x0800;
+    const DWORD MFT_RIGHTORDER = 0x2000;
+    const DWORD MFT_RIGHTJUSTIFY = 0x4000;
+
+    const DWORD MFS_GRAYED      = 0x0003;
+    const DWORD MFS_DISABLED    = 0x0003;
+    const DWORD MFS_CHECKED     = 0x0008;
+    const DWORD MFS_HILITE      = 0x0080;
+    const DWORD MFS_ENABLED     = 0x0000;
+    const DWORD MFS_UNCHECKED   = 0x0000;
+    const DWORD MFS_UNHILITE    = 0x0000;
+    const DWORD MFS_DEFAULT     = 0x1000;
+
+	/*
+	BOOL WINAPI CheckMenuRadioItem(HMENU, UINT, UINT, UINT, UINT);
+	*/
+
+
+    // System Menu Command Values
+    const DWORD SC_SIZE      = 0xF000;
+    const DWORD SC_MOVE      = 0xF010;
+    const DWORD SC_MINIMIZE  = 0xF020;
+    const DWORD SC_MAXIMIZE  = 0xF030;
+    const DWORD SC_NEXTWINDOW = 0xF040;
+    const DWORD SC_PREVWINDOW = 0xF050;
+    const DWORD SC_CLOSE     = 0xF060;
+    const DWORD SC_VSCROLL   = 0xF070;
+    const DWORD SC_HSCROLL   = 0xF080;
+    const DWORD SC_MOUSEMENU = 0xF090;
+    const DWORD SC_KEYMENU   = 0xF100;
+    const DWORD SC_ARRANGE   = 0xF110;
+    const DWORD SC_RESTORE   = 0xF120;
+    const DWORD SC_TASKLIST  = 0xF130;
+    const DWORD SC_SCREENSAVE = 0xF140;
+    const DWORD SC_HOTKEY    = 0xF150;
+    const DWORD SC_DEFAULT      = 0xF160;
+    const DWORD SC_MONITORPOWER = 0xF170;
+    const DWORD SC_CONTEXTHELP  = 0xF180;
+    const DWORD SC_SEPARATOR    = 0xF00F;
+
+	// Obsolete names
+ 	//define SC_ICON         SC_MINIMIZE
+	//define SC_ZOOM         SC_MAXIMIZE
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadBitmapW"),
+    #else
+    entry("LoadBitmapA"),
+    #endif
+    helpstring("Load a bitmap given by ID number from resource and return bitmap handle"),
+    ]
+    HBITMAP WINAPI LoadBitmapAsId(HINSTANCE hInst, LONG idBitmap);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadBitmapW"),
+    #else
+    entry("LoadBitmapA"),
+    #endif
+    helpstring("Load a bitmap given by string name from resource and return bitmap handle"),
+    ]
+    HBITMAP WINAPI LoadBitmap(HINSTANCE hInst, LPTSTR pszBitmap);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadBitmapW"),
+    #else
+    entry("LoadBitmapA"),
+    #endif
+    helpstring("Load a bitmap given by string name from resource and return bitmap handle"),
+    ]
+    HBITMAP WINAPI LoadBitmapAsStr(HINSTANCE hInst, LPTSTR pszBitmap);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadCursorW"),
+    #else
+    entry("LoadCursorA"),
+    #endif
+    helpstring("Load a cursor given by ID number from resource and return the cursor handle"),
+    ]
+    HCURSOR WINAPI LoadCursorAsId(HINSTANCE hInst, LONG idCursor);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadCursorW"),
+    #else
+    entry("LoadCursorA"),
+    #endif
+    helpstring("Load a cursor given by string name from resource and return the cursor handle"),
+    ]
+    HCURSOR WINAPI LoadCursor(HINSTANCE hInst, LPTSTR pszCursor);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadCursorW"),
+    #else
+    entry("LoadCursorA"),
+    #endif
+    helpstring("Load a cursor given by string name from resource and return the cursor handle"),
+    ]
+    HCURSOR WINAPI LoadCursorAsStr(HINSTANCE hInst, LPTSTR pszCursor);
+
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadCursorFromFileW"),
+    #else
+    entry("LoadCursorFromFileA"),
+    #endif
+    helpstring("Creates a cursor based on data contained in a file"),
+    ]
+	HCURSOR WINAPI LoadCursorFromFile(LPCTSTR    lpFileName);
+
+
+	[
+    usesgetlasterror,
+    entry("CreateCursor"),
+    helpstring("Creates a cursor having the specified size, bit patterns, and hot spot"),
+	]
+    HCURSOR WINAPI CreateCursor(HINSTANCE hInst, int xHotSpot, int yHotSpot,
+								int nWidth, int nHeight, 
+								LPVOID pvANDPlane, LPVOID pvXORPlane);
+	
+	[
+    usesgetlasterror,
+    entry("DestroyCursor"),
+    helpstring("Destroys a cursor previously created with CreateCursor or LoadCursor and frees its memory"),
+    ]
+    BOOL    WINAPI DestroyCursor(HCURSOR hcur);
+
+	//define CopyCursor(pcur) 
+	//		 ((HCURSOR)CopyIcon((HICON)(pcur)))
+
+    // Standard cursor resource IDs
+    [ helpstring("Standard cursor: Arrow") ]
+    const long IDC_ARROW          = 32512;
+    [ helpstring("Standard cursor: I-Beam") ]
+    const long IDC_IBEAM          = 32513;
+    [ helpstring("Standard cursor: Hourglass") ]
+    const long IDC_WAIT           = 32514;
+    [ helpstring("Standard cursor: Cross") ]
+    const long IDC_CROSS          = 32515;
+    [ helpstring("Standard cursor: Up arrow") ]
+    const long IDC_UPARROW        = 32516;
+    [ helpstring("Standard cursor: Resize") ]
+    const long IDC_SIZE           = 32640;
+    [ helpstring("Standard cursor: Icon") ]
+    const long IDC_ICON           = 32641;
+    [ helpstring("Standard cursor: Northwest-southeast size") ]
+    const long IDC_SIZENWSE       = 32642;
+    [ helpstring("Standard cursor: Northeast-southwest size") ]
+    const long IDC_SIZENESW       = 32643;
+    [ helpstring("Standard cursor: West-east size") ]
+    const long IDC_SIZEWE         = 32644;
+    [ helpstring("Standard cursor: North-south size") ]
+    const long IDC_SIZENS         = 32645;
+    [ helpstring("Standard cursor: Size all") ]
+    const long IDC_SIZEALL		  = 32646;
+    [ helpstring("Standard cursor: Slashed circle") ]
+    const long IDC_NO		  = 32648;
+    [ helpstring("Standard cursor: App starting") ]
+    const long IDC_APPSTARTING		  = 32650;
+    [ helpstring("Standard cursor: Help") ]
+    const long IDC_HELP		  = 32651;
+
+	[
+    usesgetlasterror,
+    entry("SetSystemCursor"),
+    helpstring("Replaces the contents of the system cursor specified by id with the contents of the cursor specified by hcur, and then destroys hcur"),
+	]
+	BOOL WINAPI SetSystemCursor(HCURSOR hcur, DWORD   id);
+
+    // ****** Icon support **********
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadIconW"),
+    #else
+    entry("LoadIconA"),
+    #endif
+    helpstring("Load an icon given by ID number from resource and return bitmap handle"),
+    ]
+    HICON WINAPI LoadIconAsId(HINSTANCE hInst, LONG idIcon);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadIconW"),
+    #else
+    entry("LoadIconA"),
+    #endif
+    helpstring("Load a bitmap given by string name from resource and return icon handle"),
+    ]
+    HICON WINAPI LoadIcon(HINSTANCE hInst, LPTSTR pszIcon);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadIconW"),
+    #else
+    entry("LoadIconA"),
+    #endif
+    helpstring("Load an icon given by string name from resource and return icon handle"),
+    ]
+    HICON WINAPI LoadIconAsStr(HINSTANCE hInst, LPTSTR pszIcon);
+
+    [
+    usesgetlasterror,
+    entry("CreateIcon"),
+    helpstring("Creates an icon that has the specified size, colors, and bit patterns"),
+    ]
+    HICON WINAPI CreateIcon(HINSTANCE hInstance,
+                            int nWidth, int nHeight,
+                            BYTE cPlanes, BYTE cBitsPixel,
+                            BYTE * lpbANDbits, BYTE * lpbXORbits);
+
+    [
+    usesgetlasterror,
+    entry("DestroyIcon"),
+    helpstring("Destroys an icon previously created with CreateIcon or LoadIcon and frees its memory"),
+    ]
+    BOOL    WINAPI DestroyIcon(HICON hicon);
+
+    [
+    usesgetlasterror,
+    entry("LookupIconIdFromDirectory"),
+    helpstring("Searches through icon or cursor data for the icon or cursor that best fits the current display device"),
+    ]
+    int WINAPI LookupIconIdFromDirectory(BYTE * presbits, BOOL fIcon);
+
+    [
+    usesgetlasterror,
+    entry("LookupIconIdFromDirectoryEx"),
+    helpstring("Searches through icon or cursor data for the icon or cursor that best fits the current display device"),
+    ]
+    int WINAPI LookupIconIdFromDirectoryEx(BYTE  * presbits, BOOL  fIcon,
+									       int   cxDesired, int   cyDesired, 
+										   UINT  Flags);
+
+    [
+    usesgetlasterror,
+    entry("CreateIconFromResource"),
+    helpstring("Creates an icon or cursor from resource bits describing the icon"),
+    ]
+    HICON WINAPI CreateIconFromResource(
+        BYTE * presbits,
+        DWORD dwResSize,
+        BOOL fIcon,
+        DWORD dwVer);
+
+    [
+    usesgetlasterror,
+    entry("CreateIconFromResourceEx"),
+    helpstring("Creates an icon or cursor from resource bits describing the icon"),
+    ]
+    HICON WINAPI CreateIconFromResourceEx(
+        BYTE  * presbits,
+        DWORD dwResSize,
+        BOOL  fIcon,
+        DWORD dwVer,
+        int   cxDesired,
+        int   cyDesired,
+        UINT  Flags);
+
+    // Image support
+
+    [ helpstring("LoadImage: Bitmap") ]
+    const long IMAGE_BITMAP         = 0;
+    [ helpstring("LoadImage: Icon") ]
+    const long IMAGE_ICON           = 1;
+    [ helpstring("LoadImage: Cursor") ]
+    const long IMAGE_CURSOR         = 2;
+    [ helpstring("LoadImage: Metafile") ]
+    const long IMAGE_ENHMETAFILE    = 3;
+
+    [ helpstring("LoadImage: Use the color format of the display") ]
+    const DWORD LR_DEFAULTCOLOR      = 0x0000;
+    [ helpstring("LoadImage or CopyImage: Convert to black and white") ]
+    const DWORD LR_MONOCHROME        = 0x0001;
+    const DWORD LR_COLOR             = 0x0002;
+    [ helpstring("CopyImage: Copy exactly, ignoring desired size") ]
+    const DWORD LR_COPYRETURNORG     = 0x0004;
+    [ helpstring("CopyImage: Delete original image after making copy") ]
+    const DWORD LR_COPYDELETEORG     = 0x0008;
+    [ helpstring("LoadImage: Load from file rather than resource") ]
+    const DWORD LR_LOADFROMFILE      = 0x0010;
+    [ helpstring("LoadImage: Use window color for all pixels matching color of first image pixel") ]
+    const DWORD LR_LOADTRANSPARENT   = 0x0020;
+    [ helpstring("LoadImage: Use system default size or resource default size") ]
+    const DWORD LR_DEFAULTSIZE       = 0x0040;
+    const DWORD LR_VGACOLOR          = 0x0080;
+    [ helpstring("LoadImage: Replace shades of gray with 3D system colors") ]
+    const DWORD LR_LOADMAP3DCOLORS   = 0x1000;
+    [ helpstring("LoadImage: Create a DIB rather than a compatible bitmap") ]
+    const DWORD LR_CREATEDIBSECTION  = 0x2000;
+    const DWORD LR_COPYFROMRESOURCE  = 0x4000;
+    [ helpstring("LoadImage: Share the image handle if loaded multiple times") ]
+    const DWORD LR_SHARED            = 0x8000;
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadImageW"),
+    #else
+    entry("LoadImageA"),
+    #endif
+    helpstring("Loads icon, bitmap, or cursor and returns handle"),
+    ]
+    HANDLE  WINAPI LoadImage(HINSTANCE hinst,
+                             LPCTSTR lpszName, UINT uType,
+                             int cxDesired, int cyDesired,
+                             UINT fuLoad);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadImageW"),
+    #else
+    entry("LoadImageA"),
+    #endif
+    helpstring("Loads icon, bitmap, or cursor from resource ID and returns handle"),
+    ]
+    HANDLE  WINAPI LoadImageID(HINSTANCE hinst,
+                               UINT idName, UINT uType,
+                               int cxDesired, int cyDesired,
+                               UINT fuLoad);
+    [
+    usesgetlasterror,
+    entry("CopyImage"),
+    helpstring("Copies icon, bitmap, or cursor to new image, stretching if necessary"),
+    ]
+    HICON   WINAPI CopyImage(HANDLE hImage, UINT uType,
+                             int cxDesired, int cyDesired,
+                             UINT fuFlags);
+
+	[ helpstring("DrawIconEx: Blits the mask") ]
+    const DWORD DI_MASK              = 0x0001;
+    [ helpstring("DrawIconEx: Blits the image") ]
+    const DWORD DI_IMAGE             = 0x0002;
+    [ helpstring("DrawIconEx: Blits the image and mask") ]
+    const DWORD DI_NORMAL            = 0x0003;
+    [ helpstring("DrawIconEx: Uses the system default images rather than given image") ]
+    const DWORD DI_COMPAT            = 0x0004;
+    [ helpstring("DrawIconEx: Draws default size, ignoring width and height arguments") ]
+    const DWORD DI_DEFAULTSIZE       = 0x0008;
+
+    [
+    usesgetlasterror,
+    entry("DrawIconEx"),
+    helpstring("Draws an icon or cursor with specified raster and stretching as required"),
+    ]
+    BOOL WINAPI DrawIconEx(HDC hdc, int xLeft, int yTop,
+                           HICON hIcon,
+                           int cxWidth, int cyWidth,
+                           UINT istepIfAniCur,
+                           HBRUSH hbrFlickerFreeDraw,
+                           UINT diFlags);
+
+    [
+    usesgetlasterror,
+    entry("CreateIconIndirect"),
+    helpstring("Creates an icon that has size, colors, and bit patterns specified in a structure variable"),
+    ]
+    HICON WINAPI CreateIconIndirect(ICONINFO * piconinfo);
+
+    [
+    usesgetlasterror,
+    entry("CopyIcon"),
+    helpstring("Copies the specified icon from another module to the current module"),
+    ]
+    HICON WINAPI CopyIcon(HICON hIcon);
+
+    [
+    usesgetlasterror,
+    entry("GetIconInfo"),
+    helpstring("Retrieves information about the specified icon or cursor"),
+    ]
+    BOOL WINAPI GetIconInfo(HICON hIcon, ICONINFO * piconinfo);
+
+
+	const long RES_ICON    = 1;
+	const long RES_CURSOR  = 2;
+
+
+    // OEM Resource Ordinal Numbers
+    const long OBM_CLOSE           = 32754;
+    const long OBM_UPARROW         = 32753;
+    const long OBM_DNARROW         = 32752;
+    const long OBM_RGARROW         = 32751;
+    const long OBM_LFARROW         = 32750;
+    const long OBM_REDUCE          = 32749;
+    const long OBM_ZOOM            = 32748;
+    const long OBM_RESTORE         = 32747;
+    const long OBM_REDUCED         = 32746;
+    const long OBM_ZOOMD           = 32745;
+    const long OBM_RESTORED        = 32744;
+    const long OBM_UPARROWD        = 32743;
+    const long OBM_DNARROWD        = 32742;
+    const long OBM_RGARROWD        = 32741;
+    const long OBM_LFARROWD        = 32740;
+    const long OBM_MNARROW         = 32739;
+    const long OBM_COMBO           = 32738;
+    const long OBM_UPARROWI        = 32737;
+    const long OBM_DNARROWI        = 32736;
+    const long OBM_RGARROWI        = 32735;
+    const long OBM_LFARROWI        = 32734;
+
+    const long OBM_OLD_CLOSE       = 32767;
+    const long OBM_SIZE            = 32766;
+    const long OBM_OLD_UPARROW     = 32765;
+    const long OBM_OLD_DNARROW     = 32764;
+    const long OBM_OLD_RGARROW     = 32763;
+    const long OBM_OLD_LFARROW     = 32762;
+    const long OBM_BTSIZE          = 32761;
+    const long OBM_CHECK           = 32760;
+    const long OBM_CHECKBOXES      = 32759;
+    const long OBM_BTNCORNERS      = 32758;
+    const long OBM_OLD_REDUCE      = 32757;
+    const long OBM_OLD_ZOOM        = 32756;
+    const long OBM_OLD_RESTORE     = 32755;
+
+    const long OCR_NORMAL          = 32512;
+    const long OCR_IBEAM           = 32513;
+    const long OCR_WAIT            = 32514;
+    const long OCR_CROSS           = 32515;
+    const long OCR_UP              = 32516;
+    const long OCR_SIZE            = 32640;
+    const long OCR_ICON            = 32641;
+    const long OCR_SIZENWSE        = 32642;
+    const long OCR_SIZENESW        = 32643;
+    const long OCR_SIZEWE          = 32644;
+    const long OCR_SIZENS          = 32645;
+    const long OCR_SIZEALL         = 32646;
+    const long OCR_ICOCUR          = 32647;
+	const long OCR_NO              = 32648;
+    const long OCR_APPSTARTING	   = 32650;
+
+    const long OIC_SAMPLE          = 32512;
+    const long OIC_HAND            = 32513;
+    const long OIC_QUES            = 32514;
+    const long OIC_BANG            = 32515;
+    const long OIC_NOTE            = 32516;
+
+    const long OIC_WINLOGO         = 32517;
+    const long OIC_WARNING         = 32515; // OIC_BANG
+    const long OIC_ERROR           = 32513; // OIC_HAND
+    const long OIC_INFORMATION     = 32516; // OIC_NOTE
+
+    // Standard icon resource IDs
+    [ helpstring("Standard icon: Application") ]
+    const long IDI_APPLICATION  = 32512;
+    [ helpstring("Standard icon: Hand") ]
+    const long IDI_HAND         = 32513;
+    [ helpstring("Standard icon: Question mark") ]
+    const long IDI_QUESTION     = 32514;
+    [ helpstring("Standard icon: Exclamation mark") ]
+    const long IDI_EXCLAMATION  = 32515;
+    [ helpstring("Standard icon: Asterisk") ]
+    const long IDI_ASTERISK     = 32516;
+    [ helpstring("Standard icon: Windows logo") ]
+    const long IDI_WINLOGO      =  32517;
+
+
+    [ helpstring("Standard icon: Warning") ]
+    const long IDI_WARNING      = 32515;
+    [ helpstring("Standard icon: Error") ]
+    const long IDI_ERROR        = 32513;
+    [ helpstring("Standard icon: Information") ]
+    const long IDI_INFORMATION  = 32516;
+
+    // ****** String resource **********
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("LoadStringW"),
+    #else
+    entry("LoadStringA"),
+    #endif
+    helpstring("Load a string given by ID number from resource into string buffer and return string length"),
+    ]
+    int     WINAPI LoadString(HINSTANCE hInst, UINT idResource,
+                              LPCTSTR lpszBuffer, int cbBuffer);
+
+    [
+    usesgetlasterror,
+    entry("LoadStringW"),
+    helpstring("Load a string given by ID number from resource into string buffer and return string length"),
+    ]
+    int     WINAPI LoadStringW(HINSTANCE hInst, UINT idResource,
+                               LPCTSTR lpszBuffer, int cbBuffer);
+
+    [
+    usesgetlasterror,
+    entry("LoadStringA"),
+    helpstring("Load a string given by ID number from resource into string buffer and return string length"),
+    ]
+    int     WINAPI LoadStringA(HINSTANCE hInst, UINT idResource,
+                               LPCTSTR lpszBuffer, int cbBuffer);
+
+
+    // Standard dialog button IDs
+    const long IDOK            = 1;
+    const long IDCANCEL        = 2;
+    const long IDABORT		  = 3;
+    const long IDRETRY		  = 4;
+    const long IDIGNORE        = 5;
+    const long IDYES           = 6;
+    const long IDNO            = 7;
+
+    const long IDCLOSE         = 8;
+    const long IDHELP          = 9;
+
+    // Edit control styles
+    const DWORD ES_LEFT        = 0x00000000;
+    const DWORD ES_CENTER      = 0x00000001;
+    const DWORD ES_RIGHT       = 0x00000002;
+    const DWORD ES_MULTILINE   = 0x00000004;
+    const DWORD ES_UPPERCASE   = 0x00000008;
+    const DWORD ES_LOWERCASE   = 0x00000010;
+    const DWORD ES_PASSWORD    = 0x00000020;
+    const DWORD ES_AUTOVSCROLL = 0x00000040;
+    const DWORD ES_AUTOHSCROLL = 0x00000080;
+    const DWORD ES_NOHIDESEL   = 0x00000100;
+    const DWORD ES_OEMCONVERT  = 0x00000400;
+    const DWORD ES_READONLY    = 0x00000800;
+    const DWORD ES_WANTRETURN  = 0x00001000;
+    const DWORD ES_NUMBER      = 0x00002000;
+
+    // Edit control notification codes
+    const DWORD EN_SETFOCUS      = 0x0100;
+    const DWORD EN_KILLFOCUS     = 0x0200;
+    const DWORD EN_CHANGE        = 0x0300;
+    const DWORD EN_UPDATE        = 0x0400;
+    const DWORD EN_ERRSPACE      = 0x0500;
+    const DWORD EN_MAXTEXT       = 0x0501;
+    const DWORD EN_HSCROLL       = 0x0601;
+    const DWORD EN_VSCROLL       = 0x0602;
+
+    // Edit control EM_SETMARGIN parameters
+    const DWORD EC_LEFTMARGIN       = 0x0001;
+    const DWORD EC_RIGHTMARGIN      = 0x0002;
+    const DWORD EC_USEFONTINFO      = 0xffff;
+
+    // Edit control messages
+    const DWORD EM_GETSEL              = 0x00B0;
+    const DWORD EM_SETSEL              = 0x00B1;
+    const DWORD EM_GETRECT             = 0x00B2;
+    const DWORD EM_SETRECT             = 0x00B3;
+    const DWORD EM_SETRECTNP           = 0x00B4;
+    const DWORD EM_SCROLL              = 0x00B5;
+    const DWORD EM_LINESCROLL          = 0x00B6;
+    // const DWORD EM_SCROLLCARET         = 0x00B7;  In RICHEDIT
+    const DWORD EM_GETMODIFY           = 0x00B8;
+    const DWORD EM_SETMODIFY           = 0x00B9;
+    const DWORD EM_GETLINECOUNT        = 0x00BA;
+    const DWORD EM_LINEINDEX           = 0x00BB;
+    const DWORD EM_SETHANDLE           = 0x00BC;
+    const DWORD EM_GETHANDLE           = 0x00BD;
+    const DWORD EM_GETTHUMB            = 0x00BE;
+    const DWORD EM_LINELENGTH          = 0x00C1;
+    const DWORD EM_REPLACESEL          = 0x00C2;
+    const DWORD EM_GETLINE             = 0x00C4;
+    const DWORD EM_LIMITTEXT           = 0x00C5;
+    const DWORD EM_CANUNDO             = 0x00C6;
+    const DWORD EM_UNDO                = 0x00C7;
+    const DWORD EM_FMTLINES            = 0x00C8;
+    const DWORD EM_LINEFROMCHAR        = 0x00C9;
+    const DWORD EM_SETTABSTOPS         = 0x00CB;
+    const DWORD EM_SETPASSWORDCHAR     = 0x00CC;
+    const DWORD EM_EMPTYUNDOBUFFER     = 0x00CD;
+    const DWORD EM_GETFIRSTVISIBLELINE = 0x00CE;
+    const DWORD EM_SETREADONLY         = 0x00CF;
+    const DWORD EM_SETWORDBREAKPROC    = 0x00D0;
+    const DWORD EM_GETWORDBREAKPROC    = 0x00D1;
+    const DWORD EM_GETPASSWORDCHAR     = 0x00D2;
+    const DWORD EM_SETMARGINS          = 0x00D3;
+    const DWORD EM_GETMARGINS          = 0x00D4;
+    const DWORD EM_SETLIMITTEXT        = 0x00C5; // EM_LIMITTEXT
+    const DWORD EM_GETLIMITTEXT        = 0x00D5;
+    const DWORD EM_POSFROMCHAR         = 0x00D6;
+    const DWORD EM_CHARFROMPOS         = 0x00D7;
+
+    // EDITWORDBREAKPROC code values
+    const long WB_LEFT         = 0;
+    const long WB_RIGHT        = 1;
+    const long WB_ISDELIMITER  = 2;
+
+    // Button Control Styles
+    const DWORD BS_PUSHBUTTON      = 0x00000000;
+    const DWORD BS_DEFPUSHBUTTON    = 0x00000001;
+    const DWORD BS_CHECKBOX        = 0x00000002;
+    const DWORD BS_AUTOCHECKBOX     = 0x00000003;
+    const DWORD BS_RADIOBUTTON     = 0x00000004;
+    const DWORD BS_3STATE      = 0x00000005;
+    const DWORD BS_AUTO3STATE      = 0x00000006;
+    const DWORD BS_GROUPBOX        = 0x00000007;
+    const DWORD BS_USERBUTTON      = 0x00000008;
+    const DWORD BS_AUTORADIOBUTTON  = 0x00000009;
+    const DWORD BS_OWNERDRAW       = 0x0000000B;
+    const DWORD BS_LEFTTEXT        = 0x00000020;
+	const DWORD BS_TEXT             = 0x00000000L;
+	const DWORD BS_ICON             = 0x00000040L;
+	const DWORD BS_BITMAP           = 0x00000080L;
+	const DWORD BS_LEFT             = 0x00000100L;
+	const DWORD BS_RIGHT            = 0x00000200L;
+	const DWORD BS_CENTER           = 0x00000300L;
+	const DWORD BS_TOP              = 0x00000400L;
+	const DWORD BS_BOTTOM           = 0x00000800L;
+	const DWORD BS_VCENTER          = 0x00000C00L;
+	const DWORD BS_PUSHLIKE         = 0x00001000L;
+	const DWORD BS_MULTILINE        = 0x00002000L;
+	const DWORD BS_NOTIFY           = 0x00004000L;
+	const DWORD BS_FLAT             = 0x00008000L;
+	const DWORD BS_RIGHTBUTTON      = 0x00000020L;
+
+    // User Button Notification Codes
+    const long BN_CLICKED       = 0;
+    const long BN_PAINT         = 1;
+    const long BN_HILITE        = 2;
+    const long BN_UNHILITE      = 3;
+    const long BN_DISABLE       = 4;
+    const long BN_DOUBLECLICKED = 5;
+
+    const long BN_PUSHED        = 2; // BN_HILITE
+    const long BN_UNPUSHED      = 3; // BN_UNHILITE
+    const long BN_DBLCLK		   = 5;
+    const long BN_SETFOCUS      = 6;
+    const long BN_KILLFOCUS     = 7;
+
+    // Button Control Messages
+	const DWORD BM_GETCHECK        = 0x00F0;
+	const DWORD BM_SETCHECK        = 0x00F1;
+	const DWORD BM_GETSTATE        = 0x00F2;
+	const DWORD BM_SETSTATE        = 0x00F3;
+	const DWORD BM_SETSTYLE        = 0x00F4;
+	const DWORD BM_CLICK           = 0x00F5;
+	const DWORD BM_GETIMAGE        = 0x00F6;
+	const DWORD BM_SETIMAGE        = 0x00F7;
+
+	const DWORD BST_UNCHECKED      = 0x0000;
+	const DWORD BST_CHECKED        = 0x0001;
+	const DWORD BST_INDETERMINATE  = 0x0002;
+	const DWORD BST_PUSHED         = 0x0004;
+	const DWORD BST_FOCUS          = 0x0008;
+
+
+    // ****** Static control *******
+    /*
+    // Static Control Styles
+    const DWORD SS_LEFT        = 0x00000000;
+    const DWORD SS_CENTER      = 0x00000001;
+    const DWORD SS_RIGHT       = 0x00000002;
+    const DWORD SS_ICON        = 0x00000003;
+    const DWORD SS_BLACKRECT       = 0x00000004;
+    const DWORD SS_GRAYRECT        = 0x00000005;
+    const DWORD SS_WHITERECT       = 0x00000006;
+    const DWORD SS_BLACKFRAME      = 0x00000007;
+    const DWORD SS_GRAYFRAME       = 0x00000008;
+    const DWORD SS_WHITEFRAME      = 0x00000009;
+    const DWORD SS_SIMPLE      = 0x0000000B;
+    const DWORD SS_LEFTNOWORDWRAP   = 0x0000000C;
+	const DWORD SS_OWNERDRAW        = 0x0000000DL;
+	const DWORD SS_BITMAP           = 0x0000000EL;
+	const DWORD SS_ENHMETAFILE      = 0x0000000FL;
+	const DWORD SS_ETCHEDHORZ       = 0x00000010L;
+	const DWORD SS_ETCHEDVERT       = 0x00000011L;
+	const DWORD SS_ETCHEDFRAME      = 0x00000012L;
+	const DWORD SS_TYPEMASK         = 0x0000001FL;
+    const DWORD SS_NOPREFIX         = 0x00000080; // Don't do "&" character translation
+	const DWORD SS_NOTIFY           = 0x00000100L;
+	const DWORD SS_CENTERIMAGE      = 0x00000200L;
+	const DWORD SS_RIGHTJUST        = 0x00000400L;
+	const DWORD SS_REALSIZEIMAGE    = 0x00000800L;
+	const DWORD SS_SUNKEN           = 0x00001000L;
+	const DWORD SS_ENDELLIPSIS      = 0x00004000L;
+	const DWORD SS_PATHELLIPSIS     = 0x00008000L;
+	const DWORD SS_WORDELLIPSIS     = 0x0000C000L;
+	const DWORD SS_ELLIPSISMASK     = 0x0000C000L;
+
+    // Static Control Mesages
+    const DWORD STM_SETICON      = 0x0170;
+    const DWORD STM_GETICON      = 0x0171;
+	const DWORD STM_SETIMAGE        = 0x0172;
+	const DWORD STM_GETIMAGE        = 0x0173;
+	const long STN_CLICKED         = 0;
+	const long STN_DBLCLK          = 1;
+	const long STN_ENABLE          = 2;
+	const long STN_DISABLE         = 3;
+	const DWORD STM_MSGMAX          = 0x0174;
+	*/
+
+
+	/*
+    const DWORD WC_DIALOG   0x8002;
+
+    // Get/SetWindowWord/Long offsets for use with WC_DIALOG windows
+    const long DWL_MSGRESULT		= 0;
+    const long DWL_DLGPROC		= 4;
+    const long DWL_USER			= 8;
+
+	*/
+
+
+    /*
+    BOOL    WINAPI IsDialogMessage(HWND hwnd, MSG *);
+    BOOL    WINAPI MapDialogRect(HWND hWnd, RECT *);
+	int		WINAPI DlgDirList(HWND hDlg, LPTSTR lpPathSpec, 
+							  int nIDListBox, int nIDStaticPath, 
+							  UINT uFileType);
+
+    // DlgDirList, DlgDirListComboBox flags values
+    const DWORD DDL_READWRITE          = 0x0000;
+    const DWORD DDL_READONLY           = 0x0001;
+    const DWORD DDL_HIDDEN             = 0x0002;
+    const DWORD DDL_SYSTEM             = 0x0004;
+    const DWORD DDL_DIRECTORY          = 0x0010;
+    const DWORD DDL_ARCHIVE            = 0x0020;
+
+    const DWORD DDL_POSTMSGS           = 0x2000;
+    const DWORD DDL_DRIVES             = 0x4000;
+    const DWORD DDL_EXCLUSIVE          = 0x8000;
+
+    BOOL    WINAPI DlgDirSelectEx(HWND hWnd, LPTSTR, int, int);
+    int     WINAPI DlgDirListComboBox(HWND hWnd, LPTSTR, int, int, UINT);
+    BOOL    WINAPI DlgDirSelectComboBoxEx(HWND hWnd, LPTSTR, int, int);
+
+    // Dialog styles
+    const DWORD DS_ABSALIGN        = 0x01;
+    const DWORD DS_SYSMODAL        = 0x02;
+    const DWORD DS_LOCALEDIT        = 0x20;
+    const DWORD DS_SETFONT          = 0x40;
+    const DWORD DS_MODALFRAME       = 0x80;
+    const DWORD DS_NOIDLEMSG        = 0x100;
+	const DWORD DS_3DLOOK           = 0x0004L;
+	const DWORD DS_FIXEDSYS         = 0x0008L;
+	const DWORD DS_NOFAILCREATE     = 0x0010L;
+	const DWORD DS_CONTROL          = 0x0400L;
+	const DWORD DS_CENTER           = 0x0800L;
+	const DWORD DS_CENTERMOUSE      = 0x1000L;
+	const DWORD DS_CONTEXTHELP      = 0x2000L;
+
+    // Dialog messages
+    const DWORD DM_GETDEFID      = WM_USER+0;
+    const DWORD DM_SETDEFID      = WM_USER+1;
+	const DWORD DM_REPOSITION    = WM_USER+2;
+
+	const DWORD PSM_PAGEINFO        = (WM_USER+100);
+	const DWORD PSM_SHEETINFO       = (WM_USER+101);
+
+	const DWORD PSI_SETACTIVE       = 0x0001L;
+	const DWORD PSI_KILLACTIVE      = 0x0002L;
+	const DWORD PSI_APPLY           = 0x0003L;
+	const DWORD PSI_RESET           = 0x0004L;
+	const DWORD PSI_HASHELP         = 0x0005L;
+	const DWORD PSI_HELP            = 0x0006L;
+
+	const DWORD PSI_CHANGED         = 0x0001L;
+	const DWORD PSI_GUISTART        = 0x0002L;
+	const DWORD PSI_REBOOT          = 0x0003L;
+	const DWORD PSI_GETSIBLINGS     = 0x0004L;
+	// Returned in HIWORD() of DM_GETDEFID result if msg is supported
+    const DWORD DC_HASDEFID      = 0x534B;
+
+    // Dialog codes
+    const DWORD DLGC_WANTARROWS       = 0x0001;
+    const DWORD DLGC_WANTTAB          = 0x0002;
+    const DWORD DLGC_WANTALLKEYS      = 0x0004;
+    const DWORD DLGC_WANTMESSAGE      = 0x0004;
+    const DWORD DLGC_HASSETSEL        = 0x0008;
+    const DWORD DLGC_DEFPUSHBUTTON    = 0x0010;
+    const DWORD DLGC_UNDEFPUSHBUTTON  = 0x0020;
+    const DWORD DLGC_RADIOBUTTON      = 0x0040;
+    const DWORD DLGC_WANTCHARS        = 0x0080;
+    const DWORD DLGC_STATIC           = 0x0100;
+    const DWORD DLGC_BUTTON           = 0x2000;
+
+	*/
+
+    const long LB_CTLCODE      = 0;
+
+    // Listbox message return values
+    const long LB_OKAY          = 0;
+    const long LB_ERR           = -1;
+    const long LB_ERRSPACE      = -2;
+
+    // Listbox notification codes
+    const long LBN_ERRSPACE     = -2;
+    const long LBN_SELCHANGE    = 1;
+    const long LBN_DBLCLK       = 2;
+    const long LBN_SELCANCEL    = 3;
+    const long LBN_SETFOCUS     = 4;
+    const long LBN_KILLFOCUS    = 5;
+
+    // Listbox messages
+    const DWORD LB_ADDSTRING      = 0x180;
+    const DWORD LB_INSERTSTRING   = 0x181;
+    const DWORD LB_DELETESTRING   = 0x182;
+    const DWORD LB_SELITEMRANGEEX = 0x183;
+    const DWORD LB_RESETCONTENT   = 0x184;
+    const DWORD LB_SETSEL         = 0x185;
+    const DWORD LB_SETCURSEL      = 0x186;
+    const DWORD LB_GETSEL         = 0x187;
+    const DWORD LB_GETCURSEL      = 0x188;
+    const DWORD LB_GETTEXT        = 0x189;
+    const DWORD LB_GETTEXTLEN     = 0x18A;
+    const DWORD LB_GETCOUNT       = 0x18B;
+    const DWORD LB_SELECTSTRING   = 0x18C;
+    const DWORD LB_DIR            = 0x18D;
+    const DWORD LB_GETTOPINDEX    = 0x18E;
+    const DWORD LB_FINDSTRING     = 0x18F;
+    const DWORD LB_GETSELCOUNT    = 0x190;
+    const DWORD LB_GETSELITEMS    = 0x191;
+    const DWORD LB_SETTABSTOPS    = 0x192;
+    const DWORD LB_GETHORIZONTALEXTENT = 0x193;
+    const DWORD LB_SETHORIZONTALEXTENT = 0x194;
+    const DWORD LB_SETCOLUMNWIDTH = 0x195;
+    const DWORD LB_ADDFILE        = 0x196;
+    const DWORD LB_SETTOPINDEX    = 0x197;
+    const DWORD LB_GETITEMRECT    = 0x198;
+    const DWORD LB_GETITEMDATA    = 0x199;
+    const DWORD LB_SETITEMDATA    = 0x19A;
+    const DWORD LB_SELITEMRANGE   = 0x19B;
+    const DWORD LB_SETANCHORINDEX = 0x19C;
+    const DWORD LB_GETANCHORINDEX = 0x19D;
+    const DWORD LB_SETCARETINDEX  = 0x19E;
+    const DWORD LB_GETCARETINDEX  = 0x19F;
+    const DWORD LB_SETITEMHEIGHT  = 0x1A0;
+    const DWORD LB_GETITEMHEIGHT  = 0x1A1;
+    const DWORD LB_FINDSTRINGEXACT = 0x1A2;
+    const DWORD LB_SETLOCALE      = 0x1A5;
+    const DWORD LB_GETLOCALE      = 0x1A6;
+    const DWORD LB_SETCOUNT       = 0x1A7;
+    const DWORD LB_INITSTORAGE    = 0x1A8;
+    const DWORD LB_ITEMFROMPOINT  = 0x1A9;
+
+    // Listbox styles
+    const DWORD LBS_NOTIFY            = 0x00000001;
+    const DWORD LBS_SORT              = 0x00000002;
+    const DWORD LBS_NOREDRAW          = 0x00000004;
+    const DWORD LBS_MULTIPLESEL       = 0x00000008;
+    const DWORD LBS_OWNERDRAWFIXED    = 0x00000010;
+    const DWORD LBS_OWNERDRAWVARIABLE = 0x00000020;
+    const DWORD LBS_HASSTRINGS        = 0x00000040;
+    const DWORD LBS_USETABSTOPS       = 0x00000080;
+    const DWORD LBS_NOINTEGRALHEIGHT  = 0x00000100;
+    const DWORD LBS_MULTICOLUMN       = 0x00000200;
+    const DWORD LBS_WANTKEYBOARDINPUT = 0x00000400;
+    const DWORD LBS_EXTENDEDSEL       = 0x00000800;
+    const DWORD LBS_DISABLENOSCROLL   = 0x00001000;
+    const DWORD LBS_NODATA            = 0x00002000;
+    const DWORD LBS_NOSEL             = 0x00004000;
+    const DWORD LBS_STANDARD          = 0x00A00003;  // (LBS_NOTIFY | LBS_SORT | WS_VSCROLL | WS_BORDER)
+
+    // Combo box message return values
+    const long CB_OKAY          = 0;
+    const long CB_ERR           = -1;
+    const long CB_ERRSPACE      = -2;
+
+    // Combo box notification codes
+    const long CBN_ERRSPACE     = -1;
+    const long CBN_SELCHANGE    = 1;
+    const long CBN_DBLCLK       = 2;
+    const long CBN_SETFOCUS     = 3;
+    const long CBN_KILLFOCUS    = 4;
+    const long CBN_EDITCHANGE   = 5;
+    const long CBN_EDITUPDATE   = 6;
+    const long CBN_DROPDOWN     = 7;
+    const long CBN_CLOSEUP      = 8;
+    const long CBN_SELENDOK     = 9;
+    const long CBN_SELENDCANCEL = 10;
+
+    // Combo box styles
+    const DWORD CBS_SIMPLE       = 0x0001;
+    const DWORD CBS_DROPDOWN         = 0x0002;
+    const DWORD CBS_DROPDOWNLIST      = 0x0003;
+    const DWORD CBS_OWNERDRAWFIXED    = 0x0010;
+    const DWORD CBS_OWNERDRAWVARIABLE = 0x0020;
+    const DWORD CBS_AUTOHSCROLL       = 0x0040;
+    const DWORD CBS_OEMCONVERT        = 0x0080;
+    const DWORD CBS_SORT              = 0x0100;
+    const DWORD CBS_HASSTRINGS        = 0x0200;
+    const DWORD CBS_NOINTEGRALHEIGHT  = 0x0400;
+    const DWORD CBS_DISABLENOSCROLL   = 0x0800;
+    const DWORD CBS_UPPERCASE  = 0x2000;
+    const DWORD CBS_LOWERCASE   = 0x4000;
+
+    // Combo box messages
+    const DWORD CB_GETEDITSEL    = 0x140;
+    const DWORD CB_LIMITTEXT     = 0x141;
+    const DWORD CB_SETEDITSEL    = 0x142;
+    const DWORD CB_ADDSTRING     = 0x143;
+    const DWORD CB_DELETESTRING  = 0x144;
+    const DWORD CB_DIR           = 0x145;
+    const DWORD CB_GETCOUNT      = 0x146;
+    const DWORD CB_GETCURSEL     = 0x147;
+    const DWORD CB_GETLBTEXT     = 0x148;
+    const DWORD CB_GETLBTEXTLEN  = 0x149;
+    const DWORD CB_INSERTSTRING  = 0x14A;
+    const DWORD CB_RESETCONTENT  = 0x14B;
+    const DWORD CB_FINDSTRING    = 0x14C;
+    const DWORD CB_SELECTSTRING  = 0x14D;
+    const DWORD CB_SETCURSEL     = 0x14E;
+    const DWORD CB_SHOWDROPDOWN  = 0x14F;
+    const DWORD CB_GETITEMDATA   = 0x150;
+    const DWORD CB_SETITEMDATA   = 0x151;
+    const DWORD CB_GETDROPPEDCONTROLRECT = 0x152;
+    const DWORD CB_SETITEMHEIGHT = 0x153;
+    const DWORD CB_GETITEMHEIGHT = 0x154;
+    const DWORD CB_SETEXTENDEDUI = 0x155;
+    const DWORD CB_GETEXTENDEDUI = 0x156;
+    const DWORD CB_GETDROPPEDSTATE = 0x157;
+    const DWORD CB_FINDSTRINGEXACT = 0x158;
+
+    const DWORD CB_SETLOCALE     = 0x159;
+    const DWORD CB_GETLOCALE     = 0x15A;
+    const DWORD CB_GETTOPINDEX   = 0x15B;
+    const DWORD CB_SETTOPINDEX   = 0x15C;
+    const DWORD CB_GETHORIZONTALEXTENT    = 0x15D;
+    const DWORD CB_SETHORIZONTALEXTENT    = 0x15E;
+    const DWORD CB_GETDROPPEDWIDTH        = 0x15F;
+    const DWORD CB_SETDROPPEDWIDTH        = 0x160;
+    const DWORD CB_INITSTORAGE            = 0x161;
+
+	/*
+    // Scroll bar styles
+    const DWORD SBS_HORZ           = 0x0000;
+    const DWORD SBS_VERT           = 0x0001;
+    const DWORD SBS_TOPALIGN           = 0x0002;
+    const DWORD SBS_LEFTALIGN          = 0x0002;
+    const DWORD SBS_BOTTOMALIGN            = 0x0004;
+    const DWORD SBS_RIGHTALIGN         = 0x0004;
+    const DWORD SBS_SIZEBOXTOPLEFTALIGN        = 0x0002;
+    const DWORD SBS_SIZEBOXBOTTOMRIGHTALIGN = 0x0004;
+    const DWORD SBS_SIZEBOX            = 0x0008;
+    const DWORD SBS_SIZEGRIP		   = 0x0010;
+
+	// Scroll bar messages
+	const DWORD SBM_SETPOS                  = 0x00E0; //not in win3.1 
+	const DWORD SBM_GETPOS                  = 0x00E1; //not in win3.1 
+	const DWORD SBM_SETRANGE                = 0x00E2; //not in win3.1 
+	const DWORD SBM_SETRANGEREDRAW          = 0x00E6; //not in win3.1 
+	const DWORD SBM_GETRANGE                = 0x00E3; //not in win3.1 
+	const DWORD SBM_ENABLE_ARROWS           = 0x00E4; //not in win3.1 
+	const DWORD SBM_SETSCROLLINFO           = 0x00E9;
+	const DWORD SBM_GETSCROLLINFO           = 0x00EA;
+
+	const DWORD SIF_RANGE           = 0x0001;
+	const DWORD SIF_PAGE            = 0x0002;
+	const DWORD SIF_POS             = 0x0004;
+	const DWORD SIF_DISABLENOSCROLL = 0x0008;
+	const DWORD SIF_TRACKPOS        = 0x0010;
+	const DWORD SIF_ALL             = 0x0017;  // (SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS)
+
+	int     WINAPI SetScrollInfo(HWND, int, LPCSCROLLINFO, BOOL);
+	BOOL    WINAPI GetScrollInfo(HWND, int, LPSCROLLINFO);
+	*/
+
+
+	// MDI client style bits
+    const DWORD MDIS_ALLCHILDSTYLES   = 0x0001;
+
+    // wParam values for WM_MDITILE and WM_MDICASCADE messages.
+    const DWORD MDITILE_VERTICAL      = 0x0000;
+    const DWORD MDITILE_HORIZONTAL    = 0x0001;
+    const DWORD MDITILE_SKIPDISABLED  = 0x0002;
+
+    /*
+
+    LRESULT WINAPI DefFrameProc(HWND hwnd, HWND hwnd, UINT, WPARAM, LPARAM lParam);
+    LRESULT WINAPI DefMDIChildProc(HWND hwnd, UINT, WPARAM, LPARAM lParam);
+
+    BOOL    WINAPI TranslateMDISysAccel(HWND hwnd, MSG *);
+
+    UINT    WINAPI ArrangeIconicWindows(HWND hwnd);
+
+	HWND	WINAPI CreateMDIWindow(LPTSTR lpClassName, LPTSTR lpWindowName,
+								   DWORD dwStyle, int X, int Y, 
+								   int nWidth, int nHeight, HWND hWndParent, 
+								   HINSTANCE hInstance, LPARAM lParam);
+	WORD    WINAPI TileWindows(HWND hwndParent, UINT wHow, 
+							   RECT * lpRect, UINT cKids, HWND * lpKids);
+	WORD    WINAPI CascadeWindows(HWND hwndParent, UINT wHow, 
+								  RECT * lpRect, UINT cKids,  HWND * lpKids);
+
+    */
+
+    // WinHelp() commands
+    const DWORD HELP_CONTEXT       = 0x0001;
+    const DWORD HELP_QUIT          = 0x0002;
+    const DWORD HELP_INDEX     = 0x0003;
+    const DWORD HELP_CONTENTS      = 0x0003;
+    const DWORD HELP_HELPONHELP   = 0x0004;
+    const DWORD HELP_SETINDEX      = 0x0005;
+    const DWORD HELP_SETCONTENTS  = 0x0005;
+    const DWORD HELP_CONTEXTPOPUP = 0x0008;
+    const DWORD HELP_FORCEFILE    = 0x0009;
+    const DWORD HELP_KEY           = 0x0101;
+    const DWORD HELP_COMMAND       = 0x0102;
+    const DWORD HELP_PARTIALKEY   = 0x0105;
+    const DWORD HELP_MULTIKEY      = 0x0201;
+    const DWORD HELP_SETWINPOS    = 0x0203;
+
+	const DWORD HELP_CONTEXTMENU  = 0x000a;
+	const DWORD HELP_FINDER       = 0x000b;
+	const DWORD HELP_WM_HELP      = 0x000c;
+	const DWORD HELP_SETPOPUP_POS = 0x000d;
+
+	const DWORD HELP_TCARD              = 0x8000;
+	const DWORD HELP_TCARD_DATA         = 0x0010;
+	const DWORD HELP_TCARD_OTHER_CALLER = 0x0011;
+
+	const long IDH_NO_HELP                     = 28440;
+	const long IDH_MISSING_CONTEXT             = 28441; // Control doesn't have matching help context
+	const long IDH_GENERIC_HELP_BUTTON         = 28442; // Property sheet help button
+	const long IDH_OK                          = 28443;
+	const long IDH_CANCEL                      = 28444;
+	const long IDH_HELP                        = 28445;
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("WinHelpW"),
+    #else
+    entry("WinHelpA"),
+    #endif
+    helpstring("Starts windows help and passes a request for help"),
+    ]
+    BOOL WINAPI WinHelp(HWND hwndMain, LPCTSTR lpszHelp,
+                        UINT usCommand, DWORD ulData);
+
+
+    const long SPI_GETBEEP                 = 1;
+    const long SPI_SETBEEP                 = 2;
+    const long SPI_GETMOUSE                = 3;
+    const long SPI_SETMOUSE                = 4;
+    const long SPI_GETBORDER               = 5;
+    const long SPI_SETBORDER               = 6;
+    const long SPI_GETKEYBOARDSPEED        = 10;
+    const long SPI_SETKEYBOARDSPEED        = 11;
+    const long SPI_LANGDRIVER              = 12;
+    const long SPI_ICONHORIZONTALSPACING   = 13;
+    const long SPI_GETSCREENSAVETIMEOUT    = 14;
+    const long SPI_SETSCREENSAVETIMEOUT    = 15;
+    const long SPI_GETSCREENSAVEACTIVE     = 16;
+    const long SPI_SETSCREENSAVEACTIVE     = 17;
+    const long SPI_GETGRIDGRANULARITY      = 18;
+    const long SPI_SETGRIDGRANULARITY      = 19;
+    const long SPI_SETDESKWALLPAPER        = 20;
+    const long SPI_SETDESKPATTERN          = 21;
+    const long SPI_GETKEYBOARDDELAY        = 22;
+    const long SPI_SETKEYBOARDDELAY        = 23;
+    const long SPI_ICONVERTICALSPACING     = 24;
+    const long SPI_GETICONTITLEWRAP        = 25;
+    const long SPI_SETICONTITLEWRAP        = 26;
+    const long SPI_GETMENUDROPALIGNMENT    = 27;
+    const long SPI_SETMENUDROPALIGNMENT    = 28;
+    const long SPI_SETDOUBLECLKWIDTH       = 29;
+    const long SPI_SETDOUBLECLKHEIGHT      = 30;
+    const long SPI_GETICONTITLELOGFONT     = 31;
+    const long SPI_SETDOUBLECLICKTIME      = 32;
+    const long SPI_SETMOUSEBUTTONSWAP      = 33;
+    const long SPI_SETICONTITLELOGFONT     = 34;
+    const long SPI_GETFASTTASKSWITCH       = 35;
+    const long SPI_SETFASTTASKSWITCH       = 36;
+	const long SPI_SETDRAGFULLWINDOWS     = 37;
+	const long SPI_GETDRAGFULLWINDOWS     = 38;
+	const long SPI_GETNONCLIENTMETRICS    = 41;
+	const long SPI_SETNONCLIENTMETRICS    = 42;
+	const long SPI_GETMINIMIZEDMETRICS    = 43;
+	const long SPI_SETMINIMIZEDMETRICS    = 44;
+	const long SPI_GETICONMETRICS         = 45;
+	const long SPI_SETICONMETRICS         = 46;
+	const long SPI_SETWORKAREA            = 47;
+	const long SPI_GETWORKAREA            = 48;
+	const long SPI_SETPENWINDOWS          = 49;
+
+	const long SPI_GETHIGHCONTRAST        = 66;
+	const long SPI_SETHIGHCONTRAST        = 67;
+	const long SPI_GETKEYBOARDPREF        = 68;
+	const long SPI_SETKEYBOARDPREF        = 69;
+	const long SPI_GETSCREENREADER        = 70;
+	const long SPI_SETSCREENREADER        = 71;
+	const long SPI_GETANIMATION           = 72;
+	const long SPI_SETANIMATION           = 73;
+	const long SPI_GETFONTSMOOTHING       = 74;
+	const long SPI_SETFONTSMOOTHING       = 75;
+	const long SPI_SETDRAGWIDTH           = 76;
+	const long SPI_SETDRAGHEIGHT          = 77;
+	const long SPI_SETHANDHELD            = 78;
+	const long SPI_GETLOWPOWERTIMEOUT     = 79;
+	const long SPI_GETPOWEROFFTIMEOUT     = 80;
+	const long SPI_SETLOWPOWERTIMEOUT     = 81;
+	const long SPI_SETPOWEROFFTIMEOUT     = 82;
+	const long SPI_GETLOWPOWERACTIVE      = 83;
+	const long SPI_GETPOWEROFFACTIVE      = 84;
+	const long SPI_SETLOWPOWERACTIVE      = 85;
+	const long SPI_SETPOWEROFFACTIVE      = 86;
+	const long SPI_SETCURSORS             = 87;
+	const long SPI_SETICONS               = 88;
+	const long SPI_GETDEFAULTINPUTLANG    = 89;
+	const long SPI_SETDEFAULTINPUTLANG    = 90;
+	const long SPI_SETLANGTOGGLE          = 91;
+	const long SPI_GETWINDOWSEXTENSION    = 92;
+	const long SPI_SETMOUSETRAILS         = 93;
+	const long SPI_GETMOUSETRAILS         = 94;
+	const long SPI_SCREENSAVERRUNNING     = 97;
+	const long SPI_GETFILTERKEYS          = 50;
+	const long SPI_SETFILTERKEYS          = 51;
+	const long SPI_GETTOGGLEKEYS          = 52;
+	const long SPI_SETTOGGLEKEYS          = 53;
+	const long SPI_GETMOUSEKEYS           = 54;
+	const long SPI_SETMOUSEKEYS           = 55;
+	const long SPI_GETSHOWSOUNDS          = 56;
+	const long SPI_SETSHOWSOUNDS          = 57;
+	const long SPI_GETSTICKYKEYS          = 58;
+	const long SPI_SETSTICKYKEYS          = 59;
+	const long SPI_GETACCESSTIMEOUT       = 60;
+	const long SPI_SETACCESSTIMEOUT       = 61;
+	const long SPI_GETSERIALKEYS          = 62;
+	const long SPI_SETSERIALKEYS          = 63;
+	const long SPI_GETSOUNDSENTRY         = 64;
+	const long SPI_SETSOUNDSENTRY         = 65;
+	const long SPI_GETSNAPTODEFBUTTON     = 95;
+	const long SPI_SETSNAPTODEFBUTTON     = 96;
+	const long SPI_GETMOUSEHOVERWIDTH     = 98;
+	const long SPI_SETMOUSEHOVERWIDTH     = 99;
+	const long SPI_GETMOUSEHOVERHEIGHT   = 100;
+	const long SPI_SETMOUSEHOVERHEIGHT   = 101;
+	const long SPI_GETMOUSEHOVERTIME     = 102;
+	const long SPI_SETMOUSEHOVERTIME     = 103;
+	const long SPI_GETWHEELSCROLLLINES   = 104;
+	const long SPI_SETWHEELSCROLLLINES   = 105;
+
+    // SystemParametersInfo flags
+    const DWORD SPIF_UPDATEINIFILE       = 0x0001;
+    const DWORD SPIF_SENDWININICHANGE    = 0x0002;
+    const DWORD SPIF_SENDCHANGE          = 0x0002; // SPIF_SENDWININICHANGE    
+
+	const DWORD METRICS_USEDEFAULT = -1;
+
+
+	const DWORD ARW_BOTTOMLEFT              = 0x0000L;
+	const DWORD ARW_BOTTOMRIGHT             = 0x0001L;
+	const DWORD ARW_TOPLEFT                 = 0x0002L;
+	const DWORD ARW_TOPRIGHT                = 0x0003L;
+	const DWORD ARW_STARTMASK               = 0x0003L;
+	const DWORD ARW_STARTRIGHT              = 0x0001L;
+	const DWORD ARW_STARTTOP                = 0x0002L;
+
+	const DWORD ARW_LEFT                    = 0x0000L;
+	const DWORD ARW_RIGHT                   = 0x0000L;
+	const DWORD ARW_UP                      = 0x0004L;
+	const DWORD ARW_DOWN                    = 0x0004L;
+	const DWORD ARW_HIDE                    = 0x0008L;
+	const DWORD ARW_VALID                   = 0x000FL;
+
+	/*
+	const DWORD SERKF_SERIALKEYSON  = 0x00000001;
+	const DWORD SERKF_AVAILABLE     = 0x00000002;
+	const DWORD SERKF_INDICATOR     = 0x00000004;
+
+	// flags for HIGHCONTRAST dwFlags field 
+	const DWORD HCF_HIGHCONTRASTON  = 0x00000001;
+	const DWORD HCF_AVAILABLE       = 0x00000002;
+	const DWORD HCF_HOTKEYACTIVE    = 0x00000004;
+	const DWORD HCF_CONFIRMHOTKEY   = 0x00000008;
+	const DWORD HCF_HOTKEYSOUND     = 0x00000010;
+	const DWORD HCF_INDICATOR       = 0x00000020;
+	const DWORD HCF_HOTKEYAVAILABLE = 0x00000040;
+
+	// Flags for ChangeDisplaySettings 
+	const DWORD CDS_UPDATEREGISTRY  = 0x00000001;
+	const DWORD CDS_TEST            = 0x00000002;
+	const DWORD CDS_FULLSCREEN      = 0x00000004;
+	const DWORD CDS_GLOBAL          = 0x00000008;
+	const DWORD CDS_SET_PRIMARY     = 0x00000010;
+	const DWORD CDS_RESET           = 0x40000000;
+	const DWORD CDS_SETRECT         = 0x20000000;
+	const DWORD CDS_NORESET         = 0x10000000;
+
+	// Return values for ChangeDisplaySettings 
+	const long DISP_CHANGE_SUCCESSFUL       = 0;
+	const long DISP_CHANGE_RESTART          = 1;
+	const long DISP_CHANGE_FAILED          = -1;
+	const long DISP_CHANGE_BADMODE         = -2;
+	const long DISP_CHANGE_NOTUPDATED      = -3;
+	const long DISP_CHANGE_BADFLAGS        = -4;
+	const long DISP_CHANGE_BADPARAM        = -5;
+
+	LONG WINAPI ChangeDisplaySettings(LPDEVMODE lpDevMode, DWORD dwFlags);
+	LONG WINAPI ChangeDisplaySettingsEx(LPCTSTR lpszDeviceName, 
+										LPDEVMODE lpDevMode, HWND hwnd, 
+										DWORD dwflags, LPVOID lParam);
+
+	const long ENUM_CURRENT_SETTINGS       = -1;
+	const long ENUM_REGISTRY_SETTINGS      = -2;
+
+	BOOL WINAPI EnumDisplaySettings(LPCTSTR lpszDeviceName, 
+									DWORD iModeNum, LPDEVMODE lpDevMode);
+
+	*/
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("SystemParametersInfoW"),
+	#else
+    entry("SystemParametersInfoA"),
+	#endif
+    helpstring("Queries or sets systemwide parameters, possibly updating the user profile while setting a parameter"),
+    ]
+    BOOL    WINAPI SystemParametersInfo(UINT uiAction, 
+										UINT uiParam, 
+										void * pvParam, 
+										UINT fWinIni);
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("SystemParametersInfoW"),
+	#else
+    entry("SystemParametersInfoA"),
+	#endif
+    helpstring("Queries or sets systemwide parameters that require string arguments, possibly updating the user profile while setting a parameter"),
+    ]
+    BOOL    WINAPI SystemParametersInfoStr(UINT uiAction, 
+										   UINT uiParam, 
+										   LPSTR pvParam, 
+										   UINT fWinIni);
+
+
+	// ******* Accessibility support *******
+
+	/*
+	// FILTERKEYS dwFlags field
+	const DWORD FKF_FILTERKEYSON    = 0x00000001;
+	const DWORD FKF_AVAILABLE       = 0x00000002;
+	const DWORD FKF_HOTKEYACTIVE    = 0x00000004;
+	const DWORD FKF_CONFIRMHOTKEY   = 0x00000008;
+	const DWORD FKF_HOTKEYSOUND     = 0x00000010;
+	const DWORD FKF_INDICATOR       = 0x00000020;
+	const DWORD FKF_CLICKON         = 0x00000040;
+
+	// STICKYKEYS dwFlags field
+	const DWORD SKF_STICKYKEYSON    = 0x00000001;
+	const DWORD SKF_AVAILABLE       = 0x00000002;
+	const DWORD SKF_HOTKEYACTIVE    = 0x00000004;
+	const DWORD SKF_CONFIRMHOTKEY   = 0x00000008;
+	const DWORD SKF_HOTKEYSOUND     = 0x00000010;
+	const DWORD SKF_INDICATOR       = 0x00000020;
+	const DWORD SKF_AUDIBLEFEEDBACK = 0x00000040;
+	const DWORD SKF_TRISTATE        = 0x00000080;
+	const DWORD SKF_TWOKEYSOFF      = 0x00000100;
+
+	// MOUSEKEYS dwFlags field
+	const DWORD MKF_MOUSEKEYSON     = 0x00000001;
+	const DWORD MKF_AVAILABLE       = 0x00000002;
+	const DWORD MKF_HOTKEYACTIVE    = 0x00000004;
+	const DWORD MKF_CONFIRMHOTKEY   = 0x00000008;
+	const DWORD MKF_HOTKEYSOUND     = 0x00000010;
+	const DWORD MKF_INDICATOR       = 0x00000020;
+	const DWORD MKF_MODIFIERS       = 0x00000040;
+	const DWORD MKF_REPLACENUMBERS  = 0x00000080;
+
+	// ACCESSTIMEOUT dwFlags field
+	const DWORD ATF_TIMEOUTON       = 0x00000001;
+	const DWORD ATF_ONOFFFEEDBACK   = 0x00000002;
+
+	// values for SOUNDSENTRY iFSGrafEffect field 
+	const long SSGF_NONE       = 0;
+	const long SSGF_DISPLAY    = 3;
+
+	// values for SOUNDSENTRY iFSTextEffect field 
+	const long SSTF_NONE       = 0;
+	const long SSTF_CHARS      = 1;
+	const long SSTF_BORDER     = 2;
+	const long SSTF_DISPLAY    = 3;
+
+	// values for SOUNDSENTRY iWindowsEffect field 
+	const long SSWF_NONE     = 0;
+	const long SSWF_TITLE    = 1;
+	const long SSWF_WINDOW   = 2;
+	const long SSWF_DISPLAY  = 3;
+	const long SSWF_CUSTOM   = 4;
+
+	// SOUNDSENTRY dwFlags field
+	const DWORD SSF_SOUNDSENTRYON   = 0x00000001;
+	const DWORD SSF_AVAILABLE       = 0x00000002;
+	const DWORD SSF_INDICATOR       = 0x00000004;
+
+	// TOGGLEKEYS dwFlags field
+	const DWORD TKF_TOGGLEKEYSON    = 0x00000001;
+	const DWORD TKF_AVAILABLE       = 0x00000002;
+	const DWORD TKF_HOTKEYACTIVE    = 0x00000004;
+	const DWORD TKF_CONFIRMHOTKEY   = 0x00000008;
+	const DWORD TKF_HOTKEYSOUND     = 0x00000010;
+	const DWORD TKF_INDICATOR       = 0x00000020;
+	*/
+
+
+	/*
+	// Set debug level
+	VOID WINAPI SetDebugErrorLevel(DWORD dwLevel);
+	*/
+
+
+	/*
+	// SetLastErrorEx() types.
+	const DWORD SLE_ERROR       = 0x00000001;
+	const DWORD SLE_MINORERROR  = 0x00000002;
+	const DWORD SLE_WARNING     = 0x00000003;
+
+	VOID WINAPI SetLastErrorEx(DWORD dwErrCode, DWORD dwType);
+	*/
+
+
+
+
+
+
+
+
+
+
+
+}   // End module User
+

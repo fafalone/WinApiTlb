@@ -1,0 +1,244 @@
+// Visual Basic Error Constants
+
+[
+#ifdef UNICODE
+uuid(64675059-3A82-101B-8181-00AA003743D3),
+#else
+uuid(64674059-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("Visual Basic Error Constants"),
+dllname("KERNEL32")
+]
+module VBErrorConst {
+
+    const long eeNone = 0;
+    [ helpstring("Return without GoSub") ]
+    const long eeReturnWOGoSub = 3;
+    const long eeIllegalFuncCall = 5;
+    [ helpstring("Overflow") ]
+    const long eeOverflow = 6;
+    [ helpstring("Out of memory")]
+    const long eeOutOfMemory = 7;
+    [ helpstring("Subscript out of range")]
+    const long eeOutOfBounds = 9;
+    [ helpstring("This array is fixed or temporarily locked")]
+    const long eeArrayLocked = 10;
+    [ helpstring("Division by zero")]
+    const long eeDivByZero = 11;
+    [ helpstring("Type mismatch")]
+    const long eeTypeMismatch = 13;
+    [ helpstring("Out of string space")]
+    const long eeOutOfStrSpace = 14;
+    [ helpstring("Expresssion too complex")]
+    const long eeExprTooComplex = 16;
+    [ helpstring("Can't perform requested operation")]
+    const long eeCantContinue = 17;
+    [ helpstring("User interrupt occurred")]
+    const long eeUserInterrupt = 18;
+    [ helpstring("Resume without error")]
+    const long eeResumeWOErr = 20;
+    [ helpstring("Out of stack space")]
+    const long eeOutOfStack = 28;
+    [ helpstring("Sub, Function, or Property not defined")]
+    const long eeUndefinedProc = 35;
+    [ helpstring("Too many DLL application clients")]
+    const long eeTooManyClients = 47;
+    [ helpstring("Error in loading DLL")]
+    const long eeDLLLoadErr = 48;
+    [ helpstring("Bad DLL calling convention")]
+    const long eeDLLBadCallingConv = 49;
+    [ helpstring("Internal error")]
+    const long eeInternalError = 51;
+    [ helpstring("Bad file name or number")]
+    const long eeBadFileNameOrNumber = 52;
+    [ helpstring("File not found")]
+    const long eeFileNotFound = 53;
+    [ helpstring("Bad file mode")]
+    const long eeBadFileMode = 54;
+    [ helpstring("File already open")]
+    const long eeFileAlreadyOpen = 55;
+    [ helpstring("Device I/O error")]
+    const long eeIOError = 57;
+    [ helpstring("File already exists")]
+    const long eeFileAlreadyExists = 58;
+    [ helpstring("Bad record length")]
+    const long eeBadRecordLen = 59;
+    [ helpstring("Disk full")]
+    const long eeDiskFull = 61;
+    [ helpstring("Input past end of file")]
+    const long eeEndOfFile = 62;
+    [ helpstring("Bad record number")]
+    const long eeBadRecordNum = 63;
+    [ helpstring("Too many files")]
+    const long eeTooManyFiles = 67;
+    [ helpstring("Device unavailable")]
+    const long eeDevUnavailable = 68;
+    [ helpstring("Permission denied")]
+    const long eePermissionDenied = 70;
+    [ helpstring("Disk not ready")]
+    const long eeDiskNotReady = 71;
+    [ helpstring("Can't rename with different drive")]
+    const long eeDifferentDrive = 74;
+    [ helpstring("Path/File access error")]
+    const long eePathFileAccess = 75;
+    [ helpstring("Path not found")]
+    const long eePathNotFound = 76;
+    [ helpstring("Object variable or With block variable not set")]
+    const long eeObjNotSet = 91;
+    [ helpstring("For loop not initialized")]
+    const long eeIllegalFor = 92;
+    [ helpstring("Invalid pattern string")]
+    const long eeBadPatStr = 93;
+    [ helpstring("Invalid use of Null")]
+    const long eeCantUseNull = 94;
+    const long eeUserDefined = 95;
+    const long eeAdviseLimit = 96;
+    [ helpstring("Can't call Friend procedure on an object that is not an instance of the defining class")]
+    const long eeBadCallToFriendFunction = 97;
+    [ helpstring("A property or method call cannot include a reference to a private object, either as an argument or as a return value (Error 98)")]
+    const long eeCantPassPrivateObject = 98;
+    const long eeAbort = 287;
+    [ helpstring("Invalid file format")]
+    const long eeInvalidFileFormat = 321;
+    [ helpstring("Can't create necessary temporary file")]
+    const long eeCantCreateTmpFile = 322;
+    [ helpstring("Invalid format in resource file")]
+    const long eeInvalidResourceFormat = 325;
+    [ helpstring("System DLL could not be loaded")]
+    const long eeCantLoadSystemDLL = 298;
+    [ helpstring("Can't use character device names in specified file names")]
+    const long eeCantUseDeviceName = 320;
+    [ helpstring("Data value named not found")]
+    const long eeDataValueNotFound = 327;
+    [ helpstring("Illegal parameter; can't write arrays")]
+    const long eeIllegalArrayWrite = 328;
+    [ helpstring("Could not access system registry")]
+    const long eeCantAccessRegistry = 335;
+    [ helpstring("ActiveX component not correctly registered")]
+    const long eeComponentNotRegistered = 336;
+    [ helpstring("ActiveX component not found")]
+    const long eeComponentNotFound = 337;
+    [ helpstring("ActiveX component did not run correctly")]
+    const long eeComponentDidNotRun = 338;
+    [ helpstring("Object already loaded")]
+    const long eeObjectAlreadyLoaded = 360;
+    [ helpstring("Can't load or unload this object")]
+    const long eeCantLoadObject = 361;
+    [ helpstring("ActiveX control specified not found")]
+    const long eeControlUnknown = 363;
+    [ helpstring("Object was unloaded")]
+    const long eeObjectUnloaded = 364;
+    [ helpstring("Unable to unload within this context")]
+    const long eeCantUnload = 365;
+    [ helpstring("The specified file is out of date. This program requires a later version")]
+    const long eeFileOutOfDate = 368;
+    [ helpstring("The specified object can't be used as an owner form for Show")]
+    const long eeIllegalOwner = 371;
+    [ helpstring("Invalid property value")]
+    const long eeInvalidPropertyValue = 380;
+
+    [ helpstring("Invalid property-array index")]
+    const long eeInvalidPropertyArrayIndex = 381;
+    [ helpstring("Property Set can't be executed at run time")]
+    const long eeSetNotSupportedAtRuntime = 382;
+    [ helpstring("Property Set can't be used with a read-only property")]
+    const long eeSetNotSupported = 383;
+    [ helpstring("Need property-array index")]
+    const long eeNeedPropertyArrayIndex = 385;
+    [ helpstring("Property Set not permitted")]
+    const long eeSetNotPermitted = 387;
+    [ helpstring("Property Get can't be executed at run time")]
+    const long eeGetNotSupportedAtRuntime = 393;
+    [ helpstring("Property Get can't be executed on write-only property")]
+    const long eeGetNotSupported = 394;
+    [ helpstring("Form already displayed; can't show modally")]
+    const long eeCantShowModally = 400;
+    [ helpstring("Code must close topmost modal form first")]
+    const long eeMustCloseTopmostFirst = 402;
+    [ helpstring("Permission to use object denied")]
+    const long eeObjectPermissionDenied = 419;
+    [ helpstring("Property not found")]
+    const long eePropertyNotFound = 422;
+    [ helpstring("Property or method not found")]
+    const long eeNoSuchControlOrProperty = 423;
+    [ helpstring("Object required")]
+    const long eeNotObject = 424;
+    [ helpstring("Invalid object use")]
+    const long eeInvalidObjectUse = 425;
+    [ helpstring("ActiveX component can't create object or return reference to this object")]
+    const long eeComponentCantCreate = 429;
+    [ helpstring("Class doesn't support Automation")]
+    const long eeNonAutomationClass = 430;
+    [ helpstring("File name or class name not found during Automation operation")]
+    const long eeFileOrClassNotFound = 432;
+
+    [ helpstring("Automation server can't create object")]
+    const long eeCantCreateObject = 429;
+    [ helpstring("Class doesn't support OLE Automation")]
+    const long eeOLENotSupported = 430;
+    [ helpstring("File name or class name not found during OLE Automation operation")]
+    const long eeOLEFileNotFound = 432;
+    [ helpstring("Object doesn't support this property or method")]
+    const long eeOLENoPropOrMethod = 438;
+    [ helpstring("Automation error")]
+    const long eeOLEAutomationError = 440;
+    const long eeLostTLB = 442;
+    [ helpstring("OLE Automation object does not have a default value")]
+    const long eeOLENoDefault = 443;
+    [ helpstring("Object doesn't support this action")]
+    const long eeActionNotSupported = 445;
+    [ helpstring("Object doesn't support named arguments")]
+    const long eeNamedArgsNotSupported = 446;
+    [ helpstring("Object doesn't support current locale setting")]
+    const long eeLocaleSettingNotSupported = 447;
+    [ helpstring("Named argument not found")]
+    const long eeNamedParamNotFound = 448;
+    [ helpstring("Argument not optional or invalid property assignment")]
+    const long eeParameterNotOptional = 449;
+    [ helpstring("Wrong number of arguments or invalid property assignment")]
+    const long eeFuncArityMismatch = 450;
+    [ helpstring("Object not a collection")]
+    const long eeNotEnum = 451;
+    [ helpstring("Invalid ordinal")]
+    const long eeInvalidOrdinal = 452;
+    [ helpstring("Specified DLL function not found")]
+    const long eeInvalidDllFunctionName = 453;
+    [ helpstring("Code resource not found")]
+    const long eeCodeResourceNotFound = 454;
+    [ helpstring("Code resource lock error")]
+    const long eeCodeResourceLockError = 455;
+    [ helpstring("This key is already associated with an element of this collection")]
+    const long eeDuplicateKey = 457;
+    [ helpstring("Variable uses a type not supported in Visual Basic")]
+    const long eeInvalidTypeLibVariable = 458;
+    [ helpstring("This component doesn't support the set pf events")]
+    const long eeObjDoesNotSupportEvents = 459;
+    [ helpstring("Invalid Clipboard format")]
+    const long eeInvalidClipboardFormat = 460;
+    [ helpstring("Specified format doesn't match format of data")]
+    const long eeDataMismatch = 461;
+    [ helpstring("Can't create AutoRedraw image")]
+    const long eeCantAutoRedraw = 480;
+    [ helpstring("Invalid picture")]
+    const long eeInvalidPicture = 481;
+    [ helpstring("Printer error")]
+    const long eePrinterError = 482;
+    [ helpstring("Printer driver does not support specified property")]
+    const long eePrinterPropertyNotSupported = 483;
+    [ helpstring("Problem getting printer information from the system. Make sure the printer is set up correctly")]
+    const long eePrinterInfoUnavailable = 484;
+    [ helpstring("Invalid picture type")]
+    const long eeInvalidPictureType = 485;
+    [ helpstring("Can't print form image to this type of printer")]
+    const long eeCantPrintFormImage = 486;
+    [ helpstring("Can't empty Clipboard")]
+    const long eeCantEmptyClipboard = 520;
+    [ helpstring("Can't open Clipboard")]
+    const long eeCantOpenClipboard = 521;
+    [ helpstring("Can't save file to TEMP directory")]
+    const long eeCantSaveFileToTemp = 735;
+    [ helpstring("Search text not found")]
+    const long eeSearchTextNotFound = 744;
+    [ helpstring("Replacements too long")]
+    const long eeReplacementsTooLong = 746;
+}

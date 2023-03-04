@@ -1,0 +1,361 @@
+//
+//  File:       OLE2.h
+//  Contents:   Main OLE2 header; Defines Linking and Emmebbeding interfaces, and API's.
+//              Also includes .h files for the compobj, and oleauto  subcomponents.
+//
+
+#if !defined( _OLE2_H_ )
+#define _OLE2_H_
+
+[
+#ifdef UNICODE
+uuid(64675072-3A82-101B-8181-00AA003743D3),
+#else
+uuid(64674072-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("COM and OLE Functions"),
+dllname("OLE32.DLL")
+]
+module Ole2 {
+
+#if 0
+
+	// View OBJECT Error Codes
+
+	#define E_DRAW                  VIEW_E_DRAW
+
+	// IDataObject Error Codes
+	#define DATA_E_FORMATETC        DV_E_FORMATETC
+
+	// Common stuff gleamed from OLE.2,
+
+	// verbs 
+	#define OLEIVERB_PRIMARY            (0L)
+	#define OLEIVERB_SHOW               (-1L)
+	#define OLEIVERB_OPEN               (-2L)
+	#define OLEIVERB_HIDE               (-3L)
+	#define OLEIVERB_UIACTIVATE         (-4L)
+	#define OLEIVERB_INPLACEACTIVATE    (-5L)
+	#define OLEIVERB_DISCARDUNDOSTATE   (-6L)
+
+	// for OleCreateEmbeddingHelper flags; roles in low word; options in high word
+	#define EMBDHLP_INPROC_HANDLER   0x0000L
+	#define EMBDHLP_INPROC_SERVER    0x0001L
+	#define EMBDHLP_CREATENOW    0x00000000L
+	#define EMBDHLP_DELAYCREATE  0x00010000L
+
+	// extended create function flags 
+	#define OLECREATE_LEAVERUNNING	0x00000001
+
+	///**** DV APIs *********
+
+
+	WINOLEAPI CreateDataAdviseHolder(LPDATAADVISEHOLDER * ppDAHolder);
+
+
+
+
+
+
+
+	// ****** OLE API Prototypes *******
+
+	WINOLEAPI_(DWORD) OleBuildVersion( VOID );
+
+#endif
+
+	// helper functions 
+    [
+    usesgetlasterror,
+    entry("ReadClassStg"),
+    helpstring("Reads a CLSID previously written in a storage object with WriteClassStg"),
+    ]
+	WINOLEAPI ReadClassStg(LPSTORAGE pStg, CLSID * pclsid);
+
+    [
+    usesgetlasterror,
+    entry("WriteClassStg"),
+    helpstring("Stores the specified CLSID in a storage object"),
+    ]
+	WINOLEAPI WriteClassStg(LPSTORAGE pStg, REFCLSID rclsid);
+
+    [
+    usesgetlasterror,
+    entry("ReadClassStm"),
+    helpstring("Reads a CLSID previously written to a stream object with WriteClassStm"),
+    ]
+	WINOLEAPI ReadClassStm(LPSTREAM pStm, CLSID * pclsid);
+
+    [
+    usesgetlasterror,
+    entry("WriteClassStm"),
+    helpstring("Stores the specified CLSID in a stream"),
+    ]
+	WINOLEAPI WriteClassStm(LPSTREAM pStm, REFCLSID rclsid);
+
+    [
+    usesgetlasterror,
+    entry("WriteFmtUserTypeStg"),
+    helpstring("Writes a clipboard format and user type to a storage object"),
+    ]
+	WINOLEAPI WriteFmtUserTypeStg(LPSTORAGE pstg, CLIPFORMAT cf, LPOLESTR lpszUserType);
+
+    [
+    usesgetlasterror,
+    entry("ReadFmtUserTypeStg"),
+    helpstring("Returns the clipboard format and user type previously saved with WriteFmtUserTypeStg"),
+    ]
+	WINOLEAPI ReadFmtUserTypeStg(LPSTORAGE pstg, CLIPFORMAT * pcf, PTR /* LPOLESTR * */ lplpszUserType);
+	// CopyMemory hacks required to read the last string back to VB.
+
+#if 0
+	// init/term 
+
+	WINOLEAPI OleInitialize(LPVOID pvReserved);
+	WINOLEAPI_(void) OleUninitialize(void);
+
+
+	// APIs to query whether (Embedded/Linked) object can be created from
+	   the data object 
+
+	WINOLEAPI  OleQueryLinkFromData(LPDATAOBJECT pSrcDataObject);
+	WINOLEAPI  OleQueryCreateFromData(LPDATAOBJECT pSrcDataObject);
+
+
+	// Object creation APIs 
+
+	WINOLEAPI  OleCreate(REFCLSID rclsid, REFIID riid, DWORD renderopt,
+					LPFORMATETC pFormatEtc, LPOLECLIENTSITE pClientSite,
+					LPSTORAGE pStg, LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateEx(REFCLSID rclsid, REFIID riid, DWORD dwFlags,
+					DWORD renderopt, ULONG cFormats, DWORD* rgAdvf,
+					LPFORMATETC rgFormatEtc, IAdviseSink * lpAdviseSink,
+					DWORD * rgdwConnection, LPOLECLIENTSITE pClientSite,
+					LPSTORAGE pStg, LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateFromData(LPDATAOBJECT pSrcDataObj, REFIID riid,
+					DWORD renderopt, LPFORMATETC pFormatEtc,
+					LPOLECLIENTSITE pClientSite, LPSTORAGE pStg,
+					LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateFromDataEx(LPDATAOBJECT pSrcDataObj, REFIID riid,
+					DWORD dwFlags, DWORD renderopt, ULONG cFormats, DWORD* rgAdvf,
+					LPFORMATETC rgFormatEtc, IAdviseSink * lpAdviseSink,
+					DWORD * rgdwConnection, LPOLECLIENTSITE pClientSite,
+					LPSTORAGE pStg, LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateLinkFromData(LPDATAOBJECT pSrcDataObj, REFIID riid,
+					DWORD renderopt, LPFORMATETC pFormatEtc,
+					LPOLECLIENTSITE pClientSite, LPSTORAGE pStg,
+					LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateLinkFromDataEx(LPDATAOBJECT pSrcDataObj, REFIID riid,
+					DWORD dwFlags, DWORD renderopt, ULONG cFormats, DWORD* rgAdvf,
+					LPFORMATETC rgFormatEtc, IAdviseSink * lpAdviseSink,
+					DWORD * rgdwConnection, LPOLECLIENTSITE pClientSite,
+					LPSTORAGE pStg, LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateStaticFromData(LPDATAOBJECT pSrcDataObj, REFIID iid,
+					DWORD renderopt, LPFORMATETC pFormatEtc,
+					LPOLECLIENTSITE pClientSite, LPSTORAGE pStg,
+					LPVOID * ppvObj);
+
+
+	WINOLEAPI  OleCreateLink(LPMONIKER pmkLinkSrc, REFIID riid,
+				DWORD renderopt, LPFORMATETC lpFormatEtc,
+				LPOLECLIENTSITE pClientSite, LPSTORAGE pStg, LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateLinkEx(LPMONIKER pmkLinkSrc, REFIID riid,
+				DWORD dwFlags, DWORD renderopt, ULONG cFormats, DWORD* rgAdvf,
+				LPFORMATETC rgFormatEtc, IAdviseSink * lpAdviseSink,
+				DWORD * rgdwConnection, LPOLECLIENTSITE pClientSite,
+				LPSTORAGE pStg, LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateLinkToFile(LPCOLESTR lpszFileName, REFIID riid,
+				DWORD renderopt, LPFORMATETC lpFormatEtc,
+				LPOLECLIENTSITE pClientSite, LPSTORAGE pStg, LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateLinkToFileEx(LPCOLESTR lpszFileName, REFIID riid,
+				DWORD dwFlags, DWORD renderopt, ULONG cFormats, DWORD* rgAdvf,
+				LPFORMATETC rgFormatEtc, IAdviseSink * lpAdviseSink,
+				DWORD * rgdwConnection, LPOLECLIENTSITE pClientSite,
+				LPSTORAGE pStg, LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateFromFile(REFCLSID rclsid, LPCOLESTR lpszFileName, REFIID riid,
+				DWORD renderopt, LPFORMATETC lpFormatEtc,
+				LPOLECLIENTSITE pClientSite, LPSTORAGE pStg, LPVOID * ppvObj);
+
+	WINOLEAPI  OleCreateFromFileEx(REFCLSID rclsid, LPCOLESTR lpszFileName, REFIID riid,
+				DWORD dwFlags, DWORD renderopt, ULONG cFormats, DWORD* rgAdvf,
+				LPFORMATETC rgFormatEtc, IAdviseSink * lpAdviseSink,
+				DWORD * rgdwConnection, LPOLECLIENTSITE pClientSite,
+				LPSTORAGE pStg, LPVOID * ppvObj);
+
+	WINOLEAPI  OleLoad(LPSTORAGE pStg, REFIID riid, LPOLECLIENTSITE pClientSite,
+				LPVOID * ppvObj);
+
+	WINOLEAPI  OleSave(LPPERSISTSTORAGE pPS, LPSTORAGE pStg, BOOL fSameAsLoad);
+
+	WINOLEAPI  OleLoadFromStream( LPSTREAM pStm, REFIID iidInterface, LPVOID * ppvObj);
+	WINOLEAPI  OleSaveToStream( LPPERSISTSTREAM pPStm, LPSTREAM pStm );
+
+
+	WINOLEAPI  OleSetContainedObject(LPUNKNOWN pUnknown, BOOL fContained);
+	WINOLEAPI  OleNoteObjectVisible(LPUNKNOWN pUnknown, BOOL fVisible);
+
+
+	// Drag/Drop APIs 
+
+	WINOLEAPI  RegisterDragDrop(HWND hwnd, LPDROPTARGET pDropTarget);
+	WINOLEAPI  RevokeDragDrop(HWND hwnd);
+	WINOLEAPI  DoDragDrop(LPDATAOBJECT pDataObj, LPDROPSOURCE pDropSource,
+				DWORD dwOKEffects, LPDWORD pdwEffect);
+
+	// Clipboard APIs 
+
+	WINOLEAPI  OleSetClipboard(LPDATAOBJECT pDataObj);
+	WINOLEAPI  OleGetClipboard(LPDATAOBJECT * ppDataObj);
+	WINOLEAPI  OleFlushClipboard(void);
+	WINOLEAPI  OleIsCurrentClipboard(LPDATAOBJECT pDataObj);
+
+
+	// InPlace Editing APIs 
+
+	WINOLEAPI_(HOLEMENU)   OleCreateMenuDescriptor (HMENU hmenuCombined,
+									LPOLEMENUGROUPWIDTHS lpMenuWidths);
+	WINOLEAPI              OleSetMenuDescriptor (HOLEMENU holemenu, HWND hwndFrame,
+									HWND hwndActiveObject,
+									LPOLEINPLACEFRAME lpFrame,
+									LPOLEINPLACEACTIVEOBJECT lpActiveObj);
+	WINOLEAPI              OleDestroyMenuDescriptor (HOLEMENU holemenu);
+
+	WINOLEAPI              OleTranslateAccelerator (LPOLEINPLACEFRAME lpFrame,
+								LPOLEINPLACEFRAMEINFO lpFrameInfo, LPMSG lpmsg);
+
+
+	// Helper APIs 
+	WINOLEAPI_(HANDLE) OleDuplicateData (HANDLE hSrc, CLIPFORMAT cfFormat,
+							UINT uiFlags);
+
+	WINOLEAPI          OleDraw (LPUNKNOWN pUnknown, DWORD dwAspect, HDC hdcDraw,
+						LPCRECT lprcBounds);
+
+	WINOLEAPI          OleRun(LPUNKNOWN pUnknown);
+	WINOLEAPI_(BOOL)   OleIsRunning(LPOLEOBJECT pObject);
+	WINOLEAPI          OleLockRunning(LPUNKNOWN pUnknown, BOOL fLock, BOOL fLastUnlockCloses);
+	WINOLEAPI_(void)   ReleaseStgMedium(LPSTGMEDIUM);
+	WINOLEAPI          CreateOleAdviseHolder(LPOLEADVISEHOLDER * ppOAHolder);
+
+	WINOLEAPI          OleCreateDefaultHandler(REFCLSID clsid, LPUNKNOWN pUnkOuter,
+						REFIID riid, LPVOID * lplpObj);
+
+	WINOLEAPI          OleCreateEmbeddingHelper(REFCLSID clsid, LPUNKNOWN pUnkOuter,
+						DWORD flags, LPCLASSFACTORY pCF,
+											REFIID riid, LPVOID * lplpObj);
+
+	WINOLEAPI_(BOOL)   IsAccelerator(HACCEL hAccel, int cAccelEntries, LPMSG lpMsg,
+											WORD * lpwCmd);
+	// Icon extraction Helper APIs 
+
+	WINOLEAPI_(HGLOBAL) OleGetIconOfFile(LPOLESTR lpszPath, BOOL fUseFileAsLabel);
+
+	WINOLEAPI_(HGLOBAL) OleGetIconOfClass(REFCLSID rclsid,     LPOLESTR lpszLabel,
+											BOOL fUseTypeAsLabel);
+
+	WINOLEAPI_(HGLOBAL) OleMetafilePictFromIconAndLabel(HICON hIcon, LPOLESTR lpszLabel,
+											LPOLESTR lpszSourceFile, UINT iIconIndex);
+
+
+
+	// Registration Database Helper APIs 
+
+	WINOLEAPI                  OleRegGetUserType (REFCLSID clsid, DWORD dwFormOfType,
+											      PTR /* LPOLESTR * */ pszUserType);
+
+	WINOLEAPI                  OleRegGetMiscStatus     (REFCLSID clsid, DWORD dwAspect,
+											DWORD * pdwStatus);
+
+	WINOLEAPI                  OleRegEnumFormatEtc     (REFCLSID clsid, DWORD dwDirection,
+											LPENUMFORMATETC * ppenum);
+
+	WINOLEAPI                  OleRegEnumVerbs (REFCLSID clsid, LPENUMOLEVERB * ppenum);
+
+
+
+
+
+	// OLE 1.0 conversion APIS 
+
+	///**** OLE 1.0 OLESTREAM declarations ********
+
+	typedef struct _OLESTREAM *  LPOLESTREAM;
+
+	typedef struct _OLESTREAMVTBL
+	{
+		DWORD (CALLBACK* Get)(LPOLESTREAM, void *, DWORD);
+		DWORD (CALLBACK* Put)(LPOLESTREAM, const void *, DWORD);
+	} OLESTREAMVTBL;
+	typedef  OLESTREAMVTBL *  LPOLESTREAMVTBL;
+
+	typedef struct _OLESTREAM
+	{
+		LPOLESTREAMVTBL lpstbl;
+	} OLESTREAM;
+
+
+	WINOLEAPI OleConvertOLESTREAMToIStorage
+		(LPOLESTREAM                lpolestream,
+		LPSTORAGE                   pstg,
+		const DVTARGETDEVICE *   ptd);
+
+	WINOLEAPI OleConvertIStorageToOLESTREAM
+		(LPSTORAGE      pstg,
+		LPOLESTREAM     lpolestream);
+
+
+	// Storage Utility APIs 
+	WINOLEAPI GetHGlobalFromILockBytes (LPLOCKBYTES plkbyt, HGLOBAL * phglobal);
+	WINOLEAPI CreateILockBytesOnHGlobal (HGLOBAL hGlobal, BOOL fDeleteOnRelease,
+										LPLOCKBYTES * pplkbyt);
+
+	WINOLEAPI GetHGlobalFromStream (LPSTREAM pstm, HGLOBAL * phglobal);
+	WINOLEAPI CreateStreamOnHGlobal (HGLOBAL hGlobal, BOOL fDeleteOnRelease,
+									LPSTREAM * ppstm);
+
+
+	// ConvertTo APIS 
+
+	WINOLEAPI OleDoAutoConvert(LPSTORAGE pStg, LPCLSID pClsidNew);
+	WINOLEAPI OleGetAutoConvert(REFCLSID clsidOld, LPCLSID pClsidNew);
+	WINOLEAPI OleSetAutoConvert(REFCLSID clsidOld, REFCLSID clsidNew);
+	WINOLEAPI GetConvertStg(LPSTORAGE pStg);
+	WINOLEAPI SetConvertStg(LPSTORAGE pStg, BOOL fConvert);
+
+
+	WINOLEAPI OleConvertIStorageToOLESTREAMEx
+		(LPSTORAGE          pstg,
+										// Presentation data to OLESTREAM
+		 CLIPFORMAT         cfFormat,   //      format
+		 LONG               lWidth,     //      width
+		 LONG               lHeight,    //      height
+		 DWORD              dwSize,     //      size in bytes
+		 LPSTGMEDIUM        pmedium,    //      bits
+		 LPOLESTREAM        polestm);
+
+	WINOLEAPI OleConvertOLESTREAMToIStorageEx
+		(LPOLESTREAM        polestm,
+		 LPSTORAGE          pstg,
+										// Presentation data from OLESTREAM
+		 CLIPFORMAT *    pcfFormat,  //      format
+		 LONG *          plwWidth,   //      width
+		 LONG *          plHeight,   //      height
+		 DWORD *         pdwSize,    //      size in bytes
+		 LPSTGMEDIUM        pmedium);   //      bits
+
+#endif
+
+}
+
+#endif     // __OLE2_H__
+

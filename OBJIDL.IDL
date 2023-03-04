@@ -1,0 +1,2620 @@
+//+-------------------------------------------------------------------------
+//
+//  Microsoft Windows
+//  Copyright (C) Microsoft Corporation, 1992 - 1996.
+//
+//  File: objidl.idl
+//
+//--------------------------------------------------------------------------
+
+#ifndef DO_NO_IMPORTS
+import "unknwn.idl";
+#endif
+
+interface IVBStream;
+//interface IVBMoniker;
+//interface IVBEnumMoniker;
+interface IVBEnumString;
+//interface IVBRunningObjectTable;
+interface IVBStorage;
+interface IVBEnumSTATSTG;
+interface IAdviseSink;
+//interface IVBBindCtx;
+//interface IVBEnumMoniker;
+//interface IConnectionPointContainer;
+//interface IConnectionPoint;
+//interface IEnumConnections;
+//interface IEnumConnectionPoints;
+
+// Component Object Interfaces
+
+[
+    local,
+    object,
+    uuid(00000003-0000-0000-C000-000000000046)
+]
+
+interface IMarshal : IUnknown
+{
+
+    typedef [unique] IMarshal *LPMARSHAL;
+
+    HRESULT GetUnmarshalClass
+    (
+        [in] REFIID riid,
+        [in, unique] void *pv,
+        [in] DWORD dwDestContext,
+        [in, unique] void *pvDestContext,
+        [in] DWORD mshlflags,
+        [out] CLSID *pCid
+    );
+
+    HRESULT GetMarshalSizeMax
+    (
+        [in] REFIID riid,
+        [in, unique] void *pv,
+        [in] DWORD dwDestContext,
+        [in, unique] void *pvDestContext,
+        [in] DWORD mshlflags,
+        [out] DWORD *pSize
+    );
+
+    HRESULT MarshalInterface
+    (
+        [in, unique] IVBStream *pStm,
+        [in] REFIID riid,
+        [in, unique] void *pv,
+        [in] DWORD dwDestContext,
+        [in, unique] void *pvDestContext,
+        [in] DWORD mshlflags
+    );
+
+    HRESULT UnmarshalInterface
+    (
+        [in, unique] IVBStream *pStm,
+        [in] REFIID riid,
+        [out] void **ppv
+    );
+
+    HRESULT ReleaseMarshalData
+    (
+        [in, unique] IVBStream *pStm
+    );
+
+    HRESULT DisconnectObject
+    (
+        [in] DWORD dwReserved
+    );
+}
+
+[	uuid(00000002-0000-0000-C000-000000000046),
+    odl,
+	helpstring("Visual Basic version of IMalloc interface")
+]
+interface IVBMalloc : IUnknown {
+
+    PTR Alloc([in] ULONG cb);
+
+    PTR Realloc([in] PTR, [in] ULONG cb);
+
+    void Free([in] PTR pv);
+
+    ULONG GetSize([in] PTR pv);
+
+    int DidAlloc(PTR pv);
+
+    void HeapMinimize(void);
+}
+typedef IVBMalloc *LPMALLOC;
+
+#if 0 
+[
+    uuid(0000001d-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IMallocSpy interface")
+]
+interface IVBMallocSpy : IUnknown {
+
+    typedef [unique] IVBMallocSpy *LPMALLOCSPY;
+
+    ULONG PreAlloc([in] ULONG cbRequest);
+
+    PTR PostAlloc([in] PTR pActual);
+
+    PTR PreFree([in] PTR pRequest,
+				[in] BOOL  fSpyed);
+
+    void  PostFree([in] BOOL  fSpyed);
+
+    ULONG PreRealloc([in] PTR pRequest,
+		 			 [in] ULONG cbRequest,
+					 [in] PTR ppNewRequest,
+					 [in] BOOL    fSpyed);
+
+    PTR PostRealloc([in] PTR pActual,
+					 [in] BOOL  fSpyed);
+
+    PTR PreGetSize([in] PTR pRequest,
+				   [in] BOOL  fSpyed);
+
+    ULONG PostGetSize([in] ULONG cbActual, [in] BOOL  fSpyed);
+
+    PTR PreDidAlloc([in] PTR pRequest,
+					[in] BOOL  fSpyed);
+
+    int   PostDidAlloc([in] PTR pRequest, 
+					   [in] BOOL  fSpyed,
+					   [in] int   fActual);
+
+    void  PreHeapMinimize(void);
+
+    void  PostHeapMinimize(void);
+}
+
+[
+    uuid(00000018-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IStdMarshalInfo interface")
+]
+interface IVBStdMarshalInfo : IUnknown {
+
+    typedef [unique] IStdMarshalInfo * LPSTDMARSHALINFO;
+
+    HRESULT GetClassForHandler
+    (
+        [in] DWORD dwDestContext,
+        [in, unique] void *pvDestContext,
+        [in, out] CLSID *pClsid
+    );
+}
+
+[
+    uuid(00000019-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IExternalConnection interface")
+]
+interface IVBExternalConnection : IUnknown
+{
+
+    typedef [unique] IVBExternalConnection* LPEXTERNALCONNECTION;
+
+    // bit flags for IExternalConnection
+    typedef enum tagEXTCONN
+    {
+        EXTCONN_STRONG      = 0x0001,   // strong connection
+        EXTCONN_WEAK        = 0x0002,   // weak connection (table, container)
+        EXTCONN_CALLABLE    = 0x0004,   // table .vs. callable
+    } EXTCONN;
+
+    // *** IExternalConnection methods ***
+    DWORD AddConnection
+    (
+        [in] DWORD extconn,
+        [in] DWORD reserved
+    );
+
+    DWORD ReleaseConnection
+    (
+        [in] DWORD extconn,
+        [in] DWORD reserved,
+        [in] BOOL  fLastReleaseCloses
+    );
+}
+
+
+[
+    uuid(00000020-0000-0000-C000-000000000046),
+	odl
+]
+interface IMultiQI : IUnknown
+{
+    typedef [unique] IMultiQI* LPMULTIQI;
+
+    typedef struct MULTI_QI
+    {
+        const IID  *pIID; // pass this one in
+        IUnknown   *pItf; // get these out (you must set to NULL before calling)
+        HRESULT     hr;
+    } MULTI_QI;
+
+    HRESULT QueryMultipleInterfaces
+    (
+        [in]     ULONG      cMQIs,
+        [in,out] MULTI_QI  *pMQIs
+    );
+}
+
+[
+    uuid(00000100-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IEnumUnknown interface")
+]
+interface IVBEnumUnknown : IUnknown {
+
+    typedef [unique] IVBEnumUnknown *LPENUMUNKNOWN;
+
+    HRESULT Next(
+        [in] ULONG celt,
+        [in, out] IUnknown **rgelt,
+        [in] ULONG pceltFetched);
+
+#if 0
+    [call_as(Next)]
+    HRESULT RemoteNext(
+        [in] ULONG celt,
+        [out, size_is(celt), length_is(*pceltFetched)]
+        IUnknown **rgelt,
+        [out] ULONG *pceltFetched);
+#endif
+
+    HRESULT Skip(
+        [in] ULONG  celt);
+
+    HRESULT Reset();
+
+    HRESULT Clone(
+        [in, out] IVBEnumUnknown **ppenum);
+}
+#endif
+
+
+// Binding Interfaces
+
+#if 0
+[
+    uuid(0000000e-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IBindCtx interface")
+]
+interface IVBBindCtx : IUnknown
+{
+
+    typedef [unique] IVBBindCtx *LPBC;
+
+    typedef [unique] IVBBindCtx *LPBINDCTX;
+
+    typedef struct BIND_OPTS {
+    DWORD       cbStruct;       //  sizeof(BIND_OPTS)
+    DWORD       grfFlags;
+    DWORD       grfMode;
+    DWORD       dwTickCountDeadline;
+    } BIND_OPTS, * LPBIND_OPTS;
+
+cpp_quote("#if defined(__cplusplus)")
+cpp_quote("    typedef struct BIND_OPTS2 : tagBIND_OPTS{")
+cpp_quote("    DWORD       dwTrackFlags;")
+cpp_quote("    DWORD       dwClassContext;")
+cpp_quote("    LCID        locale;")
+cpp_quote("    } BIND_OPTS2, * LPBIND_OPTS2;")
+cpp_quote("#else")
+
+    typedef struct BIND_OPTS2 {
+    DWORD       cbStruct;       //  sizeof(BIND_OPTS2)
+    DWORD       grfFlags;
+    DWORD       grfMode;
+    DWORD       dwTickCountDeadline;
+    DWORD       dwTrackFlags;
+    DWORD       dwClassContext;
+    LCID        locale;
+    } BIND_OPTS2, * LPBIND_OPTS2;
+
+cpp_quote("#endif")
+
+
+    typedef enum BIND_FLAGS
+    {
+        BIND_MAYBOTHERUSER = 1,
+        BIND_JUSTTESTEXISTENCE = 2
+    } BIND_FLAGS;
+
+    HRESULT RegisterObjectBound
+    (
+        [in, unique] IUnknown *punk
+    );
+
+    HRESULT RevokeObjectBound
+    (
+        [in, unique] IUnknown *punk
+    );
+
+    HRESULT ReleaseBoundObjects
+    (
+        void
+    );
+
+    HRESULT SetBindOptions
+    (
+        [in] BIND_OPTS *pbindopts
+    );
+
+#if 0
+    [call_as(SetBindOptions)]
+    HRESULT RemoteSetBindOptions
+    (
+        [in] BIND_OPTS2 *pbindopts
+    );
+#endif
+
+    HRESULT GetBindOptions
+    (
+        [in, out] BIND_OPTS *pbindopts
+    );
+
+#if 0
+    [call_as(GetBindOptions)]
+    HRESULT RemoteGetBindOptions
+    (
+        [in, out] BIND_OPTS2 *pbindopts
+    );
+#endif
+
+    HRESULT GetRunningObjectTable
+    (
+        [out, retval] IVBRunningObjectTable **pprot
+    );
+
+    HRESULT RegisterObjectParam(
+        [in] LPOLESTR pszKey,
+        [in, unique] IUnknown *punk
+    );
+
+    HRESULT GetObjectParam(
+        [in] LPOLESTR pszKey,
+        [out, retval] IUnknown **ppunk
+    );
+
+    HRESULT EnumObjectParam
+    (
+        [out, retval] IVBEnumString **ppenum
+    );
+
+    HRESULT RevokeObjectParam
+    (
+        [in] LPOLESTR pszKey
+    );
+}
+
+[
+    uuid(00000102-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IEnumMoniker interface")
+]
+interface IVBEnumMoniker : IUnknown
+{
+
+    typedef [unique] IVBEnumMoniker *LPENUMMONIKER;
+
+    HRESULT Next(
+        [in] ULONG celt,
+        [in, out] IVBMoniker **rgelt,
+        [in] ULONG *pceltFetched);
+
+#if 0
+    [call_as(Next)]
+    HRESULT RemoteNext(
+        [in] ULONG celt,
+        [out, size_is(celt), length_is(*pceltFetched)]
+        IVBMoniker **rgelt,
+        [out] ULONG *pceltFetched);
+#endif
+
+    HRESULT Skip(
+        [in] ULONG celt);
+
+    HRESULT Reset();
+
+    HRESULT Clone(
+        [in, out] IVBEnumMoniker **ppenum);
+}
+
+[
+    uuid(00000126-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IRunnableObject interface")
+]
+interface IVBRunnableObject : IUnknown
+{
+
+    typedef [unique] IVBRunnableObject *LPRUNNABLEOBJECT;
+
+    HRESULT GetRunningClass(
+        [in, out] LPCLSID lpClsid);
+
+    HRESULT Run(
+        [in] LPBINDCTX pbc);
+
+    BOOL IsRunning();
+
+#if 0
+    [call_as(IsRunning)]
+    HRESULT RemoteIsRunning();
+#endif
+
+    HRESULT LockRunning(
+        [in] BOOL fLock,
+        [in] BOOL fLastUnlockCloses);
+
+    HRESULT SetContainedObject(
+        [in] BOOL fContained);
+}
+
+[
+    uuid(00000010-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IRunningObjectTable interface")
+]
+
+interface IVBRunningObjectTable : IUnknown
+{
+
+    typedef [unique] IVBRunningObjectTable *LPRUNNINGOBJECTTABLE;
+
+    HRESULT Register
+    (
+        [in] DWORD grfFlags,
+        [in, unique] IUnknown *punkObject,
+        [in, unique] IVBMoniker *pmkObjectName,
+        [in ] DWORD pdwRegister
+    );
+
+    HRESULT Revoke
+    (
+        [in] DWORD dwRegister
+    );
+
+    HRESULT IsRunning
+    (
+        [in, unique] IVBMoniker *pmkObjectName
+    );
+
+    HRESULT GetObject
+    (
+        [in, unique] IVBMoniker *pmkObjectName,
+        [out, retval] IUnknown **ppunkObject
+    );
+
+    HRESULT NoteChangeTime
+    (
+        [in] DWORD dwRegister,
+        [in] LPFILETIME pfiletime
+    );
+
+    HRESULT GetTimeOfLastChange
+    (
+        [in, unique] IVBMoniker *pmkObjectName,
+        [in, out] LPFILETIME pfiletime
+    );
+
+    HRESULT EnumRunning
+    (
+        [out, retval] IVBEnumMoniker **ppenumMoniker
+    );
+
+}
+#endif
+
+[	uuid(0000010c-0000-0000-C000-000000000046),
+    odl,
+	helpstring("Visual Basic version of IPersist")
+]
+interface IVBPersist : IUnknown {
+    typedef [unique] IPersist *LPPERSIST;
+
+    HRESULT GetClassID([in, out] CLSID * pClassID
+    );
+
+}
+
+
+[
+    uuid(00000109-0000-0000-C000-000000000046),
+    odl,
+	helpstring("Visual Basic version of IPersist")
+]
+interface IVBPersistStream : IVBPersist
+{
+
+
+    typedef [unique] IVBPersistStream *LPPERSISTSTREAM;
+
+    HRESULT IsDirty(void);
+
+    HRESULT Load([in, unique] IVBStream *pStm);
+
+    HRESULT Save([in, unique] IVBStream *pStm,
+				 [in] BOOL fClearDirty);
+
+    HRESULT GetSizeMax([out, retval] CURRENCY /* ULARGE_INTEGER */ *pcbSize);
+
+}
+
+#if 0
+[
+    uuid(0000000f-0000-0000-C000-000000000046),
+    odl,
+	helpstring("Visual Basic version of IPersistStream interface")
+]
+interface IVBMoniker : IVBPersistStream
+{
+
+    typedef [unique] IVBMoniker *LPMONIKER;
+
+    // system moniker types; returned from IsSystemMoniker.
+    typedef enum MKSYS {
+        MKSYS_NONE = 0,
+        MKSYS_GENERICCOMPOSITE = 1,
+        MKSYS_FILEMONIKER = 2,
+        MKSYS_ANTIMONIKER = 3,
+        MKSYS_ITEMMONIKER = 4,
+        MKSYS_POINTERMONIKER = 5,
+    //  MKSYS_URLMONIKER = 6,
+        MKSYS_CLASSMONIKER = 7
+    }MKSYS;
+
+
+    typedef [v1_enum] enum MKREDUCE {
+        MKRREDUCE_ONE           =   3<<16,
+
+        MKRREDUCE_TOUSER        =   2<<16,
+        MKRREDUCE_THROUGHUSER   =   1<<16,
+        MKRREDUCE_ALL           =   0
+    } MKRREDUCE;
+
+
+    HRESULT BindToObject(
+        [in, unique] IVBBindCtx *pbc,
+        [in, unique] IVBMoniker *pmkToLeft,
+        [in] REFIID riidResult,
+        [in, out] void ** ppvResult);
+
+#if 0
+    [call_as(BindToObject)]
+    HRESULT RemoteBindToObject(
+        [in, unique] IVBBindCtx *pbc,
+        [in, unique] IVBMoniker *pmkToLeft,
+        [in] REFIID riidResult,
+        [out, iid_is(riidResult)] IUnknown **ppvResult);
+#endif
+
+    HRESULT BindToStorage(
+        [in, unique] IVBBindCtx *pbc,
+        [in, unique] IVBMoniker *pmkToLeft,
+        [in] REFIID riid,
+        [in, out] void ** ppvObj);
+
+#if 0
+    [call_as(BindToStorage)]
+    HRESULT RemoteBindToStorage(
+        [in, unique] IVBBindCtx *pbc,
+        [in, unique] IVBMoniker *pmkToLeft,
+        [in] REFIID riid,
+        [out, iid_is(riid)] IUnknown **ppvObj);
+#endif
+
+    HRESULT Reduce(
+        [in, unique] IVBBindCtx *pbc,
+        [in] DWORD dwReduceHowFar,
+        [in, out, unique] IVBMoniker **ppmkToLeft,
+        [in, out] IVBMoniker **ppmkReduced);
+
+    HRESULT ComposeWith(
+        [in, unique] IVBMoniker *pmkRight,
+        [in] BOOL fOnlyIfNotGeneric,
+        [in, out] IVBMoniker **ppmkComposite);
+
+    HRESULT Enum(
+        [in] BOOL fForward,
+        [out, retval] IVBEnumMoniker **ppenumMoniker);
+
+    HRESULT IsEqual(
+        [in, unique] IVBMoniker *pmkOtherMoniker);
+
+    HRESULT Hash(
+        [out, retval] DWORD *pdwHash);
+
+    HRESULT IsRunning(
+        [in, unique] IVBBindCtx *pbc,
+        [in, unique] IVBMoniker *pmkToLeft,
+        [in, unique] IVBMoniker *pmkNewlyRunning);
+
+    HRESULT GetTimeOfLastChange(
+        [in, unique] IVBBindCtx *pbc,
+        [in, unique] IVBMoniker *pmkToLeft,
+        [in, out] LPFILETIME pFileTime);
+
+    HRESULT Inverse(
+        [out, retval] IVBMoniker **ppmk);
+
+    HRESULT CommonPrefixWith(
+        [in, unique] IVBMoniker *pmkOther,
+        [out, retval] IVBMoniker **ppmkPrefix);
+
+    HRESULT RelativePathTo(
+        [in, unique] IVBMoniker *pmkOther,
+        [out, retval] IVBMoniker **ppmkRelPath);
+
+    HRESULT GetDisplayName(
+        [in, unique] IVBBindCtx *pbc,
+        [in, unique] IVBMoniker *pmkToLeft,
+        [in, out] PTR /* LPOLESTR * */ ppszDisplayName);
+
+    HRESULT ParseDisplayName(
+        [in, unique] IVBBindCtx *pbc,
+        [in, unique] IVBMoniker *pmkToLeft,
+        [in] LPOLESTR pszDisplayName,
+        [in, out] ULONG *pchEaten,
+        [out, retval] IVBMoniker **ppmkOut);
+
+    HRESULT IsSystemMoniker(
+        [out, retval] DWORD *pdwMksys);
+
+}
+
+
+[
+    uuid(f29f6bc0-5021-11ce-aa15-00006901293f),
+    odl,
+	helpstring("Visual Basic version of IROTData interface")
+]
+interface IVBROTData : IUnknown
+{
+    HRESULT GetComparisonData(
+        [in, out /*, size_is(cbMax) */] BYTE *pbData,
+        [in]  ULONG cbMax,
+        [out, retval] ULONG *pcbData);
+}
+#endif
+
+[
+    uuid(00000101-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IEnumString interface")
+]
+interface IVBEnumString : IUnknown
+{
+
+    typedef [unique] IVBEnumString *LPENUMSTRING;
+
+    HRESULT Next(
+        [in] ULONG celt,
+        [in] PTR /* LPOLESTR * */ rgelt,
+        [in] PTR pceltFetched);
+
+#if 0
+    [call_as(Next)]
+    HRESULT RemoteNext(
+        [in] ULONG celt,
+        [out, size_is(celt), length_is(*pceltFetched)]
+        LPOLESTR *rgelt,
+        [out] ULONG * pceltFetched);
+#endif
+
+    HRESULT Skip(
+        [in] ULONG celt);
+
+    HRESULT Reset();
+
+    HRESULT Clone(
+        [in, out] IVBEnumString **ppenum);
+}
+
+// Structured Storage Interfaces
+
+[
+    uuid(0c733a30-2a1c-11ce-ade5-00aa0044773d),
+	odl,
+	helpstring("Visual Basic version of ISequentialStream interface")
+]
+interface IVBSequentialStream : IUnknown
+{
+    HRESULT Read(
+        [in, out] void * pv,
+        [in] ULONG cb,
+        [in] PTR pcbRead);
+
+#if 0 
+    [call_as(Read)]
+    HRESULT RemoteRead(
+        [in, out, size_is(cb), length_is(*pcbRead)]
+        BYTE *pv,
+        [in] ULONG cb,
+        [in] PTR pcbRead);
+
+#endif
+
+    HRESULT Write(
+        [in] void const *pv,
+        [in] ULONG cb,
+        [in] PTR pcbWritten);
+
+#if 0
+    [call_as(Write)]
+    HRESULT RemoteWrite(
+        [in, size_is(cb)] BYTE const *pv,
+        [in] ULONG cb,
+        [in] PTR pcbWritten);
+#endif
+}
+
+
+[
+    uuid(0000000c-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IStream interface")
+]
+
+interface IVBStream : IVBSequentialStream
+{
+
+    typedef [unique] IVBStream *LPSTREAM;
+
+    // Storage stat buffer 
+
+    typedef struct STATSTG {
+        PTR pwcsName;
+        DWORD type;
+        CURRENCY cbSize;
+        CURRENCY mtime;
+        CURRENCY ctime;
+        CURRENCY atime;
+        DWORD grfMode;
+        DWORD grfLocksSupported;
+        CLSID clsid;
+        DWORD grfStateBits;
+		DWORD reserved;
+    } STATSTG;
+
+    typedef struct STATSTGO {
+        PTR /* LPOLESTR */ pwcsName;
+        DWORD type;
+        CURRENCY cbSize;
+        CURRENCY mtime;
+        CURRENCY ctime;
+        CURRENCY atime;
+        DWORD grfMode;
+        DWORD grfLocksSupported;
+        CLSID clsid;
+        DWORD grfStateBits;
+		DWORD reserved;
+    } STATSTGO;
+
+
+    // Storage element types 
+    typedef enum STGTY {
+        STGTY_STORAGE   = 1,
+        STGTY_STREAM    = 2,
+        STGTY_LOCKBYTES = 3,
+        STGTY_PROPERTY  = 4
+    } STGTY;
+
+    typedef enum STREAM_SEEK {
+        STREAM_SEEK_SET = 0,
+        STREAM_SEEK_CUR = 1,
+        STREAM_SEEK_END = 2
+    } STREAM_SEEK;
+
+    typedef enum LOCKTYPE {
+        LOCK_WRITE      = 1,
+        LOCK_EXCLUSIVE  = 2,
+        LOCK_ONLYONCE   = 4
+    } LOCKTYPE;
+
+    HRESULT Seek(
+        [in] CURRENCY /* LARGE_INTEGER */ dlibMove,
+        [in] DWORD dwOrigin,
+        [out, retval] CURRENCY /* ULARGE_INTEGER */ *plibNewPosition);
+
+#if 0
+    [call_as(Seek)]
+    HRESULT RemoteSeek(
+        [in] CURRENCY /* LARGE_INTEGER */ dlibMove,
+        [in] DWORD dwOrigin,
+        [out] CURRENCY /* ULARGE_INTEGER */ *plibNewPosition);
+#endif
+
+    HRESULT SetSize(
+        [in] CURRENCY /* ULARGE_INTEGER */ libNewSize);
+
+    HRESULT CopyTo(
+        [in, unique] IVBStream *pstm,
+        [in] CURRENCY /* ULARGE_INTEGER */ cb,
+        [in, out] CURRENCY /* ULARGE_INTEGER */ *pcbRead,
+        [in, out] CURRENCY /* ULARGE_INTEGER */ *pcbWritten);
+
+#if 0
+    [call_as(CopyTo)]
+    HRESULT RemoteCopyTo(
+        [in, unique] IVBStream *pstm,
+        [in] CURRENCY /* ULARGE_INTEGER */ cb,
+        [out] CURRENCY /* ULARGE_INTEGER */ *pcbRead,
+        [out] CURRENCY /* ULARGE_INTEGER */ *pcbWritten);
+#endif
+
+    HRESULT Commit(
+        [in] DWORD grfCommitFlags);
+
+    HRESULT Revert();
+
+    HRESULT LockRegion(
+        [in] CURRENCY /* ULARGE_INTEGER */ libOffset,
+        [in] CURRENCY /* ULARGE_INTEGER */ cb,
+        [in] DWORD dwLockType);
+
+    HRESULT UnlockRegion(
+        [in] CURRENCY /* ULARGE_INTEGER */ libOffset,
+        [in] CURRENCY /* ULARGE_INTEGER */ cb,
+        [in] DWORD dwLockType);
+
+    HRESULT Stat(
+        [in, out] STATSTG *pstatstg,
+        [in] DWORD grfStatFlag);
+
+    HRESULT Clone(
+        [in, out] IVBStream **ppstm);
+
+}
+
+[
+    object,
+    uuid(0000000d-0000-0000-C000-000000000046),
+    odl
+]
+
+interface IVBEnumSTATSTG : IUnknown
+{
+
+    typedef [unique] IVBEnumSTATSTG *LPENUMSTATSTG;
+
+    HRESULT Next(
+        [in] ULONG celt,
+        [in] STATSTG *rgelt,
+        [in] PTR pceltFetched);
+
+#if 0
+    [call_as(Next)]
+    HRESULT RemoteNext(
+        [in] ULONG celt,
+        [out, size_is(celt), length_is(*pceltFetched)]
+        STATSTG *rgelt,
+        [out] ULONG *pceltFetched);
+#endif
+
+    HRESULT Skip(
+        [in] ULONG celt);
+
+    HRESULT Reset();
+
+    HRESULT Clone(
+        [in, out] IVBEnumSTATSTG **ppenum);
+}
+
+[
+    uuid(0000000b-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IStorage interface")
+]
+interface IVBStorage : IUnknown
+{
+
+    typedef [unique] IVBStorage * LPSTORAGE;
+
+    typedef struct RemSNB {
+        ULONG ulCntStr;
+        ULONG ulCntChar;
+        /* [size_is(ulCntChar)] */ OLECHAR rgString[];
+    } RemSNB;
+
+    typedef [unique] RemSNB * wireSNB;
+    typedef [wire_marshal(wireSNB)] OLECHAR **SNB;
+
+    HRESULT CreateStream(
+        [in, string] const OLECHAR *pwcsName,
+        [in] DWORD grfMode,
+        [in] DWORD reserved1,
+        [in] DWORD reserved2,
+        [out, retval] IVBStream **ppstm);
+
+    HRESULT OpenStream(
+        [in, string] const OLECHAR *pwcsName,
+        [in] PTR reserved1,
+        [in] DWORD grfMode,
+        [in] DWORD reserved2,
+        [out, retval] IVBStream **ppstm);
+
+#if 0
+    [call_as(OpenStream)]
+    HRESULT RemoteOpenStream(
+        [in, string] const OLECHAR *pwcsName,
+        [in] unsigned long cbReserved1,
+        [in, unique, size_is(cbReserved1)] BYTE *reserved1,
+        [in] DWORD grfMode,
+        [in] DWORD reserved2,
+        [in, out] IVBStream **ppstm);
+#endif
+
+    HRESULT CreateStorage(
+        [in, string] const OLECHAR *pwcsName,
+        [in] DWORD grfMode,
+        [in] DWORD dwStgFmt,
+        [in] DWORD reserved2,
+        [out, retval] IVBStorage **ppstg);
+
+    HRESULT OpenStorage(
+        [in, unique, string] const OLECHAR *pwcsName,
+        [in, unique] IVBStorage *pstgPriority,
+        [in] DWORD grfMode,
+        [in] PTR /* SNB */ snbExclude,
+        [in] DWORD reserved,
+        [out, retval] IVBStorage **ppstg);
+
+    HRESULT CopyTo(
+        [in] DWORD ciidExclude,
+        [in /*, unique, size_is(ciidExclude) */] IID const *rgiidExclude,
+        [in] PTR /* SNB */ snbExclude,
+        [in, unique] IVBStorage *pstgDest);
+
+    HRESULT MoveElementTo(
+        [in, string] const OLECHAR * pwcsName,
+        [in, unique] IVBStorage *pstgDest,
+        [in, string] const OLECHAR *pwcsNewName,
+        [in] DWORD grfFlags);
+
+    HRESULT Commit(
+        [in] DWORD grfCommitFlags);
+
+    HRESULT Revert();
+
+    HRESULT EnumElements(
+        [in] DWORD reserved1,
+        [in] PTR reserved2,
+        [in] DWORD reserved3,
+        [out, retval] IVBEnumSTATSTG **ppenum);
+
+#if 0
+    [call_as(EnumElements)]
+    HRESULT RemoteEnumElements(
+        [in] DWORD reserved1,
+        [in] unsigned long cbReserved2,
+        [in, unique, size_is(cbReserved2)] BYTE *reserved2,
+        [in] DWORD reserved3,
+        [out] IVBEnumSTATSTG **ppenum);
+#endif
+
+    HRESULT DestroyElement(
+        [in, string] const OLECHAR *pwcsName);
+
+    HRESULT RenameElement(
+        [in, string] const OLECHAR *pwcsOldName,
+        [in, string] const OLECHAR *pwcsNewName);
+
+    HRESULT SetElementTimes(
+        [in, string] const OLECHAR *pwcsName,
+        [in] LPFILETIME pctime,
+        [in] LPFILETIME patime,
+        [in] LPFILETIME pmtime);
+
+    HRESULT SetClass(
+        [in] REFCLSID clsid);
+
+    HRESULT SetStateBits(
+        [in] DWORD grfStateBits,
+        [in] DWORD grfMask);
+
+    HRESULT Stat(
+        [in, out] STATSTG *pstatstg,
+        [in] DWORD grfStatFlag);
+}
+
+[	uuid(0000010b-0000-0000-C000-000000000046),
+    odl,
+	helpstring("Visual Basic version of IPersistFile")
+]
+interface IVBPersistFile : IVBPersist {
+
+    [ helpstring("Checks for changes since last file write") ]
+    HRESULT IsDirty();
+
+    [ helpstring("Opens the specified file and initializes the object from its contents") ]
+    HRESULT Load([in] LPCOLESTR pszFileName, [in] DWORD dwMode);
+
+    [ helpstring("Saves the object into the specified file") ]
+    HRESULT Save([in] LPCOLESTR pszFileName, [in] BOOL fRemember);
+
+    [ helpstring("Notifies the object that it can revert from NoScribble mode to Normal mode") ]
+    HRESULT SaveCompleted([in] LPCOLESTR pszFileName);
+
+    [ helpstring("Gets the current name of the file associated with the object") ]
+    HRESULT GetCurFile([in] PTR /* LPOLESTR * */ ppszFileName);
+}
+
+[
+    uuid(0000010a-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IPersistStorage interface")
+]
+interface IVBPersistStorage : IVBPersist
+{
+
+    typedef [unique] IVBPersistStorage *LPPERSISTSTORAGE;
+
+    HRESULT IsDirty
+    (
+        void
+    );
+
+    HRESULT InitNew
+    (
+        [in, unique] IVBStorage *pStg
+    );
+
+    HRESULT Load
+    (
+        [in, unique] IVBStorage *pStg
+    );
+
+    HRESULT Save
+    (
+        [in, unique] IVBStorage *pStgSave,
+        [in] BOOL fSameAsLoad
+    );
+
+    HRESULT SaveCompleted
+    (
+        [in, unique] IVBStorage *pStgNew
+    );
+
+    HRESULT HandsOffStorage
+    (
+        void
+    );
+}
+
+[
+    uuid(0000000a-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of ILockBytes interface")
+]
+interface IVBLockBytes : IUnknown
+{
+
+    typedef [unique] IVBLockBytes *LPLOCKBYTES;
+
+    HRESULT ReadAt(
+        [in] CURRENCY /* ULARGE_INTEGER */ ulOffset,
+        [in] void *pv,
+        [in] ULONG cb,
+        [out, retval] ULONG * pcbRead);
+
+#if 0
+    [call_as(ReadAt)]
+    HRESULT _stdcall RemoteReadAt(
+        [in] CURRENCY /* ULARGE_INTEGER */ ulOffset,
+        [out, size_is(cb), length_is(*pcbRead)]
+        BYTE *pv,
+        [in] ULONG cb,
+        [out, retval] ULONG *pcbRead);
+#endif
+
+    HRESULT WriteAt(
+        [in] CURRENCY /* ULARGE_INTEGER */ ulOffset,
+        [in] void const *pv,
+        [in] ULONG cb,
+        [out, retval] ULONG * pcbWritten);
+
+#if 0
+    [call_as(WriteAt)]
+    HRESULT RemoteWriteAt(
+        [in] CURRENCY /* ULARGE_INTEGER */ ulOffset,
+        [in, size_is(cb)] BYTE const *pv,
+        [in] ULONG cb,
+        [out, retval] ULONG * pcbWritten);
+#endif
+
+    HRESULT Flush();
+
+    HRESULT SetSize(
+        [in] CURRENCY /* ULARGE_INTEGER */ cb);
+
+    HRESULT LockRegion(
+        [in] CURRENCY /* ULARGE_INTEGER */ libOffset,
+        [in] CURRENCY /* ULARGE_INTEGER */ cb,
+        [in] DWORD dwLockType);
+
+    HRESULT UnlockRegion(
+        [in] CURRENCY /* ULARGE_INTEGER */ libOffset,
+        [in] CURRENCY /* ULARGE_INTEGER */ cb,
+        [in] DWORD dwLockType);
+
+    HRESULT Stat(
+        [in, out] STATSTG *pstatstg,
+        [in] DWORD grfStatFlag);
+}
+
+[
+    uuid(00000103-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IEnumFORMATETC interface")
+]
+interface IVBEnumFORMATETC : IUnknown
+{
+
+    typedef [unique] IVBEnumFORMATETC *LPENUMFORMATETC;
+
+
+    typedef struct DVTARGETDEVICE {
+        DWORD tdSize;
+        WORD tdDriverNameOffset;
+        WORD tdDeviceNameOffset;
+        WORD tdPortNameOffset;
+        WORD tdExtDevmodeOffset;
+        /* [size_is(tdSize - sizeof(DWORD) - 4*sizeof(WORD))] */
+        BYTE tdData[];
+    } DVTARGETDEVICE;
+
+
+    typedef CLIPFORMAT *LPCLIPFORMAT;
+
+    typedef struct FORMATETC {
+        CLIPFORMAT cfFormat;
+        [unique] DVTARGETDEVICE * ptd;
+        DWORD dwAspect;
+        LONG lindex;
+        DWORD tymed;
+    }FORMATETC, *LPFORMATETC;
+
+    HRESULT Next(
+        [in] ULONG celt,
+        [in, out] FORMATETC *rgelt,
+        [in] PTR pceltFetched);
+
+#if 0
+    [call_as(Next)]
+    HRESULT RemoteNext(
+        [in] ULONG celt,
+        [out, size_is(celt), length_is(*pceltFetched )]
+        FORMATETC *rgelt,
+        [out] ULONG *pceltFetched);
+#endif
+
+    HRESULT Skip(
+        [in] ULONG celt);
+
+    HRESULT Reset();
+
+    HRESULT Clone(
+        [in, out] IVBEnumFORMATETC **ppenum);
+}
+
+[
+    uuid(00000105-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IVBEnumSTATDATA interface")
+]
+
+interface IVBEnumSTATDATA : IUnknown
+{
+
+    typedef [unique] IVBEnumSTATDATA *LPENUMSTATDATA;
+
+    //Advise Flags
+    typedef enum ADVF {
+        ADVF_NODATA = 1,
+        ADVF_PRIMEFIRST = 2,
+        ADVF_ONLYONCE = 4,
+        ADVF_DATAONSTOP = 64,
+        ADVFCACHE_NOHANDLER = 8,
+        ADVFCACHE_FORCEBUILTIN = 16,
+        ADVFCACHE_ONSAVE = 32
+    } ADVF;
+
+
+    // Stats for data; used by several enumerations and by at least one
+    // implementation of IDataAdviseHolder; if a field is not used, it
+    // will be NULL.
+
+    typedef struct STATDATA {                              // field used by:
+        FORMATETC formatetc;       // EnumAdvise, EnumData (cache), EnumFormats
+        DWORD advf;                // EnumAdvise, EnumData (cache)
+        [unique] IAdviseSink * pAdvSink; // EnumAdvise
+        DWORD dwConnection;        // EnumAdvise
+    } STATDATA;
+    typedef STATDATA *LPSTATDATA;
+
+    HRESULT Next(
+        [in] ULONG celt,
+        [in, out] STATDATA *rgelt,
+        [in] PTR pceltFetched);
+
+#if 0
+    [call_as(Next)]
+    HRESULT RemoteNext(
+        [in] ULONG celt,
+        [out, size_is(celt), length_is(*pceltFetched)]
+        STATDATA *rgelt,
+        [out] ULONG *pceltFetched);
+#endif
+
+    HRESULT Skip(
+        [in] ULONG celt);
+
+    HRESULT Reset();
+
+    HRESULT Clone(
+        [in, out] IVBEnumSTATDATA **ppenum);
+}
+
+[
+    uuid(00000012-0000-0000-C000-000000000046),
+	odl,
+	helpstring("Visual Basic version of IRootStorage interface")
+]
+interface IVBRootStorage : IUnknown
+{
+
+    typedef [unique] IVBRootStorage *LPROOTSTORAGE;
+
+    HRESULT SwitchToFile
+    (
+        [in] LPOLESTR pszFile
+    );
+}
+
+#if 0
+/****************************************************************************
+ *  Notification Interfaces
+ ****************************************************************************/
+
+[
+    uuid(0000010f-0000-0000-C000-000000000046),
+    odl
+]
+interface IAdviseSink : IUnknown
+{
+
+    typedef IAdviseSink *LPADVISESINK;
+
+    typedef [v1_enum] enum tagTYMED {
+        TYMED_HGLOBAL = 1,
+        TYMED_FILE = 2,
+        TYMED_IVBStream = 4,
+        TYMED_IVBStorage = 8,
+        TYMED_GDI = 16,
+        TYMED_MFPICT = 32,
+        TYMED_ENHMF = 64,
+        TYMED_NULL = 0
+    } TYMED;
+
+    cpp_quote("#ifndef RC_INVOKED")
+    cpp_quote("#pragma warning(disable:4200)")
+    cpp_quote("#endif")
+
+    typedef struct RemSTGMEDIUM {
+        DWORD tymed;
+        DWORD dwHandleType;
+        PTR pData;
+        PTR pUnkForRelease;
+        ULONG cbData;
+        [size_is(cbData)] BYTE data[];
+    } RemSTGMEDIUM;
+    cpp_quote("#ifndef RC_INVOKED")
+    cpp_quote("#pragma warning(default:4200)")
+    cpp_quote("#endif")
+
+
+cpp_quote("#ifdef NONAMELESSUNION")
+cpp_quote("typedef struct tagSTGMEDIUM {")
+cpp_quote("    DWORD tymed;")
+cpp_quote("    union {")
+cpp_quote("        HBITMAP hBitmap;")
+cpp_quote("        HMETAFILEPICT hMetaFilePict;")
+cpp_quote("        HENHMETAFILE hEnhMetaFile;")
+cpp_quote("        HGLOBAL hGlobal;")
+cpp_quote("        LPOLESTR lpszFileName;")
+cpp_quote("        IVBStream *pstm;")
+cpp_quote("        IVBStorage *pstg;")
+cpp_quote("        } u;")
+cpp_quote("    IUnknown *pUnkForRelease;")
+cpp_quote("}uSTGMEDIUM;")
+cpp_quote("#else")
+
+    typedef struct tagSTGMEDIUM {
+    DWORD tymed;
+    [switch_type(DWORD), switch_is((DWORD) tymed)]
+        union
+        {
+        [case(TYMED_GDI)]
+            HBITMAP hBitmap;
+        [case(TYMED_MFPICT)]
+            HMETAFILEPICT hMetaFilePict;
+        [case(TYMED_ENHMF)]
+            HENHMETAFILE hEnhMetaFile;
+        [case(TYMED_HGLOBAL)]
+            HGLOBAL hGlobal;
+        [case(TYMED_FILE)]
+            LPOLESTR lpszFileName;
+        [case(TYMED_IVBStream)]
+            IVBStream *pstm;
+        [case(TYMED_IVBStorage)]
+            IVBStorage *pstg;
+        [default]
+                ;
+        };
+        [unique] IUnknown *pUnkForRelease;
+    }uSTGMEDIUM;
+
+cpp_quote("#endif /* !NONAMELESSUNION */")
+
+
+//
+//  wireSTGMEDIUM
+//
+// These flags are #defined (not enumerated) in wingdi.
+// We need to repeat #defines to avoid conflict in the generated file.
+//
+
+/* Object Definitions for EnumObjects() */
+#define OBJ_PEN             1
+#define OBJ_BRUSH           2
+#define OBJ_DC              3
+#define OBJ_METADC          4
+#define OBJ_PAL             5
+#define OBJ_FONT            6
+#define OBJ_BITMAP          7
+#define OBJ_REGION          8
+#define OBJ_METAFILE        9
+#define OBJ_MEMDC           10
+#define OBJ_EXTPEN          11
+#define OBJ_ENHMETADC       12
+#define OBJ_ENHMETAFILE     13
+
+    typedef union _GDI_OBJECT switch( DWORD ObjectType ) u
+    {
+        case OBJ_BITMAP:    wireHBITMAP     hBitmap;
+        case OBJ_PAL:       wireHPALETTE    hPalette;
+        default:            wireHGLOBAL     hGeneric;
+    } GDI_OBJECT;
+
+    typedef struct _userSTGMEDIUM
+    {
+        union _STGMEDIUM_UNION switch( DWORD tymed ) u
+        {
+        case TYMED_NULL:        ;
+        case TYMED_MFPICT:      wireHMETAFILEPICT   hMetaFilePict;
+        case TYMED_ENHMF:       wireHENHMETAFILE    hHEnhMetaFile;
+        case TYMED_GDI:         GDI_OBJECT *        hGdiHandle;
+        case TYMED_HGLOBAL:     wireHGLOBAL         hGlobal;
+        case TYMED_FILE:        LPOLESTR            lpszFileName;
+        case TYMED_IVBStream:     BYTE_BLOB *         pstm;
+        case TYMED_IVBStorage:    BYTE_BLOB *         pstg;
+        };
+        IUnknown *              pUnkForRelease;
+    } userSTGMEDIUM;
+
+    typedef [unique] userSTGMEDIUM  * wireSTGMEDIUM;
+    typedef [wire_marshal( wireSTGMEDIUM )] uSTGMEDIUM STGMEDIUM;
+
+    typedef [unique] userSTGMEDIUM  * wireASYNC_STGMEDIUM;
+    typedef [wire_marshal( wireASYNC_STGMEDIUM )] STGMEDIUM ASYNC_STGMEDIUM;
+
+    typedef STGMEDIUM *LPSTGMEDIUM;
+
+    typedef struct _userFLAG_STGMEDIUM
+    {
+        long                ContextFlags;
+        long                fPassOwnership;
+        userSTGMEDIUM       Stgmed;
+    } userFLAG_STGMEDIUM;
+
+    typedef [unique] userFLAG_STGMEDIUM  * wireFLAG_STGMEDIUM;
+
+    typedef [wire_marshal( wireFLAG_STGMEDIUM )]
+        struct _FLAG_STGMEDIUM
+        {
+                long                ContextFlags;
+                long                fPassOwnership;
+                STGMEDIUM           Stgmed;
+        } FLAG_STGMEDIUM;
+
+
+    void OnDataChange(
+        [in, unique] FORMATETC *pFormatetc,
+        [in, unique] STGMEDIUM *pStgmed);
+
+#if 0
+    [call_as(OnDataChange), async]
+    void RemoteOnDataChange(
+        [in, unique] FORMATETC *pFormatetc,
+        [in, unique] ASYNC_STGMEDIUM *pStgmed);
+#endif
+
+    void OnViewChange(
+        [in] DWORD dwAspect,
+        [in] LONG lindex);
+
+#if 0 
+    [call_as(OnViewChange), async]
+    void RemoteOnViewChange(
+        [in] DWORD dwAspect,
+        [in] LONG lindex);
+#endif
+
+    void OnRename(
+        [in] IVBMoniker *pmk);
+
+#if 0
+    [call_as(OnRename), async]
+    void RemoteOnRename(
+        [in] IVBMoniker *pmk);
+#endif
+
+    void OnSave();
+
+#if 0
+    [call_as(OnSave), async]
+    void RemoteOnSave();
+#endif
+
+    void OnClose();
+
+#if 0
+    [call_as(OnClose)]
+    HRESULT RemoteOnClose();
+#endif
+}
+
+[
+    uuid(00000125-0000-0000-C000-000000000046),
+    odl
+]
+interface IAdviseSink2 : IAdviseSink
+{
+
+    typedef [unique] IAdviseSink2 *LPADVISESINK2;
+
+    void OnLinkSrcChange(
+        [in, unique] IVBMoniker *pmk);
+
+#if 0
+    [call_as(OnLinkSrcChange), async]
+    void RemoteOnLinkSrcChange(
+        [in, unique] IVBMoniker *pmk);
+#endif
+}
+
+[
+    uuid(0000010e-0000-0000-C000-000000000046),
+    odl
+]
+interface IDataObject : IUnknown
+{
+
+    typedef [unique] IDataObject *LPDATAOBJECT;
+
+    //DATA format DIRection
+    typedef enum tagDATADIR
+    {
+        DATADIR_GET = 1,
+        DATADIR_SET = 2
+    } DATADIR;
+
+    HRESULT GetData(
+        [in, unique] FORMATETC *pformatetcIn,
+        [in, out] STGMEDIUM *pmedium);
+
+#if 0
+    [call_as(GetData)]
+    HRESULT RemoteGetData(
+        [in, unique] FORMATETC *pformatetcIn,
+        [in, out] STGMEDIUM *pRemoteMedium);
+#endif
+
+    HRESULT GetDataHere(
+        [in, unique] FORMATETC *pformatetc,
+        [in, out] STGMEDIUM *pmedium);
+
+#if 0 
+    [call_as(GetDataHere)]
+    HRESULT RemoteGetDataHere(
+        [in, unique] FORMATETC *pformatetc,
+        [in, out] STGMEDIUM *pRemoteMedium);
+#endif
+
+    HRESULT QueryGetData(
+        [in, unique] FORMATETC *pformatetc);
+
+
+    HRESULT GetCanonicalFormatEtc(
+        [in, unique] FORMATETC *pformatectIn,
+        [in, out] FORMATETC *pformatetcOut);
+
+    HRESULT SetData(
+        [in, unique] FORMATETC *pformatetc,
+        [in, unique] STGMEDIUM *pmedium,
+        [in] BOOL fRelease);
+
+#if 0
+    [call_as(SetData)]
+    HRESULT RemoteSetData(
+        [in, unique] FORMATETC *pformatetc,
+        [in, unique] FLAG_STGMEDIUM *pmedium,
+        [in] BOOL fRelease);
+#endif
+
+    HRESULT EnumFormatEtc(
+        [in] DWORD dwDirection,
+        [out, retval] IVBEnumFORMATETC **ppenumFormatEtc);
+
+    HRESULT DAdvise(
+        [in] FORMATETC *pformatetc,
+        [in] DWORD advf,
+        [in, unique] IAdviseSink *pAdvSink,
+        [out, retval] DWORD *pdwConnection);
+
+    HRESULT DUnadvise(
+        [in] DWORD dwConnection);
+
+    HRESULT EnumDAdvise(
+        [out, retval] IVBEnumSTATDATA **ppenumAdvise);
+
+}
+
+[
+    uuid(00000110-0000-0000-C000-000000000046),
+	odl
+]
+interface IDataAdviseHolder : IUnknown
+{
+
+    typedef [unique] IDataAdviseHolder *LPDATAADVISEHOLDER;
+
+    HRESULT Advise
+    (
+        [in, unique] IDataObject *pDataObject,
+        [in, unique] FORMATETC *pFetc,
+        [in] DWORD advf,
+        [in, unique] IAdviseSink *pAdvise,
+        [out, retval] DWORD *pdwConnection
+    );
+
+    HRESULT Unadvise
+    (
+        [in] DWORD dwConnection
+    );
+
+    HRESULT EnumAdvise
+    (
+        [out, retval] IVBEnumSTATDATA **ppenumAdvise
+    );
+
+    HRESULT SendOnDataChange
+    (
+        [in, unique] IDataObject *pDataObject,
+        [in] DWORD dwReserved,
+        [in] DWORD advf
+    );
+
+}
+
+[
+    uuid(00000016-0000-0000-C000-000000000046),
+	odl
+]
+
+interface IMessageFilter : IUnknown
+{
+
+    typedef [unique] IMessageFilter *LPMESSAGEFILTER;
+
+// call type used by IMessageFilter::HandleIncomingMessage
+typedef enum CALLTYPE
+{
+    CALLTYPE_TOPLEVEL = 1,      // toplevel call - no outgoing call
+    CALLTYPE_NESTED   = 2,      // callback on behalf of previous outgoing call - should always handle
+    CALLTYPE_ASYNC    = 3,      // aysnchronous call - can NOT be rejected
+    CALLTYPE_TOPLEVEL_CALLPENDING = 4,  // new toplevel call with new LID
+    CALLTYPE_ASYNC_CALLPENDING    = 5   // async call - can NOT be rejected
+} CALLTYPE;
+
+// status of server call - returned by IMessageFilter::HandleIncomingCall
+// and passed to  IMessageFilter::RetryRejectedCall
+typedef enum SERVERCALL
+{
+    SERVERCALL_ISHANDLED    = 0,
+    SERVERCALL_REJECTED     = 1,
+    SERVERCALL_RETRYLATER   = 2
+} SERVERCALL;
+
+// Pending type indicates the level of nesting
+typedef enum PENDINGTYPE
+{
+    PENDINGTYPE_TOPLEVEL = 1, // toplevel call
+    PENDINGTYPE_NESTED   = 2  // nested call
+} PENDINGTYPE;
+
+// return values of MessagePending
+typedef enum PENDINGMSG
+{
+    PENDINGMSG_CANCELCALL  = 0, // cancel the outgoing call
+    PENDINGMSG_WAITNOPROCESS  = 1, // wait for the return and don't dispatch the message
+    PENDINGMSG_WAITDEFPROCESS = 2  // wait and dispatch the message
+
+} PENDINGMSG;
+
+// additional interface information about the incoming call
+typedef struct INTERFACEINFO
+{
+    IUnknown    *pUnk;      // the pointer to the object
+    IID         iid;        // interface id
+    WORD        wMethod;    // interface method
+} INTERFACEINFO, *LPINTERFACEINFO;
+
+    DWORD HandleInComingCall
+    (
+        [in] DWORD dwCallType,
+        [in] HTASK htaskCaller,
+        [in] DWORD dwTickCount,
+        [in] LPINTERFACEINFO lpInterfaceInfo
+    );
+
+    DWORD RetryRejectedCall
+    (
+        [in] HTASK htaskCallee,
+        [in] DWORD dwTickCount,
+        [in] DWORD dwRejectType
+    );
+
+    DWORD MessagePending
+    (
+        [in] HTASK htaskCallee,
+        [in] DWORD dwTickCount,
+        [in] DWORD dwPendingType
+    );
+}
+
+
+/****************************************************************************
+ *  Object Remoting Interfaces
+ ****************************************************************************/
+
+[
+    uuid(D5F56B60-593B-101A-B569-08002B2DBF7A),
+	odl
+]
+interface IRpcChannelBuffer : IUnknown
+{
+
+    typedef ULONG RPCOLEDATAREP;
+
+    typedef struct RPCOLEMESSAGE
+    {
+        PTR	/* LPVOID */  reserved1;
+        RPCOLEDATAREP     dataRepresentation;
+        PTR /* LPVOID */  Buffer;
+        ULONG             cbBuffer;
+        ULONG             iMethod;
+        PTR /* LPVOID */  reserved2[5];
+        ULONG             rpcFlags;
+    } RPCOLEMESSAGE;
+
+    typedef RPCOLEMESSAGE *PRPCOLEMESSAGE;
+
+    HRESULT GetBuffer
+    (
+        [in] RPCOLEMESSAGE *pMessage,
+        [in] REFIID riid
+    );
+
+    HRESULT SendReceive
+    (
+        [in,out] RPCOLEMESSAGE *pMessage,
+        [out, retval] ULONG *pStatus
+    );
+
+    HRESULT FreeBuffer
+    (
+        [in] RPCOLEMESSAGE *pMessage
+    );
+
+    HRESULT GetDestCtx
+    (
+        [in, out] DWORD *pdwDestContext,
+        [out, retval] void **ppvDestContext
+    );
+
+    HRESULT IsConnected
+    (
+        void
+    );
+
+}
+
+[
+    uuid(D5F56A34-593B-101A-B569-08002B2DBF7A),
+	odl
+]
+interface IRpcProxyBuffer : IUnknown
+{
+
+    HRESULT Connect
+    (
+        [in, unique] IRpcChannelBuffer *pRpcChannelBuffer
+    );
+
+    void Disconnect
+    (
+        void
+    );
+
+}
+
+[
+    uuid(D5F56AFC-593B-101A-B569-08002B2DBF7A),
+	odl
+]
+interface IRpcStubBuffer : IUnknown
+{
+
+    HRESULT Connect
+    (
+        [in] IUnknown *pUnkServer
+    );
+
+    void Disconnect();
+
+    HRESULT Invoke
+    (
+        [in] RPCOLEMESSAGE *_prpcmsg,
+        [in] IRpcChannelBuffer *_pRpcChannelBuffer
+    );
+
+    IRpcStubBuffer *IsIIDSupported
+    (
+        [in] REFIID riid
+    );
+
+    ULONG CountRefs
+    (
+        void
+    );
+
+    HRESULT DebugServerQueryInterface
+    (
+        void **ppv
+    );
+
+    void DebugServerRelease
+    (
+        void *pv
+    );
+
+}
+
+
+
+[
+    uuid(D5F569D0-593B-101A-B569-08002B2DBF7A),
+	odl
+]
+interface IPSFactoryBuffer : IUnknown
+{
+
+    HRESULT CreateProxy
+    (
+        [in] IUnknown *pUnkOuter,
+        [in] REFIID riid,
+        [in, out] IRpcProxyBuffer **ppProxy,
+		[out, retval] void **ppv
+    );
+
+    HRESULT CreateStub
+    (
+        [in] REFIID riid,
+        [in, unique] IUnknown *pUnkServer,
+        [out, retval] IRpcStubBuffer **ppStub
+    );
+}
+
+[
+    uuid(1008c4a0-7613-11cf-9af1-0020af6e72f4),
+	odl
+]
+interface IChannelHook : IUnknown
+{
+    void ClientGetSize(
+        [in]  REFGUID uExtent,
+        [in]  REFIID  riid,
+        [out, retval] ULONG  *pDataSize );
+
+    void ClientFillBuffer(
+        [in]      REFGUID uExtent,
+        [in]      REFIID  riid,
+        [in, out] ULONG  *pDataSize,
+        [in]      void   *pDataBuffer );
+
+    void ClientNotify(
+        [in] REFGUID uExtent,
+        [in] REFIID  riid,
+        [in] ULONG   cbDataSize,
+        [in] void   *pDataBuffer,
+        [in] DWORD   lDataRep,
+        [in] HRESULT hrFault );
+
+    void ServerNotify(
+        [in] REFGUID uExtent,
+        [in] REFIID  riid,
+        [in] ULONG   cbDataSize,
+        [in] void   *pDataBuffer,
+        [in] DWORD   lDataRep );
+
+    void ServerGetSize(
+        [in]  REFGUID uExtent,
+        [in]  REFIID  riid,
+        [in]  HRESULT hrFault,
+        [out, retval] ULONG  *pDataSize );
+
+    void ServerFillBuffer(
+        [in]      REFGUID uExtent,
+        [in]      REFIID  riid,
+        [in, out] ULONG  *pDataSize,
+        [in]      void   *pDataBuffer,
+        [in]      HRESULT hrFault );
+};
+#endif
+
+/****************************************************************************
+ *  Property Storage Interfaces
+ ****************************************************************************/
+
+interface IVBEnumSTATPROPSTG;
+interface IVBEnumSTATPROPSETSTG;
+
+[
+    uuid(00000138-0000-0000-C000-000000000046),
+    odl,
+	helpstring("Visual Basic version of IPropertyStorage interface")
+]
+interface IVBPropertyStorage : IUnknown
+{
+
+    typedef UUID            FMTID;
+
+    cpp_quote("#ifdef __cplusplus")
+    cpp_quote("#define REFFMTID const FMTID &")
+    cpp_quote("#else")
+    cpp_quote("#define REFFMTID const FMTID * const")
+    cpp_quote("#endif")
+
+    cpp_quote("#if 0 // for MIDL processing only!!")
+    typedef const UUID * REFFMTID ;
+    cpp_quote("#endif //if 0: for MIDL processing only!!")
+
+    const DWORD PROPSETFLAG_DEFAULT = 0;
+    const DWORD PROPSETFLAG_NONSIMPLE = 1;
+    const DWORD PROPSETFLAG_ANSI = 2;
+
+    typedef [unique] IVBPropertyStorage * LPPROPERTYSTORAGE;
+
+#if 0	// Irrelevant to VB
+    #define TYPEDEF_CA(type, name) \
+        typedef struct tag##name\
+        {\
+            ULONG   cElems;\
+            [size_is( cElems )]\
+            type *  pElems;\
+        } name
+
+    TYPEDEF_CA(unsigned char,       CAUB);
+    TYPEDEF_CA(short,               CAI);
+    TYPEDEF_CA(USHORT,              CAUI);
+    TYPEDEF_CA(long,                CAL);
+    TYPEDEF_CA(ULONG,               CAUL);
+    TYPEDEF_CA(float,               CAFLT);
+    TYPEDEF_CA(double,              CADBL);
+    TYPEDEF_CA(CY,                  CACY);
+    TYPEDEF_CA(DATE,                CADATE);
+    TYPEDEF_CA(BSTR,                CABSTR);
+    TYPEDEF_CA(VARIANT_BOOL,        CABOOL);
+    TYPEDEF_CA(SCODE,               CASCODE);
+    TYPEDEF_CA(PROPVARIANT,         CAPROPVARIANT);
+    TYPEDEF_CA(LARGE_INTEGER,       CAH);
+    TYPEDEF_CA(ULARGE_INTEGER,      CAUH);
+    TYPEDEF_CA(LPSTR,               CALPSTR);
+    TYPEDEF_CA(LPWSTR,              CALPWSTR);
+    TYPEDEF_CA(FILETIME,            CAFILETIME);
+    TYPEDEF_CA(CLIPDATA,            CACLIPDATA);
+    TYPEDEF_CA(CLSID,               CACLSID);
+#endif
+
+    typedef struct PROPVARIANT
+    {
+        VARTYPE vt;
+        WORD    wReserved1;
+        WORD    wReserved2;
+        WORD    wReserved3;
+		DWORD	dwReserved1;
+		DWORD	dwReserved2;
+
+#if 0	// Comment out switch for VB compatibility
+        [switch_is((unsigned short) (vt & 0x1fff))] union
+        {
+            [case(VT_EMPTY, VT_NULL)]
+                ;
+            [case(VT_UI1)]
+                UCHAR               bVal;
+            [case(VT_I2)]
+                short               iVal;
+            [case(VT_UI2)]
+                USHORT              uiVal;
+            [case(VT_BOOL)]
+                VARIANT_BOOL        bool;
+            [case(VT_I4)]
+                long                lVal;
+            [case(VT_UI4)]
+                ULONG               ulVal;
+            [case(VT_R4)]
+                float               fltVal;
+            [case(VT_ERROR)]
+                SCODE               scode;
+            [case(VT_I8)]
+                LARGE_INTEGER       hVal;
+            [case(VT_UI8)]
+                ULARGE_INTEGER      uhVal;
+            [case(VT_R8)]
+                double              dblVal;
+            [case(VT_CY)]
+                CY                  cyVal;
+            [case(VT_DATE)]
+                DATE                date;
+            [case(VT_FILETIME)]
+                FILETIME            filetime;
+            [case(VT_CLSID)]
+                CLSID *             puuid;
+            [case(VT_BLOB, VT_BLOB_OBJECT)]
+                BLOB                blob;
+            [case(VT_CF)]
+                CLIPDATA            *pclipdata;
+            [case(VT_STREAM, VT_STREAMED_OBJECT)]
+                IVBStream *           pStream;
+            [case(VT_STORAGE, VT_STORED_OBJECT)]
+                IVBStorage *          pStorage;
+            [case(VT_BSTR)]
+                BSTR                bstrVal;
+            [case(VT_LPSTR)]
+                LPSTR               pszVal;
+            [case(VT_LPWSTR)]
+                LPWSTR              pwszVal;
+            [case(VT_UI1|VT_VECTOR)]
+                CAUB                caub;
+            [case(VT_I2|VT_VECTOR)]
+                CAI                 cai;
+            [case(VT_UI2|VT_VECTOR)]
+                CAUI                caui;
+            [case(VT_BOOL|VT_VECTOR)]
+                CABOOL              cabool;
+            [case(VT_I4|VT_VECTOR)]
+                CAL                 cal;
+            [case(VT_UI4|VT_VECTOR)]
+                CAUL                caul;
+            [case(VT_R4|VT_VECTOR)]
+                CAFLT               caflt;
+            [case(VT_ERROR|VT_VECTOR)]
+                CASCODE             cascode;
+            [case(VT_I8|VT_VECTOR)]
+                CAH                 cah;
+            [case(VT_UI8|VT_VECTOR)]
+                CAUH                cauh;
+            [case(VT_R8|VT_VECTOR)]
+                CADBL               cadbl;
+            [case(VT_CY|VT_VECTOR)]
+                CACY                cacy;
+            [case(VT_DATE|VT_VECTOR)]
+                CADATE              cadate;
+            [case(VT_FILETIME|VT_VECTOR)]
+                CAFILETIME          cafiletime;
+            [case(VT_CLSID|VT_VECTOR)]
+                CACLSID             cauuid;
+            [case(VT_CF|VT_VECTOR)]
+                CACLIPDATA          caclipdata;
+            [case(VT_BSTR|VT_VECTOR)]
+                CABSTR              cabstr;
+            [case(VT_LPSTR|VT_VECTOR)]
+                CALPSTR             calpstr;
+            [case(VT_LPWSTR|VT_VECTOR)]
+                CALPWSTR            calpwstr;
+            [case(VT_VARIANT|VT_VECTOR)]
+                CAPROPVARIANT       capropvar;
+        };
+#endif
+    } PROPVARIANT;
+
+    typedef struct PROPVARIANT * LPPROPVARIANT;
+
+    const PROPID PID_DICTIONARY         = 0x00000000;
+    const PROPID PID_CODEPAGE           = 0x00000001;
+    const PROPID PID_FIRST_NAME_DEFAULT = 0x00000fff;
+    const PROPID PID_LOCALE             = 0x80000000;
+    const PROPID PID_MODIFY_TIME        = 0x80000001;
+    const PROPID PID_SECURITY           = 0x80000002;
+    const PROPID PID_ILLEGAL            = 0xffffffff;
+
+
+    const ULONG PRSPEC_INVALID = 0xffffffff;
+    const ULONG PRSPEC_LPWSTR = 0;
+    const ULONG PRSPEC_PROPID = 1;
+
+    typedef struct PROPSPEC 
+	{
+        ULONG   ulKind;
+		ULONG	propid_or_lpwstr;
+#if 0
+        [switch_is(ulKind)] union
+        {
+            [case(PRSPEC_PROPID)]
+                PROPID      propid;
+            [case(PRSPEC_LPWSTR)]
+                LPOLESTR    lpwstr;
+            [default] ;
+        } ;
+#else
+		PTR p; // propid or lpwstr
+#endif
+    } PROPSPEC;
+
+    typedef struct STATPROPSTG
+    {
+        LPOLESTR    lpwstrName;
+        PROPID      propid;
+        VARTYPE     vt;
+    } STATPROPSTG;
+
+    typedef struct STATPROPSETSTG
+    {
+        FMTID       fmtid;
+        CLSID       clsid;
+        DWORD       grfFlags;
+        CURRENCY    mtime;
+        CURRENCY    ctime;
+        CURRENCY    atime;
+    } STATPROPSETSTG;
+
+    typedef struct STATPROPSETSTGO
+    {
+        FMTID       fmtid;
+        CLSID       clsid;
+        DWORD       grfFlags;
+        CURRENCY /* FILETIME */ mtime;
+        CURRENCY /* FILETIME */ ctime;
+        CURRENCY /* FILETIME */ atime;
+    } STATPROPSETSTGO;
+
+    HRESULT ReadMultiple(
+        [in]    ULONG                   cpspec,
+        [in, size_is(cpspec)]
+                PROPSPEC                rgpspec[],
+        [in, out, size_is(cpspec)]
+                PROPVARIANT            *rgpropvar
+        );
+
+    HRESULT WriteMultiple(
+        [in]    ULONG                   cpspec,
+        [in, size_is(cpspec)]
+                PROPSPEC                rgpspec[],
+        [in, size_is(cpspec)]
+                PROPVARIANT            *rgpropvar,
+        [in]    PROPID                  propidNameFirst
+        );
+
+    HRESULT DeleteMultiple(
+        [in]    ULONG                   cpspec,
+        [in, size_is(cpspec)]
+                PROPSPEC                rgpspec[]
+        );
+
+    HRESULT ReadPropertyNames(
+        [in]    ULONG                   cpropid,
+        [in, size_is(cpropid)]
+                PROPID                 *rgpropid,
+        [in, out, size_is(cpropid)]
+                PTR					   *rglpwstrName
+        );
+
+    HRESULT WritePropertyNames(
+        [in]    ULONG                   cpropid,
+        [in, size_is(cpropid)]
+                PROPID                  rgpropid[],
+        [in, size_is(cpropid)]
+                PTR                    *rglpwstrName
+        );
+
+    HRESULT DeletePropertyNames(
+        [in]    ULONG                   cpropid,
+        [in, size_is(cpropid)]
+                PROPID                  rgpropid[]
+        );
+
+    HRESULT Commit(
+        [in]    DWORD                   grfCommitFlags
+        );
+
+    HRESULT Revert();
+
+    HRESULT Enum(
+        [out, retval]   IVBEnumSTATPROPSTG **     ppenum
+        );
+
+    HRESULT SetTimes(
+        [in]    LPFILETIME pctime,
+        [in]    LPFILETIME patime,
+        [in]    LPFILETIME pmtime
+        );
+
+    HRESULT SetClass(
+        [in]    REFCLSID                clsid
+        );
+
+    HRESULT Stat(
+        [out, retval]   STATPROPSETSTG *        pstatpsstg
+        );
+}
+
+
+[
+    uuid(0000013A-0000-0000-C000-000000000046),
+    odl,
+	helpstring("Visual Basic version of IPropertySetStorage interface")
+]
+interface IVBPropertySetStorage : IUnknown
+{
+
+    typedef [unique] IVBPropertySetStorage * LPPROPERTYSETSTORAGE;
+
+    HRESULT Create(
+        [in]    REFFMTID                rfmtid,
+        [in, unique]
+                CLSID *                 pclsid,
+        [in]    DWORD                   grfFlags,
+        [in]    DWORD                   grfMode,
+        [out, retval]   IVBPropertyStorage **     ppprstg
+        );
+
+    HRESULT Open(
+        [in]    REFFMTID                rfmtid,
+        [in]    DWORD                   grfMode,
+        [out, retval]   IVBPropertyStorage **     ppprstg
+        );
+
+    HRESULT Delete(
+        [in]    REFFMTID                rfmtid
+        );
+
+    HRESULT Enum(
+        [out, retval]   IVBEnumSTATPROPSETSTG **  ppenum
+        );
+
+}
+
+
+[
+    uuid(00000139-0000-0000-C000-000000000046),
+    odl,
+	helpstring("Visual Basic version of IPropertySetStorage interface")
+]
+interface IVBEnumSTATPROPSTG : IUnknown
+{
+
+    typedef [unique] IVBEnumSTATPROPSTG * LPENUMSTATPROPSTG;
+
+    HRESULT Next(
+        [in]    ULONG                   celt,
+        [in]    STATPROPSTG *           rgelt,
+        [in]    PTR                     pceltFetched
+        );
+
+#if 0
+    [call_as(Next)]
+    HRESULT RemoteNext(
+        [in]    ULONG                   celt,
+        [out, size_is(celt), length_is(*pceltFetched)]
+                STATPROPSTG *           rgelt,
+        [out]   ULONG *                 pceltFetched
+        );
+#endif
+
+    HRESULT Skip(
+        [in]    ULONG                   celt
+        );
+
+    HRESULT Reset();
+
+    HRESULT Clone(
+        [in, out]   IVBEnumSTATPROPSTG **     ppenum
+        );
+}
+
+
+[
+    uuid(0000013B-0000-0000-C000-000000000046),
+    odl,
+	helpstring("Visual Basic version of IPropertySetStorage interface")
+]
+interface IVBEnumSTATPROPSETSTG : IUnknown
+{
+
+    typedef [unique] IVBEnumSTATPROPSETSTG * LPENUMSTATPROPSETSTG;
+
+    HRESULT Next(
+        [in]    ULONG                   celt,
+        [in]    STATPROPSETSTG *        rgelt,
+        [in]   PTR                     pceltFetched
+        );
+
+#if 0
+    [call_as(Next)]
+    HRESULT RemoteNext(
+        [in]    ULONG                   celt,
+        [out, size_is(celt), length_is(*pceltFetched)]
+                STATPROPSETSTG *        rgelt,
+        [out]   ULONG *                 pceltFetched
+        );
+#endif
+
+    HRESULT Skip(
+        [in]    ULONG                   celt
+        );
+
+    HRESULT Reset();
+
+    HRESULT Clone(
+        [in, out]   IVBEnumSTATPROPSETSTG **  ppenum
+        );
+}
+
+cpp_quote("WINOLEAPI PropVariantCopy ( PROPVARIANT * pvarDest, const PROPVARIANT * pvarSrc );")
+cpp_quote("WINOLEAPI PropVariantClear ( PROPVARIANT * pvar );")
+cpp_quote("#   ifdef __cplusplus")
+cpp_quote("inline void PropVariantInit ( PROPVARIANT * pvar )")
+cpp_quote("{")
+cpp_quote("    memset ( pvar, 0, sizeof(PROPVARIANT) );")
+cpp_quote("}")
+cpp_quote("#   else")
+cpp_quote("#   define PropVariantInit(pvar) memset ( pvar, 0, sizeof(PROPVARIANT) )")
+cpp_quote("#   endif")
+cpp_quote("WINOLEAPI FreePropVariantArray ( ULONG cVariants, PROPVARIANT * rgvars );")
+
+#if 0
+/****************************************************************************
+ *  Connection Point Interfaces
+ ****************************************************************************/
+[
+    uuid(B196B286-BAB4-101A-B69C-00AA00341D07),
+    odl
+]
+interface IConnectionPoint : IUnknown
+{
+    typedef IConnectionPoint * PCONNECTIONPOINT;
+    typedef IConnectionPoint * LPCONNECTIONPOINT;
+
+    HRESULT GetConnectionInterface
+    (
+        [in, out]           IID * piid
+    );
+
+    HRESULT GetConnectionPointContainer
+    (
+        [out, retval]           IConnectionPointContainer ** ppCPC
+    );
+
+    HRESULT Advise
+    (
+        [in]    IUnknown * pUnkSink,
+        [out, retval]   DWORD *    pdwCookie
+    );
+
+    HRESULT Unadvise
+    (
+        [in]    DWORD dwCookie
+    );
+
+    HRESULT EnumConnections
+    (
+        [out, retval]   IEnumConnections ** ppEnum
+    );
+}
+
+[
+    uuid(B196B284-BAB4-101A-B69C-00AA00341D07),
+    odl
+]
+interface IConnectionPointContainer : IUnknown
+{
+    typedef IConnectionPointContainer * PCONNECTIONPOINTCONTAINER;
+    typedef IConnectionPointContainer * LPCONNECTIONPOINTCONTAINER;
+
+    HRESULT EnumConnectionPoints
+    (
+        [out, retval]   IEnumConnectionPoints ** ppEnum
+    );
+
+    HRESULT FindConnectionPoint
+    (
+        [in]    REFIID riid,
+        [out, retval]   IConnectionPoint ** ppCP
+    );
+}
+
+
+[
+    uuid(B196B287-BAB4-101A-B69C-00AA00341D07),
+    odl
+]
+interface IEnumConnections : IUnknown
+{
+    typedef IEnumConnections * PENUMCONNECTIONS;
+    typedef IEnumConnections * LPENUMCONNECTIONS;
+
+    typedef struct tagCONNECTDATA
+    {
+        IUnknown *  pUnk;
+        DWORD       dwCookie;
+    } CONNECTDATA;
+
+    typedef struct tagCONNECTDATA * PCONNECTDATA;
+    typedef struct tagCONNECTDATA * LPCONNECTDATA;
+
+    HRESULT Next(
+        [in]    ULONG           cConnections,
+        [in, out]   CONNECTDATA *   rgcd,
+        [in]   PTR				lpcFetched
+    );
+
+#if 0
+    [call_as(Next)]
+    HRESULT RemoteNext(
+        [in]                            ULONG           cConnections,
+        [out,
+         size_is(cConnections),
+         length_is(*lpcFetched)]        CONNECTDATA *   rgcd,
+        [out]                           ULONG *         lpcFetched
+    );
+#endif
+
+    HRESULT Skip
+    (
+        [in]    ULONG cConnections
+    );
+
+    HRESULT Reset
+    (
+        void
+    );
+
+    HRESULT Clone
+    (
+        [in, out]   IEnumConnections ** ppEnum
+    );
+}
+
+
+[
+    uuid(B196B285-BAB4-101A-B69C-00AA00341D07),
+    odl
+]
+interface IEnumConnectionPoints : IUnknown
+{
+    typedef IEnumConnectionPoints * PENUMCONNECTIONPOINTS;
+    typedef IEnumConnectionPoints * LPENUMCONNECTIONPOINTS;
+
+    HRESULT Next(
+        [in]    ULONG               cConnections,
+        [in, out]   IConnectionPoint ** rgpcn,
+        [in]   PTR lpcFetched
+    );
+
+#if 0
+    [call_as(Next)]
+    HRESULT RemoteNext(
+        [in]                        ULONG               cConnections,
+        [out,
+         size_is(cConnections),
+         length_is(*lpcFetched)]    IConnectionPoint ** rgpcn,
+        [out]                       ULONG *             lpcFetched
+    );
+#endif
+
+    HRESULT Skip
+    (
+        [in]    ULONG   cConnections
+    );
+
+    HRESULT Reset
+    (
+        void
+    );
+
+    HRESULT Clone
+    (
+        [in, out]   IEnumConnectionPoints **    ppEnum
+    );
+}
+
+
+
+[
+    uuid(0000013D-0000-0000-C000-000000000046),
+	odl
+]
+interface IClientSecurity : IUnknown
+{
+
+    typedef struct tagSOLE_AUTHENTICATION_SERVICE
+    {
+        DWORD    dwAuthnSvc;
+        DWORD    dwAuthzSvc;
+        PTR /* OLECHAR * */ pPrincipalName;
+        HRESULT  hr;
+    } SOLE_AUTHENTICATION_SERVICE;
+
+    typedef SOLE_AUTHENTICATION_SERVICE *PSOLE_AUTHENTICATION_SERVICE;
+
+    typedef enum tagEOLE_AUTHENTICATION_CAPABILITIES
+    {
+        EOAC_NONE        = 0x0,
+        EOAC_MUTUAL_AUTH = 0x1,
+        EOAC_SECURE_REFS = 0x2
+    } EOLE_AUTHENTICATION_CAPABILITIES;
+
+    HRESULT QueryBlanket
+    (
+        [in]  IUnknown                *pProxy,
+        [in, out] DWORD                   *pAuthnSvc,
+        [in, out] DWORD                   *pAuthzSvc,
+        [in, out] OLECHAR                **pServerPrincName,
+        [in, out] DWORD                   *pAuthnLevel,
+        [in, out] DWORD                   *pImpLevel,
+        [in, out] void                   **pAuthInfo,
+        [in, out] DWORD                   *pCapabilites
+    );
+
+    HRESULT SetBlanket
+    (
+        [in] IUnknown                 *pProxy,
+        [in] DWORD                     AuthnSvc,
+        [in] DWORD                     AuthzSvc,
+        [in] OLECHAR                  *pServerPrincName,
+        [in] DWORD                     AuthnLevel,
+        [in] DWORD                     ImpLevel,
+        [in] void                     *pAuthInfo,
+        [in] DWORD                     Capabilities
+    );
+
+    HRESULT CopyProxy
+    (
+        [in]  IUnknown  *pProxy,
+        [out, retval] IUnknown **ppCopy
+    );
+}
+
+[
+    uuid(0000013E-0000-0000-C000-000000000046),
+	odl
+]
+interface IServerSecurity : IUnknown
+{
+    HRESULT QueryBlanket
+    (
+        [in, out] DWORD    *pAuthnSvc,
+        [in, out] DWORD    *pAuthzSvc,
+        [in, out] OLECHAR **pServerPrincName,
+        [in, out] DWORD    *pAuthnLevel,
+        [in, out] DWORD    *pImpLevel,
+        [in, out] void    **pPrivs,
+        [in, out] DWORD    *pCapabilities
+    );
+
+    HRESULT ImpersonateClient();
+
+    HRESULT RevertToSelf();
+
+    BOOL IsImpersonating();
+}
+
+[
+    uuid(00000140-0000-0000-C000-000000000046),
+	odl
+]
+
+interface IClassActivator : IUnknown
+{
+    HRESULT GetClassObject(
+        [in] REFCLSID rclsid,
+        [in] DWORD dwClassContext,
+        [in] LCID locale,
+        [in] REFIID riid,
+        [out, iid_is(riid)] void **ppv);
+}
+
+
+[
+    uuid(99caf010-415e-11cf-8814-00aa00b569f5),
+    odl
+]
+
+interface IFillLockBytes: IUnknown
+{
+
+    HRESULT FillAppend
+    (
+        [in] void const *pv,
+        [in] ULONG cb,
+        [out, retval] ULONG *pcbWritten
+    );
+
+    HRESULT FillAt
+    (
+        [in] ULARGE_INTEGER ulOffset,
+        [in] void const *pv,
+        [in] ULONG cb,
+        [out, retval] ULONG *pcbWritten
+    );
+
+    HRESULT SetFillSize
+    (
+        [in] ULARGE_INTEGER ulSize
+    );
+
+    HRESULT Terminate
+    (
+        [in] BOOL bCanceled
+    );
+}
+
+
+[
+    uuid(a9d758a0-4617-11cf-95fc-00aa00680db4),
+    odl
+]
+interface IProgressNotify: IUnknown
+{
+
+
+    HRESULT OnProgress (
+    [in]        DWORD           dwProgressCurrent,
+    [in]        DWORD           dwProgressMaximum,
+    [in]        BOOL            fAccurate,
+    [in]        BOOL            fOwner
+    );
+
+}
+
+[
+    uuid(0e6d4d90-6738-11cf-9608-00aa00680db4),
+    odl
+]
+interface ILayoutStorage: IUnknown
+{
+
+
+	typedef struct StorageLayout 
+	{	DWORD 			LayoutType;
+		PTR /* OLECHAR* */ pwcsElementName;
+		LARGE_INTEGER   cOffset;
+		LARGE_INTEGER	cBytes;
+	} StorageLayout;
+
+
+	HRESULT __stdcall LayoutScript(
+	[in]	StorageLayout	*pStorageLayout,
+	[in]	DWORD			nEntries,
+	[in]	DWORD			glfInterleavedFlag);
+
+	HRESULT __stdcall BeginMonitor(void);
+
+	HRESULT __stdcall EndMonitor(void);
+
+	HRESULT __stdcall ReLayoutDocfile(
+	[in]	OLECHAR			*pwcsNewDfName);
+
+
+}
+
+#endif

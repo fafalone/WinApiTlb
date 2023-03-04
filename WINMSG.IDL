@@ -1,0 +1,18 @@
+// Windows messages
+
+
+[
+#ifdef UNICODE
+uuid(6467504C-3A82-101B-8181-00AA003743D3),
+#else
+uuid(6467404C-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("Windows Messages"),
+dllname("USER32.DLL")
+]
+module WinMessage {
+
+
+
+
+}

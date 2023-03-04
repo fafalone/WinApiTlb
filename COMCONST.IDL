@@ -1,0 +1,157 @@
+
+// Typedefs
+
+typedef enum EQBColor {
+    qbBlack           = 0,
+    qbBlue            = 1,
+    qbGreen           = 2,
+    qbCyan            = 3,
+    qbRed             = 4,
+    qbMagenta         = 5,
+    qbYellow          = 6,
+    qbWhite           = 7,
+    qbGray            = 8,
+    qbLightBlue       = 9,
+    qbLightGreen      = 10,
+    qbLightCyan       = 11,
+    qbLightRed        = 12,
+    qbLightMagenta    = 13,
+    qbLightYellow     = 14,
+    qbBrightWhite     = 15
+} EQBColor;
+
+
+[
+#ifdef UNICODE
+uuid(64675060-3A82-101B-8181-00AA003743D3),
+#else
+uuid(64674060-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("Control Character Strings and Other Common Constants"),
+dllname("NOSUCH.DLL")
+]
+module CommonConst {
+
+    [ helpstring("Unicode build") ]
+#ifdef UNICODE
+	const short UnicodeTypeLib = -1;
+#else
+	const short UnicodeTypeLib = 0;
+#endif
+
+    [ helpstring("Empty string (\"\")") ]
+    const LPSTR sEmpty = "";
+    // MIDL bug generates empty string rather than null character
+    //[ helpstring("Null character (ASCII 0)") ]
+    // const LPSTR sNullChar = "\0";
+    [ helpstring("Null string pointer (address zero)") ]
+    const LPSTR sNullStr = 0;
+    [ helpstring("Carriage return/line feed (ASCII 13,10)") ]
+    const LPSTR sCrLf = "\r\n";
+    [ helpstring("Double carriage return/line feed (ASCII 13,10,13,10)") ]
+    const LPSTR sCrLfCrLf = "\r\n\r\n";
+    [ helpstring("Carriage return (ASCII 13)") ]
+    const LPSTR sCr = "\r";
+    [ helpstring("Line feed (ASCII 10)") ]
+    const LPSTR sLf = "\n";
+    [ helpstring("Bell (ASCII 7)") ]
+    const LPSTR sBell = "\a";
+    [ helpstring("Backspace (ASCII 8)") ]
+    const LPSTR sBack = "\b";
+    [ helpstring("Tab (ASCII 9)") ]
+    const LPSTR sTab = "\t";
+    [ helpstring("Vertical Tab (ASCII 11)") ]
+    const LPSTR sVerticalTab = "\v";
+    [ helpstring("Form feed (ASCII 12)") ]
+    const LPSTR sFormFeed = "\f";
+
+	// Uncommon consts
+	const LPSTR sSOH = "\x1";
+	const LPSTR sSTX = "\x2";
+	const LPSTR sETX = "\x3";
+	const LPSTR sEOT = "\x4";
+	const LPSTR sENQ = "\x5";
+	const LPSTR sACK = "\x6";
+	
+	const LPSTR sSO  = "\xe";
+	const LPSTR sSI  = "\xf";
+	const LPSTR sDLE = "\x10";
+	const LPSTR sDC1 = "\x11";
+	const LPSTR sDC2 = "\x12";
+	const LPSTR sDC3 = "\x13";
+	const LPSTR sDC4 = "\x14";
+	const LPSTR sNAK = "\x15";
+	const LPSTR sSYN = "\x16";
+	const LPSTR sETB = "\x17";
+	const LPSTR sCAN = "\x18";
+	const LPSTR sEM  = "\x19";	// MIDL bug generates wrong value
+    const LPSTR sSUB = "\x1a"; 
+	const LPSTR sESC = "\x1b";
+	const LPSTR sFS  = "\x1c";
+	const LPSTR sGS  = "\x1d";
+	const LPSTR sRS  = "\x1e";
+	const LPSTR sUS  = "\x1f";
+
+    [ helpstring("Executable Extension") ]
+    const LPSTR sExeExt = ".EXE";
+    [ helpstring("Program Information File Extension") ]
+    const LPSTR sPifExt = ".PIF";
+    [ helpstring("Command File Extension") ]
+    const LPSTR sCmdExt = ".CMD";
+    [ helpstring("Batch File Extension") ]
+    const LPSTR sBatExt = ".BAT";
+    [ helpstring("Flat Executable File Extension") ]
+    const LPSTR sComExt = ".COM";
+
+    [ helpstring("Backslash (directory separator)") ]
+    const LPSTR sBSlash = "\\";
+    [ helpstring("Double backslash (network directory indicator)") ]
+    const LPSTR sBSlash2 = "\\\\";
+    [ helpstring("Colon (drive separator)") ]
+    const LPSTR sColon = ":";
+    [ helpstring("Dot (file extension separator)") ]
+    const LPSTR sDot = ".";
+    [ helpstring("Space") ]
+    const LPSTR sSpace = " ";
+    [ helpstring("Single quote") ]
+    const LPSTR sQuote1 = "'";
+    [ helpstring("Double quote") ]
+    const LPSTR sQuote2 = "\"";
+    [ helpstring("Pipe (horizontal bar)") ]
+    const LPSTR sPipe = "|";
+    [ helpstring("Less than") ]
+    const LPSTR sLesser = "<";
+    [ helpstring("Greater than") ]
+    const LPSTR sGreater = ">";
+
+    [ helpstring("Null pointer") ]
+    const long pNull = 0;
+    //[ helpstring("Null handle") ]
+    //const long hNull = 0;
+
+	// Some common separators
+    [ helpstring("White space characters") ]
+    const LPSTR sWhiteSpace = " \t\r\n";
+    [ helpstring("Punctuation characters") ]
+    const LPSTR sPunctuation = ",.;:!";
+    [ helpstring("White space and punctuation characters") ]
+    const LPSTR sWhitePunct = " \t\r\n,.;:!";
+    [ helpstring("Single and double quotes") ]
+    const LPSTR sQuotes = "\"'";
+    [ helpstring("Path separators") ]
+    const LPSTR sPathSeparators = "\\:";
+
+
+    [ helpstring("Maximum directory length") ]
+    const int cMaxPath = 260;
+
+    [ helpstring("Maximum file length") ]
+    const int cMaxFile = 260;
+
+    // Keycodes that are missing or have confusing names in VB type library
+    [ helpstring("Page Up key.") ]
+    const int vbKeyPrior = 0x21;
+    [ helpstring("Page Down key.") ]
+    const int vbKeyNext = 0x22;
+
+}

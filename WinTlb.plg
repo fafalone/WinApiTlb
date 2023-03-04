@@ -1,0 +1,34 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: WinTlb - Win32 Unicode--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\TEMP\RSP2CF1.bat" with contents
+[
+@echo off
+midl /nologo /win32 /DUNICODE /tlb c:\Hardcore3\release\winu.tlb win.idl
+]
+Creating command line "C:\TEMP\RSP2CF1.bat"
+<h3>Output Window</h3>
+Performing Custom Build Step on .\WIN.IDL
+Processing .\win.idl
+win.idl
+Processing .\oaidl.idl
+oaidl.idl
+Processing .\objidl.idl
+objidl.idl
+Processing .\unknwn.idl
+unknwn.idl
+Processing .\wtypes.idl
+wtypes.idl
+
+
+
+<h3>Results</h3>
+WinTlb.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

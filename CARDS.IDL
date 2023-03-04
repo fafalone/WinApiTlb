@@ -1,0 +1,105 @@
+
+// Enums
+
+typedef enum ECardType {
+    ectFaces = 0,
+    ectBacks = 1,
+    ectInvert = 2
+} ECardType;
+
+typedef enum ECardBack {
+    ecbCrossHatch = 53,
+    ecbPlaid = 54,
+    ecbWeave = 55,
+    ecbRobot = 56,
+    ecbRoses = 57,
+    ecbIvyBlack = 58,
+    ecbIvyBlue = 59,
+    ecbFishCyan = 60,
+    ecbFishBlue = 61,
+    ecbShell = 62,
+    ecbCastle = 63,
+    ecbBeach = 64,
+    ecbCardHand = 65,
+    ecbUnused = 66,
+    ecbX = 67,
+    ecbO = 68,
+} ECardBack;
+
+typedef enum ECardSuit {
+    ecsClubs = 0,
+    ecsDiamonds = 1,
+    ecsHearts = 2,
+    ecsSpades = 3
+} ECardSuit;
+
+typedef enum ECardFace {
+    ecfAce = 0,
+    ecfTwo = 4,
+    ecfThree = 8,
+    ecfFour = 12,
+    ecfFive = 16,
+    ecfSix = 20,
+    ecfSeven = 24,
+    ecfEight = 28,
+    ecfNine = 32,
+    ecfTen = 36,
+    ecfJack = 40,
+    ecfQueen = 44,
+    ecfKing = 48
+} ECardFace;
+
+[
+#ifdef UNICODE
+uuid(64675062-3A82-101B-8181-00AA003743D3),
+#else
+uuid(64674062-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("Card Functions and Resources"),
+dllname("CARDS32.DLL")
+]
+module WinCards {
+
+    [
+    usesgetlasterror,
+    entry("cdtInit"),
+    helpstring("Initializes the DLL and returns the card size in pixels through the dx and dy references"),
+    ]
+    long WINAPI cdtInit(long * dx, long * dy);
+
+
+    [
+    usesgetlasterror,
+    entry("cdtDraw"),
+    helpstring("Draw the specified card at the given location"),
+    ]
+    long WINAPI cdtDraw(HDC hdc, long x, long y, 
+					    ECardSuit ecsCard, ECardType ectDraw, 
+						COLORREF clr);
+
+    [
+    usesgetlasterror,
+    entry("cdtDrawExt"),
+    helpstring("Draw the specified card at the given location with the given size"),
+    ]
+    long WINAPI cdtDrawExt(HDC hdc, long x, long y, 
+						   long dx, long dy, 
+					       ECardSuit ecsCard, ECardType ectDraw, 
+						   COLORREF clr);
+
+    [
+    usesgetlasterror,
+    entry("cdtAnimate"),
+    helpstring("Initializes the DLL and returns the card size in pixels through the dx and dy references"),
+    ]
+    long WINAPI cdtAnimate(HDC hdc, ECardBack ecbCardBack, 
+						   long x, long y, long iState);
+						   	
+    [
+    usesgetlasterror,
+    entry("cdtTerm"),
+    helpstring("Frees card resources"),
+    ]
+    long WINAPI cdtTerm();
+
+}

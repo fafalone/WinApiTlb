@@ -1,0 +1,775 @@
+
+// Shell structures
+
+typedef struct SHFILEINFO {
+        HICON       hIcon;                      // out: icon
+        int         iIcon;                      // out: icon index
+        DWORD       dwAttributes;               // out: SFGAO_ flags
+#if UNICODE
+        BYTE        szDisplayName[260 * 2];     // out: display name (or path)
+        BYTE        szTypeName[80 * 2];         // out: type name
+#else
+        BYTE        szDisplayName[260];         // out: display name (or path)
+        BYTE        szTypeName[80];             // out: type name
+#endif
+} SHFILEINFO;
+
+typedef WORD FILEOP_FLAGS;
+// no POF_ flags currently defined
+typedef WORD PRINTEROP_FLAGS;
+
+typedef struct SHFILEOPSTRUCT {
+        HWND            hwnd;
+        UINT            wFunc;
+        LONG            pFrom;
+        LONG            pTo;
+        FILEOP_FLAGS    fFlags;
+        BOOL            fAnyOperationsAborted;
+        PTR 			hNameMappings;	// LPVOID          
+        PTR             lpszProgressTitle; // only used if FOF_SIMPLEPROGRESS
+} SHFILEOPSTRUCT;
+
+typedef struct NOTIFYICONDATA {
+        DWORD cbSize;
+        HWND  hWnd;
+        UINT  uID;
+        UINT  uFlags;
+        UINT  uCallbackMessage;
+        HICON hIcon;
+#if UNICODE
+        BYTE  szTip[64 * 2];
+#else
+        BYTE  szTip[64];
+#endif
+} NOTIFYICONDATA;
+
+typedef LONG BFFCALLBACK;
+// typedef int (CALLBACK* BFFCALLBACK)(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
+
+typedef struct BROWSEINFO {
+    HWND        hwndOwner;
+    LPCITEMIDLIST pidlRoot;
+    PTR /* LPTSTR  */ pszDisplayName;// Return display name of item selected.
+    PTR /* LPCTSTR */ lpszTitle; // text to go in the banner over the tree.
+    UINT         ulFlags;   // Flags that control the return stuff
+    BFFCALLBACK  lpfn;
+    LONG         lParam;    // extra info that's passed back in callbacks
+    int          iImage;    // output var: where to return the Image index.
+} BROWSEINFO, *PBROWSEINFO, *LPBROWSEINFO;
+
+// Browsing for directory.
+typedef enum EBROWSEOPTIONS {
+
+	[ helpstring("Only return directories--grey out OK button for other selections")]    
+    BIF_RETURNONLYFSDIRS   = 0x0001,  // Find folder to start document search
+	[ helpstring("Don't include network folders below the domain level")]    
+    BIF_DONTGOBELOWDOMAIN  = 0x0002,  
+	[ helpstring("Include a status area with text coming from messages sent by the callback function")]    
+    BIF_STATUSTEXT         = 0x0004,
+	[ helpstring("Only return file system ancestors--grey out OK button for other selections")]    
+    BIF_RETURNFSANCESTORS  = 0x0008,
+	[ helpstring("Include edit control for name of item")]    
+	BIF_EDITBOX            = 0x0010,
+	[ helpstring("Insist on valid result (or CANCEL)--requires will BIF_EDITBOX and callback procedure")]    
+	BIF_VALIDATE           = 0x0020,  
+	[ helpstring("Only return computers--grey out OK button for other selections")]  
+    BIF_BROWSEFORCOMPUTER  = 0x1000,  
+	[ helpstring("Only return printers--grey out OK button for other selections")]    
+    BIF_BROWSEFORPRINTER   = 0x2000,  
+	[ helpstring("Display files as well as folders")]    
+    BIF_BROWSEINCLUDEFILES = 0x4000   
+	
+} EBROWSEOPTIONS;
+
+    //// Shell File Operations
+
+typedef enum EFILEOPS {
+    FO_MOVE         = 0x0001,
+    FO_COPY         = 0x0002,
+    FO_DELETE       = 0x0003,
+    FO_RENAME       = 0x0004,
+
+    FOF_MULTIDESTFILES      = 0x0001,
+    FOF_CONFIRMMOUSE        = 0x0002,
+    FOF_SILENT              = 0x0004, // don't create progress/report
+    FOF_RENAMEONCOLLISION   = 0x0008,
+    FOF_NOCONFIRMATION      = 0x0010, // Don't prompt the user.
+    FOF_WANTMAPPINGHANDLE   = 0x0020, // Fill in SHFILEOPSTRUCT.hNameMappings
+                                      // Must be freed using SHFreeNameMappings
+    FOF_ALLOWUNDO           = 0x0040,
+    FOF_FILESONLY           = 0x0080, // on *.*, do only files
+    FOF_SIMPLEPROGRESS      = 0x0100, // means don't show names of files
+    FOF_NOCONFIRMMKDIR      = 0x0200, // don't confirm making any needed dirs
+
+    PO_DELETE               = 0x0013, // printer is being deleted
+    PO_RENAME               = 0x0014, // printer is being renamed
+    PO_PORTCHANGE           = 0x0020, // port this printer connected to is being changed
+                                      // if this id is set, the strings received by
+                                      // the copyhook are a doubly-null terminated
+                                      // list of strings.  The first is the printer
+                                      // name and the second is the printer port.
+    PO_REN_PORT             = 0x0034, // PO_RENAME and PO_PORTCHANGE at same time.
+
+    // Some useful masks
+    FOF_COPYFLAGS =     FOF_MULTIDESTFILES | FOF_SILENT |
+                        FOF_RENAMEONCOLLISION | FOF_NOCONFIRMATION |
+                        FOF_ALLOWUNDO | FOF_FILESONLY |
+                        FOF_SIMPLEPROGRESS | FOF_NOCONFIRMMKDIR,
+
+    FOF_MOVEFLAGS   =   FOF_COPYFLAGS,
+    FOF_RENAMEFLAGS =   FOF_COPYFLAGS,
+    FOF_DELETEFLAGS =   FOF_SILENT | FOF_NOCONFIRMATION |
+                        FOF_ALLOWUNDO | FOF_SIMPLEPROGRESS
+
+} EFILEOPS;
+
+typedef enum ESHARD {
+    [ helpstring("SHAddToRecentDocs: Add item identifier list") ]
+    SHARD_PIDL   = 0x00000001,
+    [ helpstring("SHAddToRecentDocs: Add path string") ]
+    #ifdef UNICODE
+    SHARD_PATH   = 0x00000003,
+    #else
+    SHARD_PATH   = 0x00000002,
+    #endif
+    SHARD_PATHA  = 0x00000002,
+    SHARD_PATHW  = 0x00000003
+} ESHARD;
+
+typedef enum ESHGFI {
+    [ helpstring("SHGetFileInfo: Get icon") ]
+    SHGFI_ICON               = 0x00000100,
+    [ helpstring("SHGetFileInfo: Get display name") ]
+    SHGFI_DISPLAYNAME        = 0x00000200,
+    [ helpstring("SHGetFileInfo: Get type name") ]
+    SHGFI_TYPENAME           = 0x00000400,
+    [ helpstring("SHGetFileInfo: Get attributes") ]
+    SHGFI_ATTRIBUTES         = 0x00000800,
+    [ helpstring("SHGetFileInfo: Get icon location") ]
+    SHGFI_ICONLOCATION       = 0x00001000,
+    [ helpstring("SHGetFileInfo: Get EXE type") ]
+    SHGFI_EXETYPE            = 0x00002000,
+    [ helpstring("SHGetFileInfo: Get system icon index") ]
+    SHGFI_SYSICONINDEX       = 0x00004000,
+    [ helpstring("SHGetFileInfo: Put link overlay on icon") ]
+    SHGFI_LINKOVERLAY        = 0x00008000,
+    [ helpstring("SHGetFileInfo: Show icon in selected state") ]
+    SHGFI_SELECTED           = 0x00010000,
+    [ helpstring("SHGetFileInfo: Get large icon") ]
+    SHGFI_LARGEICON          = 0x00000000,
+    [ helpstring("SHGetFileInfo: Get small icon") ]
+    SHGFI_SMALLICON          = 0x00000001,
+    [ helpstring("SHGetFileInfo: Get open icon") ]
+    SHGFI_OPENICON           = 0x00000002,
+    [ helpstring("SHGetFileInfo: Get shell size icon") ]
+    SHGFI_SHELLICONSIZE      = 0x00000004,
+    [ helpstring("SHGetFileInfo: pszPath is a PIDL") ]
+    SHGFI_PIDL               = 0x00000008,
+    [ helpstring("SHGetFileInfo: Use passed file attributes") ]
+    SHGFI_USEFILEATTRIBUTES  = 0x00000010
+} ESHGFI;
+
+typedef enum ECSIDL {
+	[ helpstring("SHGetSpecialFolderLocation: Desktop") ]
+	CSIDL_DESKTOP         = 0x0000,
+	[ helpstring("SHGetSpecialFolderLocation: Internet") ]
+	CSIDL_INTERNET        = 0x0001, 
+	[ helpstring("SHGetSpecialFolderLocation: Programs") ]
+	CSIDL_PROGRAMS        = 0x0002,
+	[ helpstring("SHGetSpecialFolderLocation: Control Panel") ]
+	CSIDL_CONTROLS        = 0x0003,
+	[ helpstring("SHGetSpecialFolderLocation: Printers") ]
+	CSIDL_PRINTERS        = 0x0004,
+	[ helpstring("SHGetSpecialFolderLocation: Documents") ]
+	CSIDL_PERSONAL        = 0x0005,
+	[ helpstring("SHGetSpecialFolderLocation: User's favorite items") ]
+	CSIDL_FAVORITES       = 0x0006,
+	[ helpstring("SHGetSpecialFolderLocation: Startup Directory") ]
+	CSIDL_STARTUP         = 0x0007,
+	[ helpstring("SHGetSpecialFolderLocation: Most Recently Used Documents") ]
+	CSIDL_RECENT          = 0x0008,
+	[ helpstring("SHGetSpecialFolderLocation: Send To Menu Items") ]
+	CSIDL_SENDTO          = 0x0009,
+	[ helpstring("SHGetSpecialFolderLocation: Recycle Bin") ]
+	CSIDL_BITBUCKET       = 0x000a,
+	[ helpstring("SHGetSpecialFolderLocation: Start Menu Directory") ]
+	CSIDL_STARTMENU       = 0x000b,
+	[ helpstring("SHGetSpecialFolderLocation: Desktop Directory") ]
+	CSIDL_DESKTOPDIRECTORY  = 0x0010,
+	[ helpstring("SHGetSpecialFolderLocation: My Computer") ]
+	CSIDL_DRIVES          = 0x0011,
+	[ helpstring("SHGetSpecialFolderLocation: Network Neighborhood") ]
+	CSIDL_NETWORK         = 0x0012,
+	[ helpstring("SHGetSpecialFolderLocation: Network Neighborhood Directory") ]
+	CSIDL_NETHOOD         = 0x0013,
+	[ helpstring("SHGetSpecialFolderLocation: Fonts") ]
+	CSIDL_FONTS           = 0x0014,
+	[ helpstring("SHGetSpecialFolderLocation: Templates") ]
+	CSIDL_TEMPLATES       = 0x0015,
+	[ helpstring("SHGetSpecialFolderLocation: Common Start Menu") ]
+	CSIDL_COMMON_STARTMENU          = 0x0016,
+	[ helpstring("SHGetSpecialFolderLocation: Common Programs") ] 
+	CSIDL_COMMON_PROGRAMS           = 0X0017, 
+	[ helpstring("SHGetSpecialFolderLocation: Common Startup") ]
+	CSIDL_COMMON_STARTUP            = 0x0018,
+	[ helpstring("SHGetSpecialFolderLocation: Common Desktop Directory") ]
+	CSIDL_COMMON_DESKTOPDIRECTORY   = 0x0019,
+	[ helpstring("SHGetSpecialFolderLocation: Common Application Data") ]
+	CSIDL_APPDATA                   = 0x001a,
+	[ helpstring("SHGetSpecialFolderLocation: Common Printer Neighborhood") ]
+	CSIDL_PRINTHOOD                 = 0x001b,
+	[ helpstring("SHGetSpecialFolderLocation: User's nonlocalized Startup program group") ]
+	CSIDL_ALTSTARTUP                = 0x001d,         // DBCS 
+	[ helpstring("SHGetSpecialFolderLocation: Common nonlocalized Startup program group") ]
+	CSIDL_COMMON_ALTSTARTUP         = 0x001e,         // DBCS 
+	[ helpstring("SHGetSpecialFolderLocation: Common favorite items") ]
+	CSIDL_COMMON_FAVORITES          = 0x001f, 
+	[ helpstring("SHGetSpecialFolderLocation: Temporary Internet files") ]
+	CSIDL_INTERNET_CACHE            = 0x0020, 
+	[ helpstring("SHGetSpecialFolderLocation: Internet cookies") ]
+	CSIDL_COOKIES                   = 0x0021, 
+	[ helpstring("SHGetSpecialFolderLocation: Internet history items") ]
+	CSIDL_HISTORY                   = 0x0022,
+} ECSIDL;
+
+typedef enum ESHGDFIL {
+    SHGDFIL_FINDDATA     = 1,
+    SHGDFIL_NETRESOURCE  = 2
+} ESHGDFIL;
+
+// Shell function entries and constants
+[
+#ifdef UNICODE
+uuid(64675052-3A82-101B-8181-00AA003743D3),
+#else
+uuid(64674052-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("Shell"),
+dllname("SHELL32.DLL")
+]
+module Shell {
+
+    // Shell functions, types, and definitions
+    /*
+    UINT WINAPI DragQueryFileA(HDROP,UINT,LPTSTR,UINT);
+
+    BOOL WINAPI DragQueryPoint(HDROP,LPPOINT);
+
+    VOID WINAPI DragFinish(HDROP);
+
+    VOID WINAPI DragAcceptFiles(HWND,BOOL);
+    */
+
+    /*
+    typedef struct _DRAGINFOA {
+        UINT uSize;                 // Init with sizeof(DRAGINFO)
+        POINTL pt;
+        BOOL fNC;
+        LPSTR   lpFileList;
+        DWORD grfKeyState;
+    } DRAGINFOA, FAR* LPDRAGINFOA;
+    typedef DRAGINFOA DRAGINFO;
+    typedef LPDRAGINFOA LPDRAGINFO;
+    */
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("ShellExecuteW"),
+    #else
+    entry("ShellExecuteA"),
+    #endif
+    helpstring("Opens or prints specified executable or document file"),
+    ]
+    HINSTANCE WINAPI ShellExecute(HWND hwnd,
+                                  LPCTSTR lpOperation,
+                                  LPCTSTR lpFile,
+                                  LPCTSTR lpParameters,
+                                  LPCTSTR lpDirectory,
+                                  ESW nShowCmd); // SW_NORMAL
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("FindExecutableW"),
+    #else
+    entry("FindExecutableA"),
+    #endif
+    helpstring("Retrieves name and handle of executable file associated with the specified filename"),
+    ]
+    HINSTANCE WINAPI FindExecutable(LPCTSTR lpFile,
+                                    LPCTSTR lpDirectory,
+                                    LPTSTR lpResult);
+
+    // LPWSTR * WINAPI CommandLineToArgvW(LPCWSTR lpCmdLine, int*pNumArgs);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("ShellAboutW"),
+    #else
+    entry("ShellAboutA"),
+    #endif
+    helpstring("Displays an About Box"),
+    ]
+    INT WINAPI ShellAbout(HWND hWnd, LPCTSTR szApp,
+                          LPCTSTR szOtherStuff,
+                          HICON hIcon);
+
+    // HICON      WINAPI DuplicateIcon(HINSTANCE hInst, HICON hIcon);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("ExtractAssociatedIconW"),
+    #else
+    entry("ExtractAssociatedIconA"),
+    #endif
+    helpstring("Returns handle of indexed icon found in a file or in an associated executable file"),
+    ]
+    HICON     WINAPI ExtractAssociatedIcon(HINSTANCE hInst,
+                                           LPTSTR lpIconPath,
+                                           WORD * lpiIcon);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("ExtractIconW"),
+    #else
+    entry("ExtractIconA"),
+    #endif
+    helpstring("Retrieves handle of an icon from given executable file, DLL, or icon file"),
+    ]
+    HICON     WINAPI ExtractIcon(HINSTANCE hInst,
+                                 LPCTSTR lpszExeFileName,
+                                 UINT nIconIndex);
+
+
+    // AppBar stuff
+    /*
+    const DWORD ABM_NEW             = 0x00000000;
+    const DWORD ABM_REMOVE          = 0x00000001;
+    const DWORD ABM_QUERYPOS        = 0x00000002;
+    const DWORD ABM_SETPOS          = 0x00000003;
+    const DWORD ABM_GETSTATE        = 0x00000004;
+    const DWORD ABM_GETTASKBARPOS   = 0x00000005;
+    const DWORD ABM_ACTIVATE        = 0x00000006;  // lParam == TRUE/FALSE means activate/deactivate
+    const DWORD ABM_GETAUTOHIDEBAR  = 0x00000007;
+    const DWORD ABM_SETAUTOHIDEBAR  = 0x00000008;  // This can fail at any time.
+                                                   // MUST check the result
+                                                   // lParam = TRUE/FALSE  Set/Unset
+                                                   // uEdge = what edge
+    const DWORD ABM_WINDOWPOSCHANGED = 0x0000009;
+
+
+    // these are put in the wparam of callback messages
+    const DWORD ABN_STATECHANGE    = 0x0000000;
+    const DWORD ABN_POSCHANGED     = 0x0000001;
+    const DWORD ABN_FULLSCREENAPP  = 0x0000002;
+    const DWORD ABN_WINDOWARRANGE  = 0x0000003; // lParam == TRUE means hide
+
+    // flags for get state
+    const DWORD ABS_AUTOHIDE       = 0x0000001;
+    const DWORD ABS_ALWAYSONTO     = 0x0000002;
+
+    const int ABE_LEFT    = 0;
+    const int ABE_TOP     = 1;
+    const int ABE_RIGHT   = 2;
+    const int ABE_BOTTOM  = 3;
+    */
+
+    /*
+    typedef struct _AppBarData
+    {
+        DWORD cbSize;
+        HWND hWnd;
+        UINT uCallbackMessage;
+        UINT uEdge;
+        RECT rc;
+        LONG	lParam; // LPARAM  // message specific
+    } APPBARDATA, *PAPPBARDATA;
+    */
+
+    // UINT WINAPI SHAppBarMessage(DWORD dwMessage, PAPPBARDATA pData);
+
+    //  EndAppBar
+
+    // DWORD WINAPI DoEnvironmentSubstA(LPTSTR szString, UINT cbString);
+
+    // LPTSTR WINAPI FindEnvironmentStringA(LPTSTR szEnvVar);
+
+    //        #define EIRESID(x) (-1 * (int)(x))
+
+    [
+    usesgetlasterror,
+	#ifdef UNICODE
+    entry("ExtractIconExW"),
+	#else
+    entry("ExtractIconExA"),
+	#endif
+    helpstring("Extracts the handle of an icon from the specified executable file, DLL, or icon file"),
+    ]
+    UINT WINAPI ExtractIconEx(LPCTSTR lpszFile, 
+							  int nIconIndex,
+                              LPVOID phiconLarge,
+                              LPVOID phiconSmall,
+                              UINT nIcons);
+
+    //
+    // SHAddToRecentDocs
+    //
+    [
+    usesgetlasterror,
+    entry("SHAddToRecentDocs"),
+    helpstring("Adds a file to shell list of recently used documents, or clears documents from the list"),
+    ]
+    void WINAPI SHAddToRecentDocs(ESHARD uFlags, LPTSTR pv);
+
+    [
+    usesgetlasterror,
+    entry("SHAddToRecentDocs"),
+    helpstring("Adds an item ID list to shell list of recently used documents, or clears documents from the list"),
+    ]
+    void WINAPI SHAddToRecentDocsItem(ESHARD uFlags, DWORD pv);
+
+    //----------
+    //
+    // SHGetPathFromIDList
+    //
+    //  This function assumes the size of the buffer (MAX_PATH). The pidl
+    // should point to a file system object.
+    //
+    //----------
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("SHGetPathFromIDListW"),
+    #else
+    entry("SHGetPathFromIDListA"),
+    #endif
+    helpstring("Converts an item ID list pointer to a file system path (cMaxPath buffer expected)"),
+    ]
+    BOOL WINAPI SHGetPathFromIDList(DWORD pidl, LPTSTR pszPath);
+
+
+    // implicit parameters are:
+    //      if pFrom or pTo are unqualified names the current directories are
+    //      taken from the global current drive/directory settings managed
+    //      by Get/SetCurrentDrive/Directory
+    //
+    //      the global confirmation settings
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("SHFileOperationW"),
+    #else
+    entry("SHFileOperationA"),
+    #endif
+    helpstring("Performs a copy, move, rename, or delete operation on a file system object"),
+    ]
+    int WINAPI SHFileOperation(SHFILEOPSTRUCT * lpFileOp);
+
+    /*
+    [
+    usesgetlasterror,
+    entry(""),
+    helpstring(""),
+    ]
+    void WINAPI SHFreeNameMappings(HANDLE hNameMappings);
+
+    typedef struct SHNAMEMAPPING {
+        LPSTR pszOldPath;
+        LPSTR pszNewPath;
+        int   cchOldPath;
+        int   cchNewPath;
+    } SHNAMEMAPPING, *LPSHNAMEMAPPING;
+    */
+
+    ////        #define SHGetNameMappingCount(_hnm)
+    //      DSA_GetItemCount(_hnm)
+    ////        #define SHGetNameMappingPtr(_hnm, _iItem) \
+    //      (LPSHNAMEMAPPING)DSA_GetItemPtr(_hnm, _iItem)
+
+    //// End Shell File Operations
+
+    //  Begin ShellExecuteEx and family
+
+    // ShellExecute() and ShellExecuteEx() error codes
+
+    // Regular WinExec() codes
+    const int SE_ERR_FNF                = 2;       // file not found
+    const int SE_ERR_PNF                = 3;       // path not found
+    const int SE_ERR_ACCESSDENIED       = 5;       // access denied
+    const int SE_ERR_OOM                = 8;       // out of memory
+    const int SE_ERR_DLLNOTFOUND       = 32;
+
+
+    // Error values for ShellExecute() beyond the regular WinExec() codes
+    const int SE_ERR_SHARE                  = 26;
+    const int SE_ERR_ASSOCINCOMPLETE        = 27;
+    const int SE_ERR_DDETIMEOUT             = 28;
+    const int SE_ERR_DDEFAIL                = 29;
+    const int SE_ERR_DDEBUSY                = 30;
+    const int SE_ERR_NOASSOC                = 31;
+
+    // Note CLASSKEY overrides CLASSNAME
+    const DWORD SEE_MASK_CLASSNAME        = 0x00000001;
+    const DWORD SEE_MASK_CLASSKEY         = 0x00000003;
+    // Note INVOKEIDLIST overrides IDLIST
+    const DWORD SEE_MASK_IDLIST           = 0x00000004;
+    const DWORD SEE_MASK_INVOKEIDLIST     = 0x0000000c;
+    const DWORD SEE_MASK_ICON             = 0x00000010;
+    const DWORD SEE_MASK_HOTKEY           = 0x00000020;
+    const DWORD SEE_MASK_NOCLOSEPROCESS   = 0x00000040;
+    const DWORD SEE_MASK_CONNECTNETDRV    = 0x00000080;
+    const DWORD SEE_MASK_FLAG_DDEWAIT     = 0x00000100;
+    const DWORD SEE_MASK_DOENVSUBST       = 0x00000200;
+    const DWORD SEE_MASK_FLAG_NO_UI       = 0x00000400;
+    const DWORD SEE_MASK_UNICODE          = 0x00010000;
+
+    /*
+    typedef struct _SHELLEXECUTEINFOA
+    {
+            DWORD cbSize;
+            ULONG fMask;
+            HWND hwnd;
+            LPCSTR   lpVerb;
+            LPCSTR   lpFile;
+            LPCSTR   lpParameters;
+            LPCSTR   lpDirectory;
+            ESW      nShow;
+            HINSTANCE hInstApp;
+            // Optional fields
+            PTR       lpIDList; // LPVOID
+            LPCSTR   lpClass;
+            HKEY hkeyClass;
+            DWORD dwHotKey;
+            HANDLE hIcon;
+            HANDLE hProcess;
+    } SHELLEXECUTEINFOA, *LPSHELLEXECUTEINFOA;
+    typedef SHELLEXECUTEINFOA SHELLEXECUTEINFO;
+    typedef LPSHELLEXECUTEINFOA LPSHELLEXECUTEINFO;
+    */
+
+    // BOOL WINAPI ShellExecuteExA(LPSHELLEXECUTEINFOA lpExecInfo);
+
+    // void WINAPI WinExecErrorA(HWND hwnd, int error, LPCTSTR lpstrFileName, LPCTSTR lpstrTitle);
+
+    //  End ShellExecuteEx and family
+
+    // Tray notification definitions
+
+    const DWORD NIM_ADD       = 0x00000000;
+    const DWORD NIM_MODIFY    = 0x00000001;
+    const DWORD NIM_DELETE    = 0x00000002;
+
+    const DWORD NIF_MESSAGE   = 0x00000001;
+    const DWORD NIF_ICON      = 0x00000002;
+    const DWORD NIF_TIP       = 0x00000004;
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("Shell_NotifyIconW"),
+    #else
+    entry("Shell_NotifyIconA"),
+    #endif
+    helpstring("Performs a copy, move, rename, or delete operation on a file system object"),
+    ]
+    BOOL WINAPI Shell_NotifyIcon(DWORD dwMessage,
+                                 NOTIFYICONDATA * lpData);
+
+    // End Tray Notification Icons
+
+    // Begin SHGetFileInfo
+
+    /*
+     * The SHGetFileInfo API provides an easy way to get attributes
+     * for a file given a pathname.
+     *
+     *   PARAMETERS
+     *
+     *     pszPath              file name to get info about
+     *     dwFileAttributes     file attribs, only used with SHGFI_USEFILEATTRIBUTES
+     *     psfi                 place to return file info
+     *     cbFileInfo           size of structure
+     *     uFlags               flags
+     *
+     *   RETURN
+     *     TRUE if things worked
+     */
+
+    [
+    entry("SHGetMalloc"),
+    helpstring("Returns a pointer to an IMalloc used to allocate LPITEMID"),
+    ]
+    HRESULT WINAPI SHGetMalloc(IVBMalloc ** ppMalloc);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("SHGetFileInfoW"),
+    #else
+    entry("SHGetFileInfoA"),
+    #endif
+    helpstring("Retrieves information about a file system object such as a file, a folder, a directory, or a drive root"),
+    ]
+    DWORD WINAPI SHGetFileInfo(LPCTSTR pszPath,
+                               DWORD dwFileAttributes,
+                               SHFILEINFO * psfi,
+                               UINT cbFileInfo,
+                               UINT uFlags);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("SHGetFileInfoW"),
+    #else
+    entry("SHGetFileInfoA"),
+    #endif
+    helpstring("Retrieves information about a special folder specified as an index"),
+    ]
+    DWORD WINAPI SHGetItemInfo(LONG ordPath,
+                               DWORD dwFileAttributes,
+                               SHFILEINFO * psfi,
+                               UINT cbFileInfo,
+                               UINT uFlags);
+
+    /*
+    BOOL WINAPI SHGetNewLinkInfoA(LPCTSTR pszLinkTo, 
+								  LPCTSTR pszDir,
+                                  LPTSTR pszName, 
+								  BOOL * pfMustCopy,
+                                  UINT uFlags);
+    */
+
+    //define SHGNLI_PIDL           0x000000001     // pszLinkTo is a pidl
+    //define SHGNLI_PREFIXNAME     0x000000002     // Make name "Shortcut to xxx"
+
+    //-------------------------------------------------------------------------
+    //
+    // SHGetSpecialFolderLocation
+    //
+    //  Caller should call SHFree to free the returned pidl.
+    //
+    //-------------------------------------------------------------------------
+    //
+
+    [
+    entry("SHGetSpecialFolderLocation"),
+    helpstring("Get item ID of special folder location"),
+    ]
+    HRESULT WINAPI SHGetSpecialFolderLocation(HWND hwndOwner,
+                                              int nFolder,
+                                              /* LPITEMIDLIST * ppidl */
+                                              long * ppidl);
+
+    // registry entries for special paths are kept in :
+#ifdef UNICODE
+    const LPTSTR REGSTR_PATH_SPECIAL_FOLDERS  = L"\\Shell Folders";
+#else
+    const LPTSTR REGSTR_PATH_SPECIAL_FOLDERS  = "\\Shell Folders";
+#endif
+
+    //-------------------------------------------------------------------------
+    //
+    // SHBrowseForFolder API
+    //
+    //-------------------------------------------------------------------------
+
+    // message from browser
+    const short BFFM_INITIALIZED        = 1;
+    const short BFFM_SELCHANGED         = 2;
+#ifdef UNICODE
+    const short BFFM_VALIDATEFAILED     = 4;   // lParam:wzPath ret:1(cont),0(EndDialog)
+#else
+    const short BFFM_VALIDATEFAILED     = 3;   // lParam:szPath ret:1(cont),0(EndDialog)
+#endif
+
+    // messages to browser
+    const short BFFM_ENABLEOK           = WM_USER + 101;
+#ifdef UNICODE
+    const short BFFM_SETSTATUSTEXT      = WM_USER + 104;
+    const short BFFM_SETSELECTION       = WM_USER + 103;
+#else
+    const short BFFM_SETSTATUSTEXT      = WM_USER + 100;
+    const short BFFM_SETSELECTION       = WM_USER + 102;
+#endif
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("SHBrowseForFolderW"),
+    #else
+    entry("SHBrowseForFolder"),
+    #endif
+    helpstring("Displays a dialog that allows selection of shell folders"),
+    ]
+    LPITEMIDLIST WINAPI SHBrowseForFolder(LPBROWSEINFO lpbi);
+
+    //-------------------------------------------------------------------------
+    //
+    // SHLoadInProc
+    //
+    //   When this function is called, the shell calls CoCreateInstance
+    //  (or equivalent) with CLSCTX_INPROC_SERVER and the specified CLSID
+    //  from within the shell's process and release it immediately.
+    //
+    //-------------------------------------------------------------------------
+
+    [
+    entry("SHLoadInProc"),
+    helpstring("Creates instance of specified object class from within context of shell's process"),
+    ]
+    HRESULT WINAPI SHLoadInProc(REFCLSID rclsid);
+
+    //
+    //  Helper function which returns a IShellFolder interface to the desktop
+    // folder. This is equivalent to call CoCreateInstance with CLSID_ShellDesktop.
+    //
+    //  CoCreateInstance(CLSID_Desktop, NULL,
+    //                   CLSCTX_INPROC, IID_IShellFolder, &pshf);
+    //
+    [
+    entry("SHGetDesktopFolder"),
+    helpstring("Retrieves IShellFolder interface for desktop folder, which is the root of the shell's namespace"),
+    ]
+    HRESULT WINAPI SHGetDesktopFolder(LPSHELLFOLDER *ppshf);
+
+
+    //
+    //  APIs
+    //
+    [
+    usesgetlasterror,
+    entry("SHChangeNotify"),
+    helpstring("Notifies system of event that may affect the shell"),
+    ]
+    void WINAPI SHChangeNotify(LONG wEventId, UINT uFlags,
+                               LPCVOID dwItem1, LPCVOID dwItem2);
+
+
+    [
+    entry("SHGetInstanceExplorer"),
+    helpstring("Retrieves Explorer's IUnknown interface"),
+    ]
+    HRESULT WINAPI SHGetInstanceExplorer(IUnknown **ppunk);
+
+    //
+    // SHGetDataFromIDListA/W
+    //
+    [
+    #ifdef UNICODE
+    entry("SHGetDataFromIDListW"),
+    #else
+    entry("SHGetDataFromIDListA"),
+    #endif
+    helpstring("Retrieves extended property data from relative identifier list"),
+    ]
+    HRESULT WINAPI SHGetDataFromIDList(LPSHELLFOLDER psf,
+                                       LPCITEMIDLIST pidl,
+                                       int nFormat,
+                                       LPVOID pv,
+                                       int cb);
+
+}

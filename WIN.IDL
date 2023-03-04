@@ -1,0 +1,57 @@
+//@B Win
+// WIN.IDL
+
+[
+#ifdef UNICODE
+uuid(64675040-3A82-101B-8181-00AA003743D3),
+helpstring("Windows API (Unicode)"),
+#else
+uuid(64674040-3A82-101B-8181-00AA003743D3),
+helpstring("Windows API (ANSI)"),
+#endif
+lcid (0x00000000),
+version(1.1)
+]
+
+
+library Win
+{
+
+    importlib("stdole2.tlb");
+
+	// Include standard windows types
+    #include "windef.idl"
+	#include "vberr.idl"
+
+    // NOTE: All messages below 0x0400 are RESERVED by Windows
+    #define WM_USER        0x0400
+
+    #include "winbase.idl"
+    #include "wingdi.idl"
+    #include "winuser.idl"
+    #include "richedit.idl"
+    #include "winnls.idl"
+    #include "winver.idl"
+    #include "winreg.idl"
+    #include "winnetwk.idl"
+    #include "objbase.idl"
+    #include "propset.idl"
+	
+    #include "shlobj.idl"
+
+    #include "mmsystem.idl"
+    #include "shellapi.idl"
+    #include "commdlg.idl"
+    #include "oleauto.idl"
+    #include "ole2.idl"
+    #include "olectl.idl"
+
+    #include "commctrl.idl"
+    #include "cards.idl"
+    #include "winerror.idl"
+    #include "comconst.idl"
+    // #include "shlwapi.idl"	// Disabled because some users may not have SHLWAPI.DLL
+
+};
+//@E Win
+//

@@ -1,0 +1,42 @@
+// APIs to set properties
+
+[
+#ifdef UNICODE
+uuid(1A089FD2-E43B-11d1-9367-00805F852792),
+#else
+uuid(1A089FD3-E43B-11d1-9367-00805F852792),
+#endif
+helpstring("IPropertySetStorage API functions"),
+dllname("IPROP.DLL")
+]
+
+module PropSet {
+
+    [
+    entry("StgCreatePropSetStg"),
+    helpstring("Creates a property set storage object from a specified storage object"),
+    ]
+    HRESULT StgCreatePropSetStg(
+                [in]  IVBStorage * pStorage,  // Pointer to a storage object
+                [in]  DWORD dwReserved,       // Reserved; must be zero
+                [out, retval] IVBPropertySetStorage ** ppPropSetStg  
+                       // Address of output variable that receives 
+                       //  IVBPropertySetStorage interface pointer
+    );
+
+    [
+    entry("StgOpenPropStg"),
+    helpstring("Opens a specified property set in a specified storage or stream object"),
+    ]
+    HRESULT StgOpenPropStg(
+      [in]  IUnknown* pUnk,     // Interface pointer for object containing the 
+                                //  requested property set
+      [in]  REFFMTID fmtid,     // Format identifier of the property set to be 
+                                //  opened  DWORD grfFlags,    //PROPSETFLAG values
+      [in]  DWORD dwReserved,   // Reserved; must be zero
+      [out, retval] IVBPropertyStorage ** ppPropStg
+                                // Address of output variable that receives the 
+                                //  IVBPropertyStorage interface pointer
+    );
+
+}

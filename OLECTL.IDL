@@ -1,0 +1,519 @@
+////
+//
+// olectl.h     OLE Control interfaces
+//
+//              OLE Version 2.0
+//
+//              Copyright (c) 1992-1996, Microsoft Corp. All rights reserved.
+//
+////
+
+
+#ifndef _OLECTL_H_
+#define _OLECTL_H_
+
+// include <ocidl.h>
+
+
+////
+// OCPFIPARAMS structure - parameters for OleCreatePropertyFrameIndirect
+
+typedef struct OCPFIPARAMS {
+    ULONG cbStructSize;
+    HWND hWndOwner;
+    int x;
+    int y;
+    PTR /* LPCOLESTR */ lpszCaption;
+    ULONG cObjects;
+    PTR /* LPUNKNOWN * */ lplpUnk;
+    ULONG cPages;
+    PTR /* CLSID * */ lpPages;
+    LCID lcid;
+    DISPID dispidInitialProperty;
+} OCPFIPARAMS, * LPOCPFIPARAMS;
+
+
+////
+// FONTDESC structure
+
+typedef struct FONTDESC {
+    UINT cbSizeofstruct;
+    PTR /* LPCOLESTR */ lpstrName;
+    CY cySize;
+    SHORT sWeight;
+    SHORT sCharset;
+    BOOL fItalic;
+    BOOL fUnderline;
+    BOOL fStrikethrough;
+} FONTDESC, * LPFONTDESC;
+
+
+////
+// PICTDESC structure
+
+typedef struct PICTDESC {
+    UINT cbSizeofstruct;
+    UINT picType;
+    HBITMAP   hgdiobj;      // Bitmap, icon, cursor, or metafile
+    HPALETTE  hPalOrXYExt;  // Bitmap hPal or metafile xExt and yExt
+} PICTDESC, * LPPICTDESC;
+
+typedef struct PICTDESCBMP {
+    UINT cbSizeofstruct;
+    UINT picType;
+    HBITMAP   hbitmap;        // Bitmap
+    HPALETTE  hpal;           // Accompanying palette
+} PICTDESCBMP, * LPPICTDESCBMP;
+
+typedef struct PICTDESCMETA {
+    UINT cbSizeofstruct;
+    UINT picType;
+    HMETAFILE hmeta;          // Metafile or enhanced metafile
+    int       xExt;
+    int       yExt;           // Extent
+} PICTDESCMETA, * LPPICTDESCMETA;
+
+typedef struct PICTDESCICO {
+    UINT cbSizeofstruct;
+    UINT picType;
+	HICON hicon;              // Icon
+    UINT  reserved; 
+} PICTDESCICO, * LPPICTDESCICO;
+
+
+////
+// Typedefs for standard scalar types
+
+typedef long OLE_XPOS_PIXELS;
+typedef long OLE_YPOS_PIXELS;
+typedef long OLE_XSIZE_PIXELS;
+typedef long OLE_YSIZE_PIXELS;
+typedef float OLE_XPOS_CONTAINER;
+typedef float OLE_YPOS_CONTAINER;
+typedef float OLE_XSIZE_CONTAINER;
+typedef float OLE_YSIZE_CONTAINER;
+typedef enum { 
+	triUnchecked = 0, 
+	triChecked = 1, 
+	triGray = 2 
+} OLE_TRISTATE;
+typedef VARIANT_BOOL OLE_OPTEXCLUSIVE;
+typedef VARIANT_BOOL OLE_CANCELBOOL;
+typedef VARIANT_BOOL OLE_ENABLEDEFAULTBOOL;
+
+// OLE control function entries and constants
+[
+#ifdef UNICODE
+uuid(64675064-3A82-101B-8181-00AA003743D3),
+#else
+uuid(64674064-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("OLE Control Functions"),
+dllname("OLEPRO32.DLL")
+]
+module OleCtl {
+
+
+	/* Ignore interface HRESULT codes
+
+	////
+	// FACILITY_CONTROL status codes
+
+	//define FACILITY_CONTROL 0xa
+
+	//define = 0x800A0000 + n) MAKE_SCODE(SEVERITY_ERROR, FACILITY_CONTROL, n)
+	
+	const DWORD CTL_E_ILLEGALFUNCTIONCALL       = 0x800A0000 + 5;
+	const DWORD CTL_E_OVERFLOW                  = 0x800A0000 + 6;
+	const DWORD CTL_E_OUTOFMEMORY               = 0x800A0000 + 7;
+	const DWORD CTL_E_DIVISIONBYZERO            = 0x800A0000 + 11;
+	const DWORD CTL_E_OUTOFSTRINGSPACE          = 0x800A0000 + 14;
+	const DWORD CTL_E_OUTOFSTACKSPACE           = 0x800A0000 + 28;
+	const DWORD CTL_E_BADFILENAMEORNUMBER       = 0x800A0000 + 52;
+	const DWORD CTL_E_FILENOTFOUND              = 0x800A0000 + 53;
+	const DWORD CTL_E_BADFILEMODE               = 0x800A0000 + 54;
+	const DWORD CTL_E_FILEALREADYOPEN           = 0x800A0000 + 55;
+	const DWORD CTL_E_DEVICEIOERROR             = 0x800A0000 + 57;
+	const DWORD CTL_E_FILEALREADYEXISTS         = 0x800A0000 + 58;
+	const DWORD CTL_E_BADRECORDLENGTH           = 0x800A0000 + 59;
+	const DWORD CTL_E_DISKFULL                  = 0x800A0000 + 61;
+	const DWORD CTL_E_BADRECORDNUMBER           = 0x800A0000 + 63;
+	const DWORD CTL_E_BADFILENAME               = 0x800A0000 + 64;
+	const DWORD CTL_E_TOOMANYFILES              = 0x800A0000 + 67;
+	const DWORD CTL_E_DEVICEUNAVAILABLE         = 0x800A0000 + 68;
+	const DWORD CTL_E_PERMISSIONDENIED          = 0x800A0000 + 70;
+	const DWORD CTL_E_DISKNOTREADY              = 0x800A0000 + 71;
+	const DWORD CTL_E_PATHFILEACCESSERROR       = 0x800A0000 + 75;
+	const DWORD CTL_E_PATHNOTFOUND              = 0x800A0000 + 76;
+	const DWORD CTL_E_INVALIDPATTERNSTRING      = 0x800A0000 + 93;
+	const DWORD CTL_E_INVALIDUSEOFNULL          = 0x800A0000 + 94;
+	const DWORD CTL_E_INVALIDFILEFORMAT         = 0x800A0000 + 321;
+	const DWORD CTL_E_INVALIDPROPERTYVALUE      = 0x800A0000 + 380;
+	const DWORD CTL_E_INVALIDPROPERTYARRAYINDEX = 0x800A0000 + 381;
+	const DWORD CTL_E_SETNOTSUPPORTEDATRUNTIME  = 0x800A0000 + 382;
+	const DWORD CTL_E_SETNOTSUPPORTED           = 0x800A0000 + 383;
+	const DWORD CTL_E_NEEDPROPERTYARRAYINDEX    = 0x800A0000 + 385;
+	const DWORD CTL_E_SETNOTPERMITTED           = 0x800A0000 + 387;
+	const DWORD CTL_E_GETNOTSUPPORTEDATRUNTIME  = 0x800A0000 + 393;
+	const DWORD CTL_E_GETNOTSUPPORTED           = 0x800A0000 + 394;
+	const DWORD CTL_E_PROPERTYNOTFOUND          = 0x800A0000 + 422;
+	const DWORD CTL_E_INVALIDCLIPBOARDFORMAT    = 0x800A0000 + 460;
+	const DWORD CTL_E_INVALIDPICTURE            = 0x800A0000 + 481;
+	const DWORD CTL_E_PRINTERERROR              = 0x800A0000 + 482;
+	const DWORD CTL_E_CANTSAVEFILETOTEMP        = 0x800A0000 + 735;
+	const DWORD CTL_E_SEARCHTEXTNOTFOUND        = 0x800A0000 + 744;
+	const DWORD CTL_E_REPLACEMENTSTOOLONG       = 0x800A0000 + 746;
+
+	//define CUSTOM_CTL_SCODE(n) MAKE_SCODE(SEVERITY_ERROR, FACILITY_CONTROL, n)
+	//define CTL_E_CUSTOM_FIRST              CUSTOM_CTL_SCODE(600)
+
+
+	////
+	// IClassFactory2 status codes
+
+	//define CLASS_E_NOTLICENSED         (CLASSFACTORY_E_FIRST+2)
+	// class is not licensed for use
+
+
+	////
+	// IConnectionPoint status codes
+
+	//define CONNECT_E_FIRST    MAKE_SCODE(SEVERITY_ERROR,   FACILITY_ITF, 0x0200)
+	const DWORD CONNECT_E_LAST     MAKE_SCODE(SEVERITY_ERROR,   FACILITY_ITF, 0x020F)
+	const DWORD CONNECT_S_FIRST    MAKE_SCODE(SEVERITY_SUCCESS, FACILITY_ITF, 0x0200)
+	const DWORD CONNECT_S_LAST     MAKE_SCODE(SEVERITY_SUCCESS, FACILITY_ITF, 0x020F)
+
+	const DWORD CONNECT_E_NOCONNECTION      (CONNECT_E_FIRST+0)
+	// there is no connection for this connection id
+
+	const DWORD CONNECT_E_ADVISELIMIT       (CONNECT_E_FIRST+1)
+	// this implementation's limit for advisory connections has been reached
+
+	const DWORD CONNECT_E_CANNOTCONNECT     (CONNECT_E_FIRST+2)
+	// connection attempt failed
+
+	const DWORD CONNECT_E_OVERRIDDEN        (CONNECT_E_FIRST+3)
+	// must use a derived interface to connect
+
+
+	////
+	// DllRegisterServer/DllUnregisterServer status codes
+
+	const DWORD SELFREG_E_FIRST    MAKE_SCODE(SEVERITY_ERROR,   FACILITY_ITF, 0x0200)
+	const DWORD SELFREG_E_LAST     MAKE_SCODE(SEVERITY_ERROR,   FACILITY_ITF, 0x020F)
+	const DWORD SELFREG_S_FIRST    MAKE_SCODE(SEVERITY_SUCCESS, FACILITY_ITF, 0x0200)
+	const DWORD SELFREG_S_LAST     MAKE_SCODE(SEVERITY_SUCCESS, FACILITY_ITF, 0x020F)
+
+	const DWORD SELFREG_E_TYPELIB           (SELFREG_E_FIRST+0)
+	// failed to register/unregister type library
+
+	const DWORD SELFREG_E_CLASS             (SELFREG_E_FIRST+1)
+	// failed to register/unregister class
+
+
+	////
+	// IPerPropertyBrowsing status codes
+
+	const DWORD PERPROP_E_FIRST    MAKE_SCODE(SEVERITY_ERROR,   FACILITY_ITF, 0x0200)
+	const DWORD PERPROP_E_LAST     MAKE_SCODE(SEVERITY_ERROR,   FACILITY_ITF, 0x020F)
+	const DWORD PERPROP_S_FIRST    MAKE_SCODE(SEVERITY_SUCCESS, FACILITY_ITF, 0x0200)
+	const DWORD PERPROP_S_LAST     MAKE_SCODE(SEVERITY_SUCCESS, FACILITY_ITF, 0x020F)
+
+	const DWORD PERPROP_E_NOPAGEAVAILABLE   (PERPROP_E_FIRST+0)
+	// no page available for requested property
+	*/
+
+	// PICTYPE constants 
+	const DWORD PICTYPE_UNINITIALIZED   = -1;
+	const DWORD PICTYPE_NONE            = 0;
+	const DWORD PICTYPE_BITMAP          = 1;
+	const DWORD PICTYPE_METAFILE        = 2;
+	const DWORD PICTYPE_ICON            = 3;
+	const DWORD PICTYPE_ENHMETAFILE     = 4;
+
+	/* 
+	////
+	// OLEMISC_ constants (they are also defined in the latest oleidl.h)
+
+	const DWORD OLEMISC_INVISIBLEATRUNTIME			0x00000400L
+	const DWORD OLEMISC_ALWAYSRUN					0x00000800L
+	const DWORD OLEMISC_ACTSLIKEBUTTON				0x00001000L
+	const DWORD OLEMISC_ACTSLIKELABEL				0x00002000L
+	const DWORD OLEMISC_NOUIACTIVATE				0x00004000L
+	const DWORD OLEMISC_ALIGNABLE					0x00008000L
+	const DWORD OLEMISC_SIMPLEFRAME					0x00010000L
+	const DWORD OLEMISC_SETCLIENTSITEFIRST			0x00020000L
+	const DWORD OLEMISC_IMEMODE						0x00040000L
+	const DWORD OLEMISC_IGNOREACTIVATEWHENVISIBLE	0x00080000L
+	const DWORD OLEMISC_NOTMINIMUMNOTIFY			0x00100000L
+	const DWORD OLEMISC_SUPPORTSMULTILEVELUNDO		0x00200000L
+	const DWORD OLEMISC_WANTSTOMENUMERGE			0x00400000L
+
+
+
+	////
+	// OLEIVERB_ constants
+
+	const DWORD OLEIVERB_PROPERTIES (-7L)
+
+	////
+	// Variant type (VT_) tags for property sets
+
+	const DWORD VT_STREAMED_PROPSET 73  //       [P]  Stream contains a property set
+	const DWORD VT_STORED_PROPSET   74  //       [P]  Storage contains a property set
+	const DWORD VT_BLOB_PROPSET     75  //       [P]  Blob contains a property set
+	const DWORD VT_VERBOSE_ENUM     76  //       [P]  Enum value with text string
+
+
+	////
+	// Variant type (VT_) tags that are just aliases for others
+
+	const DWORD VT_COLOR            VT_I4
+	const DWORD VT_XPOS_PIXELS      VT_I4
+	const DWORD VT_YPOS_PIXELS      VT_I4
+	const DWORD VT_XSIZE_PIXELS     VT_I4
+	const DWORD VT_YSIZE_PIXELS     VT_I4
+	const DWORD VT_XPOS_HIMETRIC    VT_I4
+	const DWORD VT_YPOS_HIMETRIC    VT_I4
+	const DWORD VT_XSIZE_HIMETRIC   VT_I4
+	const DWORD VT_YSIZE_HIMETRIC   VT_I4
+	const DWORD VT_TRISTATE         VT_I2
+	const DWORD VT_OPTEXCLUSIVE     VT_BOOL
+	const DWORD VT_FONT             VT_DISPATCH
+	const DWORD VT_PICTURE          VT_DISPATCH
+
+	const DWORD VT_HANDLE           VT_I4
+
+	////
+	// Reflected Window Message IDs
+
+	const DWORD OCM__BASE           (WM_USER+0x1c00)
+	const DWORD OCM_COMMAND         (OCM__BASE + WM_COMMAND)
+
+	const DWORD OCM_CTLCOLORBTN     (OCM__BASE + WM_CTLCOLORBTN)
+	const DWORD OCM_CTLCOLOREDIT    (OCM__BASE + WM_CTLCOLOREDIT)
+	const DWORD OCM_CTLCOLORDLG     (OCM__BASE + WM_CTLCOLORDLG)
+	const DWORD OCM_CTLCOLORLISTBOX (OCM__BASE + WM_CTLCOLORLISTBOX)
+	const DWORD OCM_CTLCOLORMSGBOX  (OCM__BASE + WM_CTLCOLORMSGBOX)
+	const DWORD OCM_CTLCOLORSCROLLBAR   (OCM__BASE + WM_CTLCOLORSCROLLBAR)
+	const DWORD OCM_CTLCOLORSTATIC  (OCM__BASE + WM_CTLCOLORSTATIC)
+
+	const DWORD OCM_DRAWITEM        (OCM__BASE + WM_DRAWITEM)
+	const DWORD OCM_MEASUREITEM     (OCM__BASE + WM_MEASUREITEM)
+	const DWORD OCM_DELETEITEM      (OCM__BASE + WM_DELETEITEM)
+	const DWORD OCM_VKEYTOITEM      (OCM__BASE + WM_VKEYTOITEM)
+	const DWORD OCM_CHARTOITEM      (OCM__BASE + WM_CHARTOITEM)
+	const DWORD OCM_COMPAREITEM     (OCM__BASE + WM_COMPAREITEM)
+	const DWORD OCM_HSCROLL         (OCM__BASE + WM_HSCROLL)
+	const DWORD OCM_VSCROLL         (OCM__BASE + WM_VSCROLL)
+	const DWORD OCM_PARENTNOTIFY    (OCM__BASE + WM_PARENTNOTIFY)
+
+	const DWORD OCM_NOTIFY            (OCM__BASE + WM_NOTIFY)
+	*/
+
+	////
+	// Self-registration APIs (to be implemented by server DLL)
+
+    [
+    entry("DllRegisterServer"),
+    helpstring("Instructs an in-process server to create its registry entries for all classes supported in this server module"),
+    ]
+	HRESULT WINAPI DllRegisterServer(void);
+
+    [
+    entry("DllUnregisterServer"),
+    helpstring("Instructs an in-process server to remove only those entries created through DllRegisterServer"),
+    ]
+	HRESULT WINAPI DllUnregisterServer(void);
+
+
+	/*
+	////
+	// Property frame APIs
+
+	HRESULT WINAPI OleCreatePropertyFrame(HWND hwndOwner, UINT x, UINT y,
+		LPCOLESTR lpszCaption, ULONG cObjects, LPUNKNOWN * ppUnk, ULONG cPages,
+		LPCLSID pPageClsID, LCID lcid, DWORD dwReserved, LPVOID pvReserved);
+
+	HRESULT WINAPI OleCreatePropertyFrameIndirect(LPOCPFIPARAMS lpParams);
+	*/
+
+	////
+	// Standard type APIs
+
+#if 0 
+	// Could be defined as a Sub
+    [
+    entry("OleTranslateColor"),
+    helpstring("Converts an OLE_COLOR type to a COLORREF"),
+    ]
+	HRESULT WINAPI OleTranslateColor(OLE_COLOR clr, HPALETTE hpal, 
+								     COLORREF* lpcolorref);
+#else
+	// Could be defined as a Function
+    [
+    entry("OleTranslateColor"),
+    helpstring("Converts an OLE_COLOR type to a COLORREF"),
+    ]
+	HRESULT WINAPI OleTranslateColor(OLE_COLOR clr, 
+									 [in, defaultvalue(0)] HPALETTE hpal, 
+								     [out, retval] COLORREF* lpcolorref);
+#endif
+
+    [
+    entry("OleCreateFontIndirect"),
+    helpstring("Creates and initializes a standard font object using an initial description of the font's properties in a FONTDESC structure"),
+    ]
+	HRESULT WINAPI OleCreateFontIndirect(LPFONTDESC lpFontDesc, 
+			 						     REFIID * riid, IFont * ifont);
+
+    [
+    entry("OleCreatePictureIndirect"),
+    helpstring("Creates a new picture object initialized according to a PICTDESC structure"),
+    ]
+	HRESULT WINAPI OleCreatePictureIndirect(PICTDESC * lpPictDesc,
+										 REFIID * riid, BOOL fOwn,
+										 IPicture * ipic);
+
+    [
+    entry("OleCreatePictureIndirect"),
+    helpstring("Creates a new picture object initialized according to a PICTDESCBMP structure (BITMAP alias)"),
+    ]
+	HRESULT WINAPI OleCreatePictureIndirectBmp(LPPICTDESCBMP lpPictDescBmp, 
+											   REFIID * riid, BOOL fOwn, 
+											   IPicture * ipic);
+
+    [
+    entry("OleCreatePictureIndirect"),
+    helpstring("Creates a new picture object initialized according to a PICTDESCBMP structure (ICON alias)"),
+    ]
+	HRESULT WINAPI OleCreatePictureIndirectIco(LPPICTDESCICO lpPictDescIco, 
+											   REFIID * riid, BOOL fOwn, 
+											   IPicture * ipic);
+
+    [
+    entry("OleCreatePictureIndirect"),
+    helpstring("Creates a new picture object initialized according to a PICTDESCBMP structure (METAFILE alias)"),
+    ]
+	HRESULT WINAPI OleCreatePictureIndirectMeta(LPPICTDESCMETA lpPictDescMeta, 
+											    REFIID * riid, BOOL fOwn,
+											    IUnknown * ipic);
+
+    [
+    entry("OleLoadPicture"),
+    helpstring("Creates a new picture object and initializes it from the contents of a stream"),
+    ]
+	HRESULT WINAPI OleLoadPicture(LPSTREAM lpstream, LONG lSize, 
+		 					      BOOL fRunmode, REFIID * riid, 
+							      IPicture * ipic);
+
+	/*
+	// DIFFERENT:   This OleLoadPicturePath function signature is only for valid if
+	//              ASYNCPICTURE is defined.
+	#if defined(ASYNCPICTURE)
+	HRESULT WINAPI OleLoadPicturePath(LPOLESTR szUrl, 
+									  LPUNKNOWN punkCaller, 
+									  DWORD dwFlags, 
+							          OLE_COLOR clrBackgnd, 
+									  REFIID * riid, IPicture * ipic);
+	#endif  // if defined(ASYNCPICTURE)
+	*/
+
+	const DWORD OPCTPATH_DEFAULTS     = 0; // SYNC | AUTHORTIME | OPAQUE
+	const DWORD OPCTPATH_ASYNCHRONOUS = 1;
+	const DWORD OPCTPATH_RUNTIME      = 2;
+	const DWORD OPCTPATH_RESERVED1    = 4;
+
+    [
+    usesgetlasterror,
+    entry("OleIconToCursor"),
+    helpstring("Converts an icon to a cursor"),
+    ]
+	HCURSOR WINAPI OleIconToCursor(HINSTANCE hinstExe, HICON hIcon);
+
+	/*
+	////
+	//  Standard dispatch ID constants
+
+	const DWORD DISPID_AUTOSIZE                 (-500)
+	const DWORD DISPID_BACKCOLOR                (-501)
+	const DWORD DISPID_BACKSTYLE                (-502)
+	const DWORD DISPID_BORDERCOLOR              (-503)
+	const DWORD DISPID_BORDERSTYLE              (-504)
+	const DWORD DISPID_BORDERWIDTH              (-505)
+	const DWORD DISPID_DRAWMODE                 (-507)
+	const DWORD DISPID_DRAWSTYLE                (-508)
+	const DWORD DISPID_DRAWWIDTH                (-509)
+	const DWORD DISPID_FILLCOLOR                (-510)
+	const DWORD DISPID_FILLSTYLE                (-511)
+	const DWORD DISPID_FONT                     (-512)
+	const DWORD DISPID_FORECOLOR                (-513)
+	const DWORD DISPID_ENABLED                  (-514)
+	const DWORD DISPID_HWND                     (-515)
+	const DWORD DISPID_TABSTOP                  (-516)
+	const DWORD DISPID_TEXT                     (-517)
+	const DWORD DISPID_CAPTION                  (-518)
+	const DWORD DISPID_BORDERVISIBLE            (-519)
+	const DWORD DISPID_APPEARANCE               (-520)
+	const DWORD DISPID_READYSTATE               (-525)
+
+	const DWORD DISPID_REFRESH                  (-550)
+	const DWORD DISPID_DOCLICK                  (-551)
+	const DWORD DISPID_ABOUTBOX                 (-552)
+
+	const DWORD DISPID_CLICK                    (-600)
+	const DWORD DISPID_DBLCLICK                 (-601)
+	const DWORD DISPID_KEYDOWN                  (-602)
+	const DWORD DISPID_KEYPRESS                 (-603)
+	const DWORD DISPID_KEYUP                    (-604)
+	const DWORD DISPID_MOUSEDOWN                (-605)
+	const DWORD DISPID_MOUSEMOVE                (-606)
+	const DWORD DISPID_MOUSEUP                  (-607)
+	const DWORD DISPID_ERROREVENT               (-608)
+	const DWORD DISPID_READYSTATECHANGE         (-609)
+
+	const DWORD DISPID_AMBIENT_BACKCOLOR        (-701)
+	const DWORD DISPID_AMBIENT_DISPLAYNAME      (-702)
+	const DWORD DISPID_AMBIENT_FONT             (-703)
+	const DWORD DISPID_AMBIENT_FORECOLOR        (-704)
+	const DWORD DISPID_AMBIENT_LOCALEID         (-705)
+	const DWORD DISPID_AMBIENT_MESSAGEREFLECT   (-706)
+	const DWORD DISPID_AMBIENT_SCALEUNITS       (-707)
+	const DWORD DISPID_AMBIENT_TEXTALIGN        (-708)
+	const DWORD DISPID_AMBIENT_USERMODE         (-709)
+	const DWORD DISPID_AMBIENT_UIDEAD           (-710)
+	const DWORD DISPID_AMBIENT_SHOWGRABHANDLES  (-711)
+	const DWORD DISPID_AMBIENT_SHOWHATCHING     (-712)
+	const DWORD DISPID_AMBIENT_DISPLAYASDEFAULT (-713)
+	const DWORD DISPID_AMBIENT_SUPPORTSMNEMONICS (-714)
+	const DWORD DISPID_AMBIENT_AUTOCLIP         (-715)
+	const DWORD DISPID_AMBIENT_APPEARANCE       (-716)
+
+	const DWORD DISPID_Name                     (-800)
+	const DWORD DISPID_Delete                   (-801)
+	const DWORD DISPID_Object                   (-802)
+	const DWORD DISPID_Parent                   (-803)
+
+	////
+	// Dispatch ID constants for font and picture types
+
+	const DWORD DISPID_FONT_NAME    0
+	const DWORD DISPID_FONT_SIZE    2
+	const DWORD DISPID_FONT_BOLD    3
+	const DWORD DISPID_FONT_ITALIC  4
+	const DWORD DISPID_FONT_UNDER   5
+	const DWORD DISPID_FONT_STRIKE  6
+	const DWORD DISPID_FONT_WEIGHT  7
+	const DWORD DISPID_FONT_CHARSET 8
+
+	const DWORD DISPID_PICT_HANDLE  0
+	const DWORD DISPID_PICT_HPAL    2
+	const DWORD DISPID_PICT_TYPE    3
+	const DWORD DISPID_PICT_WIDTH   4
+	const DWORD DISPID_PICT_HEIGHT  5
+	const DWORD DISPID_PICT_RENDER  6
+	*/
+
+}
+
+#endif // _OLECTL_H_

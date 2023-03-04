@@ -1,0 +1,118 @@
+// WinDef.IDL - Windows types for easy translation of API types
+
+#ifndef _WINTYPE_ODL_
+#define _WINTYPE_ODL_
+
+//@B WinType1
+#if 0
+#ifdef SIGNAWARE
+// For host languages that recognize unsigned numbers
+typedef unsigned short  WORD;
+typedef unsigned short  USHORT;
+typedef unsigned long   DWORD;
+typedef unsigned long   ULONG;
+typedef unsigned int    UINT;
+#else
+// For host languages (such as VB) that only recognize signed numbers
+typedef short           WORD;
+typedef short           USHORT;
+typedef long            DWORD;
+typedef long            ULONG;
+typedef long            UINT;
+#endif
+#endif
+typedef unsigned char   BYTE;   // BYTE is unsigned under VB
+typedef long            BOOL;
+typedef long            LONG;
+typedef long            HANDLE;
+typedef long            HWND;
+//@E WinType1
+typedef long            HINSTANCE;
+typedef long            HDC;
+typedef long            HFILE;
+typedef long            HGDIOBJ;
+typedef long            HICON;
+typedef long            HCURSOR;
+typedef long            HFONT;
+typedef long            HDWP;
+typedef long            HKEY;
+typedef long            HPEN;
+typedef long            HRGN;
+typedef long            HMODULE;
+typedef long            HTASK;
+typedef long            HRSRC;
+typedef long            HBITMAP;
+typedef long            HGLOBAL;
+typedef long            HPALETTE;
+typedef long            HMETAFILE;
+typedef long            HENHMETAFILE;
+typedef long            HBRUSH;
+typedef long            HMENU;
+typedef long            HIMAGELIST;
+typedef long            REGSAM;
+typedef long            WNDPROC;
+typedef float           FLOAT;
+typedef double          DOUBLE;
+typedef void *			LPVOID;
+typedef void *			LPCVOID;
+typedef int *			LPINT;
+typedef BOOL *			LPBOOL;
+typedef DWORD           COLORREF;
+typedef UINT            WPARAM;
+typedef LPVOID			LPARAM;
+typedef LONG            LRESULT;
+typedef LPSTR			LPCSTR;
+typedef LPWSTR			LPCWSTR;
+typedef char			CHAR;
+typedef wchar_t			WCHAR;
+#ifdef UNICODE 
+typedef LPWSTR			LPTSTR;
+typedef LPWSTR			LPCTSTR;
+typedef WCHAR			TCHAR;
+#else
+typedef LPSTR			LPTSTR;
+typedef LPSTR			LPCTSTR;
+typedef BYTE			TCHAR;
+#endif
+typedef LONG            CALLBACK;
+
+
+#define WINAPI			__stdcall
+#define VOID			void
+#define UNALIGNED
+
+typedef struct LOGPALETTE256 {
+    WORD        palVersion;
+    WORD        palNumEntries;
+    PALETTEENTRY        palPalEntry[256];
+} LOGPALETTE256, *PLOGPALETTE256, *LPLOGPALETTE256;
+
+
+typedef struct POINTS {
+    SHORT x;
+    SHORT y;
+} POINTS, *PPOINTS;
+
+typedef RECT * LPRECT;
+typedef POINTL * LPPOINT;
+
+typedef long FARPROC;
+
+// Forward declare interfaces must be public in the type library, but
+// that are not used by later interfaces or procedures
+interface IVBMalloc;
+interface IVBEnumVARIANT;
+interface IVBStream;
+interface IVBStorage;
+interface IVBStream;
+interface IVBPersistStream; 
+interface IVBSequentialStream;
+interface IVBPersistFile;
+interface IVBPersistStorage; 
+interface IVBLockBytes;
+interface IVBRootStorage;
+interface IVBEnumSTATPROPSTG;
+interface IVBEnumSTATPROPSETSTG;
+
+ 
+#endif // _WINTYPE_ODL_

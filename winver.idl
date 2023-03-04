@@ -1,0 +1,251 @@
+// 
+// 
+// winver.h -    Version management functions, types, and definitions          *
+//                                                                              *
+//               Include file for VER.DLL.  This library is                    *
+//               designed to allow version stamping of Windows executable files*
+//               and of special .VER files for DOS executable files.           *
+//                                                                              *
+//               Copyright (c) 1993-1995, Microsoft Corp.  All rights reserved *
+//                                                                             *
+
+#ifndef VER_H
+#define VER_H
+
+// ----- Types and structures ----- 
+
+typedef struct VS_FIXEDFILEINFO {
+    DWORD   dwSignature;            // e.g. = 0xfeef04bd 
+    DWORD   dwStrucVersion;         // e.g. = 0x00000042 = "0.42" 
+    DWORD   dwFileVersionMS;        // e.g. = 0x00030075 = "3.75" 
+    DWORD   dwFileVersionLS;        // e.g. = 0x00000031 = "0.31" 
+    DWORD   dwProductVersionMS;     // e.g. = 0x00030010 = "3.10" 
+    DWORD   dwProductVersionLS;     // e.g. = 0x00000031 = "0.31" 
+    DWORD   dwFileFlagsMask;        // = = 0x3F for version "0.42" 
+    DWORD   dwFileFlags;            // e.g. VFF_DEBUG | VFF_PRERELEASE 
+    DWORD   dwFileOS;               // e.g. VOS_DOS_WINDOWS16 
+    DWORD   dwFileType;             // e.g. VFT_DRIVER 
+    DWORD   dwFileSubtype;          // e.g. VFT2_DRV_KEYBOARD 
+    DWORD   dwFileDateMS;           // e.g. 0 
+    DWORD   dwFileDateLS;           // e.g. 0 
+} VS_FIXEDFILEINFO;
+
+[
+#ifdef UNICODE
+uuid(64675068-3A82-101B-8181-00AA003743D3),
+#else
+uuid(64674068-3A82-101B-8181-00AA003743D3),
+#endif
+helpstring("Version Data"),
+dllname("VERSION.DLL")
+]
+module WinVersion {
+
+	// ----- Symbols ----- 
+	const DWORD VS_FILE_INFO            = 16; // RT_VERSION
+	const DWORD VS_VERSION_INFO         = 1;
+	const DWORD VS_USER_DEFINED         = 100;
+
+	// ----- VS_VERSION.dwFileFlags ----- 
+	const DWORD VS_FFI_SIGNATURE        = 0xFEEF04BD;
+	const DWORD VS_FFI_STRUCVERSION     = 0x00010000;
+	const DWORD VS_FFI_FILEFLAGSMASK    = 0x0000003F;
+
+	// ----- VS_VERSION.dwFileFlags ----- 
+	const DWORD VS_FF_DEBUG             = 0x00000001;
+	const DWORD VS_FF_PRERELEASE        = 0x00000002;
+	const DWORD VS_FF_PATCHED           = 0x00000004;
+	const DWORD VS_FF_PRIVATEBUILD      = 0x00000008;
+	const DWORD VS_FF_INFOINFERRED      = 0x00000010;
+	const DWORD VS_FF_SPECIALBUILD      = 0x00000020;
+
+	// ----- VS_VERSION.dwFileOS ----- 
+	const DWORD VOS_UNKNOWN             = 0x00000000;
+	const DWORD VOS_DOS                 = 0x00010000;
+	const DWORD VOS_OS216               = 0x00020000;
+	const DWORD VOS_OS232               = 0x00030000;
+	const DWORD VOS_NT                  = 0x00040000;
+
+	const DWORD VOS__BASE               = 0x00000000;
+	const DWORD VOS__WINDOWS16          = 0x00000001;
+	const DWORD VOS__PM16               = 0x00000002;
+	const DWORD VOS__PM32               = 0x00000003;
+	const DWORD VOS__WINDOWS32          = 0x00000004;
+
+	const DWORD VOS_DOS_WINDOWS16       = 0x00010001;
+	const DWORD VOS_DOS_WINDOWS32       = 0x00010004;
+	const DWORD VOS_OS216_PM16          = 0x00020002;
+	const DWORD VOS_OS232_PM32          = 0x00030003;
+	const DWORD VOS_NT_WINDOWS32        = 0x00040004;
+
+	// ----- VS_VERSION.dwFileType ----- 
+	const DWORD VFT_UNKNOWN             = 0x00000000;
+	const DWORD VFT_APP                 = 0x00000001;
+	const DWORD VFT_DLL                 = 0x00000002;
+	const DWORD VFT_DRV                 = 0x00000003;
+	const DWORD VFT_FONT                = 0x00000004;
+	const DWORD VFT_VXD                 = 0x00000005;
+	const DWORD VFT_STATIC_LIB          = 0x00000007;
+
+	// ----- VS_VERSION.dwFileSubtype for VFT_WINDOWS_DRV ----- 
+	const DWORD VFT2_UNKNOWN            = 0x00000000;
+	const DWORD VFT2_DRV_PRINTER        = 0x00000001;
+	const DWORD VFT2_DRV_KEYBOARD       = 0x00000002;
+	const DWORD VFT2_DRV_LANGUAGE       = 0x00000003;
+	const DWORD VFT2_DRV_DISPLAY        = 0x00000004;
+	const DWORD VFT2_DRV_MOUSE          = 0x00000005;
+	const DWORD VFT2_DRV_NETWORK        = 0x00000006;
+	const DWORD VFT2_DRV_SYSTEM         = 0x00000007;
+	const DWORD VFT2_DRV_INSTALLABLE    = 0x00000008;
+	const DWORD VFT2_DRV_SOUND          = 0x00000009;
+	const DWORD VFT2_DRV_COMM           = 0x0000000A;
+	const DWORD VFT2_DRV_INPUTMETHOD    = 0x0000000B;
+
+	// ----- VS_VERSION.dwFileSubtype for VFT_WINDOWS_FONT ----- 
+	const DWORD VFT2_FONT_RASTER        = 0x00000001;
+	const DWORD VFT2_FONT_VECTOR        = 0x00000002;
+	const DWORD VFT2_FONT_TRUETYPE      = 0x00000003;
+
+	// ----- VerFindFile() flags ----- 
+	const WORD VFFF_ISSHAREDFILE        = 0x0001;
+
+	const WORD VFF_CURNEDEST            = 0x0001;
+	const WORD VFF_FILEINUSE            = 0x0002;
+	const WORD VFF_BUFFTOOSMALL         = 0x0004;
+
+	// ----- VerInstallFile() flags ----- 
+	const WORD VIFF_FORCEINSTALL        = 0x0001;
+	const WORD VIFF_DONTDELETEOLD       = 0x0002;
+
+	const DWORD VIF_TEMPFILE            = 0x00000001;
+	const DWORD VIF_MISMATCH            = 0x00000002;
+	const DWORD VIF_SRCOLD              = 0x00000004;
+
+	const DWORD VIF_DIFFLANG            = 0x00000008;
+	const DWORD VIF_DIFFCODEPG          = 0x00000010;
+	const DWORD VIF_DIFFTYPE            = 0x00000020;
+
+	const DWORD VIF_WRITEPROT           = 0x00000040;
+	const DWORD VIF_FILEINUSE           = 0x00000080;
+	const DWORD VIF_OUTOFSPACE          = 0x00000100;
+	const DWORD VIF_ACCESSVIOLATION     = 0x00000200;
+	const DWORD VIF_SHARINGVIOLATION    = 0x00000400;
+	const DWORD VIF_CANNOTCREATE        = 0x00000800;
+	const DWORD VIF_CANNOTDELETE        = 0x00001000;
+	const DWORD VIF_CANNOTRENAME        = 0x00002000;
+	const DWORD VIF_CANNOTDELETECUR     = 0x00004000;
+	const DWORD VIF_OUTOFMEMORY         = 0x00008000;
+
+	const DWORD VIF_CANNOTREADSRC       = 0x00010000;
+	const DWORD VIF_CANNOTREADDST       = 0x00020000;
+
+	const DWORD VIF_BUFFTOOSMALL        = 0x00040000;
+
+	// ----- Function prototypes ----- 
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("VerFindFileW"),
+    #else
+    entry("VerFindFileA"),
+    #endif
+    helpstring("Determines where to install a file based on whether there is another version of the file in the system"),
+    ]
+	DWORD WINAPI VerFindFile(
+			DWORD uFlags,
+			LPTSTR szFileName,
+			LPTSTR szWinDir,
+			LPTSTR szAppDir,
+			LPTSTR szCurDir,
+			UINT * lpuCurDirLen,
+			LPTSTR szDestDir,
+			UINT * lpuDestDirLen
+			);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("VerInstallFileW"),
+    #else
+    entry("VerInstallFileA"),
+    #endif
+    helpstring("Attempts to install the specified file based on information returned from the VerFindFile function"),
+    ]
+	DWORD WINAPI VerInstallFile(
+			DWORD uFlags,
+			LPTSTR szSrcFileName,
+			LPTSTR szDestFileName,
+			LPTSTR szSrcDir,
+			LPTSTR szDestDir,
+			LPTSTR szCurDir,
+			LPTSTR szTmpFile,
+			UINT * lpuTmpFileLen
+			);
+
+	// Returns size of version info in bytes 
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetFileVersionInfoSizeW"),
+    #else
+    entry("GetFileVersionInfoSizeA"),
+    #endif
+    helpstring("Determines whether the operating system can obtain version information about a specified file, and if so returns the size in bytes"),
+    ]
+	DWORD WINAPI GetFileVersionInfoSize(
+			LPTSTR lptstrFilename, 
+			DWORD * lpdwHandle
+			);	   
+
+	// Read version info into buffer 
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("GetFileVersionInfoW"),
+    #else
+    entry("GetFileVersionInfoA"),
+    #endif
+    helpstring("Returns version information about a specified file"),
+    ]
+	BOOL WINAPI GetFileVersionInfo(
+			LPTSTR lptstrFilename,  
+			DWORD dwHandle,         
+			DWORD dwLen,            
+			BYTE * lpData
+			);			
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("VerLanguageNameW"),
+    #else
+    entry("VerLanguageNameA"),
+    #endif
+    helpstring("Retrieves a description string for the language associated with a specified binary Microsoft language identifier"),
+    ]
+	DWORD WINAPI VerLanguageName(
+			DWORD wLang,
+			LPTSTR szLang,
+			DWORD nSize
+			);
+
+    [
+    usesgetlasterror,
+    #ifdef UNICODE
+    entry("VerQueryValueW"),
+    #else
+    entry("VerQueryValueA"),
+    #endif
+    helpstring("Returns selected version information from the specified version-information resource"),
+    ]
+	BOOL WINAPI VerQueryValue(
+			BYTE * pBlock,
+			LPTSTR lpSubBlock,
+			LONG * lplpBuffer,
+			UINT * puLen
+			);
+
+}
+
+#endif  // !VER_H 
